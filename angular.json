@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "angular-electron": {
+    "stagepiano": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -11,10 +11,10 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist",
+            "outputPath": "dist/frontend",
             "index": "src/index.html",
-            "main": "src/main.ts",
-            "tsConfig": "src/tsconfig.app.json",
+            "main": "src/main.frontend.ts",
+            "tsConfig": "src/tsconfig.frontend.json",
             "polyfills": "src/polyfills.ts",
             "assets": [
               "src/assets",
@@ -66,24 +66,32 @@
             }
           }
         },
+		"backend": {
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "dist/backend",
+            "main": "src/main.backend.ts",
+            "tsConfig": "src/tsconfig.backend.json"
+          }
+		},
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "angular-electron:build"
+            "browserTarget": "stagepiano:build"
           },
           "configurations": {
             "dev": {
-              "browserTarget": "angular-electron:build:dev"
+              "browserTarget": "stagepiano:build:dev"
             },
             "production": {
-              "browserTarget": "angular-electron:build:production"
+              "browserTarget": "stagepiano:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "angular-electron:build"
+            "browserTarget": "stagepiano:build"
           }
         },
         "test": {
@@ -111,7 +119,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "src/tsconfig.app.json",
+              "src/tsconfig.frontend.json",
               "src/tsconfig.spec.json"
             ],
             "exclude": [
@@ -121,7 +129,7 @@
         }
       }
     },
-    "angular-electron-e2e": {
+    "stagepiano-e2e": {
       "root": "e2e",
       "projectType": "application",
       "architect": {
@@ -139,14 +147,14 @@
       }
     }
   },
-  "defaultProject": "angular-electron",
+  "defaultProject": "stagepiano",
   "schematics": {
     "@schematics/angular:component": {
-      "prefix": "app",
+      "prefix": "frontend",
       "styleext": "scss"
     },
     "@schematics/angular:directive": {
-      "prefix": "app"
+      "prefix": "frontend"
     }
   }
 }

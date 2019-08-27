@@ -83,5 +83,14 @@
   },
   "engines": {
     "node": ">=10.9.0"
+  },
+  "dependencies": {
+    "@angular/animations": "^8.2.3",
+    "@angular/http": "^7.2.15",
+    "@angular/platform-server": "^8.2.3",
+    "@ngxs/devtools-plugin": "^3.5.0",
+    "@ngxs/logger-plugin": "^3.5.0",
+    "@ngxs/schematics": "0.0.1-alpha.5",
+    "@ngxs/store": "^3.5.0"
   }
 }

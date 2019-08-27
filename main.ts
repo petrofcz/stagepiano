@@ -1,6 +1,11 @@
 import { app, BrowserWindow, screen } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+import 'zone.js/dist/zone-node';
+import { enableProdMode } from '@angular/core';
+import { renderModuleFactory } from '@angular/platform-server';
+import { BackendModuleNgFactory } from './dist/backend/main';
+
 
 let win, serve;
 const args = process.argv.slice(1);
@@ -54,7 +59,16 @@ try {
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
-  app.on('ready', createWindow);
+  app.on('ready', function() {
+	// create window
+	createWindow();
+	
+	// start backend service
+	renderModuleFactory(BackendModuleNgFactory, {
+		url: '/',
+		document: ''
+	});
+  });
 
   // Quit when all windows are closed.
   app.on('window-all-closed', () => {
