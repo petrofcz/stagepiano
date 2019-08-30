@@ -15,10 +15,10 @@ export class KotatkoService {
 	run() {
 		const _this = this;
 		setInterval(function () {
-			_this.store.dispatch(new SetKnobValueAction(
-				_this.getRandomArbitrary(0, 8),
-				_this.getRandomArbitrary(0, 128),
-			));
+			_this.store.dispatch(<SetKnobValueAction>{
+				knobId: _this.getRandomArbitrary(0, 8),
+				value: _this.getRandomArbitrary(0, 128),
+			});
 		}, 1000);
 	}
 

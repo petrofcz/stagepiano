@@ -21,7 +21,6 @@ export interface KeyboardStateModel {
 	}
 })
 export class KeyboardState {
-
 	@Selector()
 	public static getState(state: KeyboardStateModel) {
 		return state;
@@ -32,7 +31,7 @@ export class KeyboardState {
 		return model.knobValues;
 	}
 
-	@Action(SetKnobValueAction)
+	@Action(<SetKnobValueAction>{})
 	public setKnobValue(ctx: StateContext<KeyboardStateModel>, {knobId, value}: SetKnobValueAction) {
 		const state = ctx.getState();
 		const kvo = {...state.knobValues};

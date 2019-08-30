@@ -1,6 +1,5 @@
-export class SetKnobValueAction {
-	public static readonly type = '[Keyboard] SetKnobValue';
-
-	constructor(public knobId: number, public value: number) {
-	}
+export interface SetKnobValueAction {
+	type: '[Keyboard] SetKnobValue';
+	knobId: number;
+	value: number;
 }
