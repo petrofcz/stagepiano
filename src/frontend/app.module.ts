@@ -41,6 +41,7 @@ import {RouterModule} from '@angular/router';
 import {MaterialModule} from './material';
 import {LayoutState} from '../shared/layout/state/layout.state';
 import {FrontendState} from '../shared/frontend/state/frontend.state';
+import {VSTState} from '../shared/vst/state/vst.state';
 // import {IpcStorageEngine} from './core/services/storage/ipcStorageEngine.service';
 
 // AoT requires an exported function for factories
@@ -69,7 +70,7 @@ export function IpcActionReceiverFactory(ipcActionReceiver: IpcActionReceiver) {
 				deps: [HttpClient]
 			}
 		}),
-		NgxsModule.forRoot([LayoutState, FrontendState]),
+		NgxsModule.forRoot([LayoutState, FrontendState, VSTState]),
 		NgxsReduxDevtoolsPluginModule.forRoot(),
 		NgxsRouterPluginModule.forRoot(),
 		RouterModule.forRoot([]),

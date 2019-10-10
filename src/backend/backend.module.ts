@@ -13,7 +13,9 @@ import {StateLoaderHandler} from './ngxs/state-loader-handler.service';
 import {LayoutState} from '../shared/layout/state/layout.state';
 import {BiduleSettingsLoader} from './bidule/settings/BiduleSettingsLoader';
 import {OscService} from './osc/osc.service';
-import {LayoutOpener} from './bidule/layout/layout-opener.service';
+import {BiduleLayoutOpener} from './bidule/layout/layout-opener.service';
+import {VSTState} from '../shared/vst/state/vst.state';
+import {BiduleLayoutReader} from './bidule/layout/layout-reader';
 
 export function IpcActionReceiverFactory(ipcActionReceiver: IpcActionReceiver) {
 	return () => ipcActionReceiver.init();
@@ -31,7 +33,7 @@ export function NoopAppInitializer() {
 	],
 	imports: [
 		ServerModule,
-		NgxsModule.forRoot([LayoutState, KeyboardState])
+		NgxsModule.forRoot([LayoutState, KeyboardState, VSTState])
 	],
 	providers: [
 		{
@@ -65,7 +67,7 @@ export function NoopAppInitializer() {
 	bootstrap: [DummyComponent]
 })
 export class BackendModule {
-	constructor(ks: KotatkoService, lw: LayoutOpener) {
+	constructor(ks: KotatkoService, blw: BiduleLayoutOpener, blr: BiduleLayoutReader) {
 		ks.run();
 	}
 }
