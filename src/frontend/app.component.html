@@ -1,1 +1,83 @@
-<router-outlet></router-outlet>
+<div *ngIf="initialized$ | async; else loader">
+	<mat-sidenav-container class="sidenav-container">
+		<mat-sidenav
+	        #drawer
+			class="sidenav"
+			fixedInViewport="true"
+			[attr.role]="'navigation'"
+			[mode]="'side'"
+	        [disableClose]="true"
+			[opened]="true">
+			<mat-toolbar color="primary">StagePiano</mat-toolbar>
+			<mat-nav-list *ngIf="layoutLoaded$ | async">
+				<a mat-list-item routerLink="/layouts">
+					<mat-icon mat-list-icon>toc</mat-icon>
+					<span mat-line>Instruments</span>
+					<span mat-line class="secondary">Setup your virtual instruments.</span>
+				</a>
+				<mat-divider></mat-divider>
+				<a mat-list-item (click)="closeLayout()">
+					<mat-icon mat-list-icon>arrow_back_ios</mat-icon>
+					<span mat-line>Close layout</span>
+				</a>
+			</mat-nav-list>
+			<mat-nav-list *ngIf="!(layoutLoaded$ | async)">
+				<a mat-list-item routerLink="/layouts">
+					<mat-icon mat-list-icon>toc</mat-icon>
+					<span mat-line>Layouts</span>
+					<span mat-line class="secondary">Manage layouts for your performance.</span>
+				</a>
+			</mat-nav-list>
+		</mat-sidenav>
+		<mat-sidenav-content>
+			<div *ngIf="(activeLayout$ | async) && !(layoutLoaded$ | async)">
+				<div style="
+				    opacity: 0.5;
+				    background: #000;
+				    width:      100%;
+				    height:     100%;
+				    z-index:    10;
+				    top:        0;
+				    left:       0;
+				    position:  fixed;
+				"></div>
+				<div style="
+					position: absolute;
+	                top: 50%;
+	                left: 50%;
+	                margin-right: -50%;
+	                transform: translate(-50%, -50%);
+	                z-index: 1000;
+                    min-width: 80%;
+				">
+					<div style="padding: 30px; background: white; text-align: center;">
+						<mat-spinner style="margin: 0 auto;"></mat-spinner>
+						<br>
+						<h2>{{ (activeLayout$ | async).name }} is loading</h2>
+						<button mat-raised-button color="primary" (click)="closeLayout()">
+							Cancel
+						</button>
+					</div>
+				</div>
+			</div>
+			<mat-toolbar color="primary">
+				<span>{{ pageTitle | async }}</span>
+			</mat-toolbar>
+			<div class="main-content">
+				<router-outlet></router-outlet>
+			</div>
+		</mat-sidenav-content>
+		<mat-toolbar color="primary">
+			StagePiano
+		</mat-toolbar>
+	</mat-sidenav-container>
+</div>
+<ng-template #loader>
+	<div class="container" style="text-align: center; overflow: hidden;">
+		<h1 class="title">
+			<mat-spinner style="margin: 0 auto;"></mat-spinner>
+			<br>
+			StagePiano is loading...
+		</h1>
+	</div>
+</ng-template>

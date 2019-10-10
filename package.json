@@ -1,5 +1,5 @@
 {
-  "name": "angular-electron",
+  "name": "stagepiano",
   "version": "6.1.0",
   "description": "Angular 8 with Electron (Typescript + SASS + Hot Reload)",
   "homepage": "https://github.com/maximegris/angular-electron",
@@ -21,6 +21,7 @@
     "postinstall:web": "node postinstall-web",
     "postinstall:electron": "node postinstall",
     "ng": "ng",
+    "start:fresh": "npm run postinstall:electron && ng run stagepiano:backend && npm-run-all -p ng:serve electron:serve",
     "start": "npm run postinstall:electron && npm-run-all -p ng:serve electron:serve",
     "build": "npm run postinstall:electron && npm run electron:serve-tsc && ng build",
     "build:dev": "npm run build -- -c dev",
@@ -52,6 +53,7 @@
     "@angular/router": "8.2.2",
     "@ngx-translate/core": "11.0.1",
     "@ngx-translate/http-loader": "4.0.0",
+    "@ngxs/schematics": "^0.0.1-alpha.5",
     "@types/jasmine": "3.3.16",
     "@types/jasminewd2": "2.0.6",
     "@types/mocha": "5.2.7",
@@ -62,6 +64,7 @@
     "core-js": "3.1.4",
     "electron": "6.0.2",
     "electron-builder": "21.2.0",
+    "electron-devtools-installer": "^2.2.4",
     "electron-reload": "1.5.0",
     "jasmine-core": "3.4.0",
     "jasmine-spec-reporter": "4.2.1",
@@ -85,12 +88,21 @@
     "node": ">=10.9.0"
   },
   "dependencies": {
-    "@angular/animations": "^8.2.3",
+    "@angular/animations": "^8.2.6",
+    "@angular/cdk": "^8.2.0",
     "@angular/http": "^7.2.15",
+    "@angular/material": "^8.2.0",
     "@angular/platform-server": "^8.2.3",
-    "@ngxs/devtools-plugin": "^3.5.0",
-    "@ngxs/logger-plugin": "^3.5.0",
+    "@ngxs/devtools-plugin": "^3.3.2",
+    "@ngxs/logger-plugin": "^3.3.2",
+    "@ngxs/router-plugin": "^3.5.1",
     "@ngxs/schematics": "0.0.1-alpha.5",
-    "@ngxs/store": "^3.5.0"
+    "@ngxs/storage-plugin": "^3.5.0",
+    "@ngxs/store": "^3.3.2",
+    "angular2-uuid": "^1.1.1",
+    "entity-state": "^0.1.8",
+    "osc-js": "^2.0.4",
+    "usb": "^1.6.0",
+    "uuid": "^3.3.3"
   }
 }

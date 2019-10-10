@@ -5,11 +5,13 @@ import 'zone.js/dist/zone-node';
 import {enableProdMode} from '@angular/core';
 import {renderModuleFactory} from '@angular/platform-server';
 import {BackendModuleNgFactory} from './dist/backend/main';
-
+import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer';
 
 let win, serve;
 const args = process.argv.slice(1);
 serve = args.some(val => val === '--serve');
+
+const globalAny: any = global;
 
 function createWindow() {
 
@@ -25,6 +27,7 @@ function createWindow() {
 		webPreferences: {
 			nodeIntegration: true,
 		},
+		show: false
 	});
 
 	if (serve) {
@@ -40,18 +43,14 @@ function createWindow() {
 		}));
 	}
 
-	if (serve) {
-		win.webContents.openDevTools();
-	}
-
 	// Emitted when the window is closed.
 	win.on('closed', () => {
 		// Dereference the window object, usually you would store window
 		// in an array if your app supports multi windows, this is the time
 		// when you should delete the corresponding element.
 		win = null;
+		process.exit(0);
 	});
-
 }
 
 try {
@@ -62,6 +61,19 @@ try {
 	app.on('ready', function () {
 		// create window
 		createWindow();
+
+		installExtension(REDUX_DEVTOOLS).then((name) => {
+			console.log(`Added Extension:  ${name}`);
+		}).catch((err) => {
+			console.log('An error occurred: ', err);
+		});
+
+		globalAny.electronWindow = win;
+
+		win.once('ready-to-show', () => {
+			win.show();
+			win.openDevTools();
+		});
 
 		// start backend service
 		renderModuleFactory(BackendModuleNgFactory, {

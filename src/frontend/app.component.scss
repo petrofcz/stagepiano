@@ -1,0 +1,26 @@
+.sidenav {
+  min-width: 200px;
+  overflow-x: hidden;
+}
+
+.main-content {
+  padding: 30px;
+  overflow-x: hidden;
+}
+
+.overlay {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: grey;
+  -webkit-background-size: cover; /* pour anciens Chrome et Safari */
+  background-size: cover; /* version standardisée */
+
+  .title {
+    color: white;
+    margin: 0;
+    padding: 50px 20px;
+  }
+}

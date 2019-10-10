@@ -7,6 +7,8 @@
     "types": []
   },
   "exclude": [
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "./*.spec.ts",
+    "./backend/*"
   ]
 }

@@ -1,5 +1,10 @@
 <div class="container">
-  <h1 class="title">
-    {{ 'PAGES.HOME.TITLE' | translate }}
-  </h1>
+	<h1 class="title">
+		{{ 'PAGES.HOME.TITLE' | translate }}
+	</h1>
+    <br />
+	<div *ngFor="let item of knobValues$ | async | keyvalue" style="display: block">
+		<div>{{ item.key }}: {{ item.value }}</div>
+		<br/>
+	</div>
 </div>

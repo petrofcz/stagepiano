@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {Select, Store} from '@ngxs/store';
-import {KeyboardState, KeyboardStateModel} from '../keyboard/states/keyboard.state';
+import {KeyboardState, KeyboardStateModel} from '../shared/keyboard/states/keyboard.state';
 
 @Injectable({
 	providedIn: 'root'

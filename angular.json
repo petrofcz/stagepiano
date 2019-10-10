@@ -66,14 +66,14 @@
             }
           }
         },
-		"backend": {
+        "backend": {
           "builder": "@angular-devkit/build-angular:server",
           "options": {
             "outputPath": "dist/backend",
             "main": "src/main.backend.ts",
             "tsConfig": "src/tsconfig.backend.json"
           }
-		},
+        },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
@@ -156,5 +156,8 @@
     "@schematics/angular:directive": {
       "prefix": "frontend"
     }
+  },
+  "cli": {
+    "defaultCollection": "@ngxs/schematics"
   }
 }
