@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<BoardLayout xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation='Bidule.xsd' scaleFactor="1">
+	<MediaPool>
+	</MediaPool>
+	<BiduleGroup id="UID_1026570522" displayName="" zoom="1" processingMode="process" version="0.0">
+		<Geometry x="-8" y="-8" w="1382" h="754"/>
+		<Parameter id="-11" userMin="0" userMax="1" lockedForRandom="false" mutationFactor="0.1">0</Parameter>
+		<Parameter id="-9" userMin="0" userMax="0" lockedForRandom="false" mutationFactor="0.1">1.0</Parameter>
+		<Parameter id="-7" userMin="0" userMax="1" lockedForRandom="false" mutationFactor="0.1">1</Parameter>
+		<Parameter id="-5" userMin="0" userMax="0" lockedForRandom="false" mutationFactor="0.1">0.0</Parameter>
+		<Parameter id="-2" userMin="0" userMax="2" lockedForRandom="false" mutationFactor="0.1">0.0</Parameter>
+		<Bidule id="UID_1026758624" type="com.plogue.Comment" displayName="No StagePiano layout is selected" processingMode="process">
+			<Geometry x="-461" y="87.5" w="0" h="0"/>
+			<ChannelConfig numSampleIn="0" numSampleOut="0" numMidiIn="0" numMidiOut="0" numFreqIn="0" numFreqOut="0" numMagIn="0" numMagOut="0"/>
+			<Gui state="normal" hidden="true" generic="true">
+				<Geometry x="490" y="202" w="413" h="309"/>
+			</Gui>
+			<Parameter id="-9" userMin="0" userMax="0" lockedForRandom="false" mutationFactor="0.1">1.0</Parameter>
+			<Parameter id="-5" userMin="0" userMax="0" lockedForRandom="false" mutationFactor="0.1">0.0</Parameter>
+			<Parameter id="0" userMin="0" userMax="0" lockedForRandom="true" mutationFactor="0">This is Bidule's default patch...
+you can customise it so it suits your needs by changing 
+the devices,  (or by getting rid of them completely)....
+you can of course delete this &quot;Read Me&quot; bidule
+
+When you are satisfied with your default setup go to:
+
+Edit/Set current patch as default
+
+Try out the patches in the layouts directory for a short demonstration of some of the
+features of Bidule.
+</Parameter>
+		</Bidule>
+	</BiduleGroup>
+	<Automation id="Automation"/>
+</BoardLayout>
