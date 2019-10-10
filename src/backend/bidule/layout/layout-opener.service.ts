@@ -11,7 +11,7 @@ import {app} from 'electron';
 @Injectable({
 	providedIn: 'root'
 })
-export class LayoutOpener {
+export class BiduleLayoutOpener {
 
 	protected oscSubscription;
 
