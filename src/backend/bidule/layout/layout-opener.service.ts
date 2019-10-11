@@ -2,7 +2,7 @@ import {OscService} from '../../osc/osc.service';
 import {Select, Store} from '@ngxs/store';
 import {LayoutState} from '../../../shared/layout/state/layout.state';
 import {OscMessage} from '../../osc/osc.message';
-import {SelectLayoutAction, SetLayoutLoadingAction} from '../../../shared/layout/state/layout.actions';
+import {SelectLayoutAction, SetLayoutLoadingAction, UpdateLayoutAction} from '../../../shared/layout/state/layout.actions';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {Layout} from '../../../shared/layout/model/layout';
@@ -19,11 +19,13 @@ export class BiduleLayoutOpener {
 
 	protected timeout;
 
-	@Select(LayoutState.getActiveLayout)
-	protected activeLayout$: Observable<Layout>;
+	@Select(LayoutState.getActiveLayoutId)
+	protected activeLayoutId$: Observable<string|null>;
 
-	constructor(osc: OscService, store: Store) {
-		this.activeLayout$.subscribe((activeLayout) => {
+	constructor(osc: OscService, protected store: Store) {
+		this.activeLayoutId$.subscribe((layoutId) => {
+			const activeLayout = this.store.selectSnapshot(LayoutState.getById)(layoutId);
+
 			if (this.oscSubscription) {
 				osc.off(this.oscSubscription);
 				this.oscSubscription = null;
@@ -54,6 +56,10 @@ export class BiduleLayoutOpener {
 					clearTimeout(this.timeout);
 					this.interval = null;
 					store.dispatch(new SetLayoutLoadingAction(false));
+					store.dispatch(new UpdateLayoutAction({
+						id: activeLayout.id,
+						lastOpened: Date.now()
+					}));
 				});
 
 				store.dispatch(new SetLayoutLoadingAction(true));

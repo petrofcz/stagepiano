@@ -14,18 +14,12 @@ export class StateLoaderHandler {
 		this.actions$.subscribe((val) => {
 			if (val.status === 'SUCCESSFUL' && 'action' in val) {
 				const actionTester = new ActionTester(val['action']);
-				if (actionTester.matches(RequestGlobalStateAction)) {
+				if (actionTester.matches(InitState)) {
 					const enhanceData = (data) => {
-						if (!('frontend' in data)) {
-							data['frontend'] = {};
-						}
-						data['frontend']['initialized'] = true;
 						data['layout']['active'] = null;
 						data['layout']['loading'] = false;
 						return data;
 					};
-
-					// initialize state from store
 					const globalData = this.stateStorage.loadGlobal();
 					globalData.then((data) => {
 						if (data) {
@@ -33,7 +27,6 @@ export class StateLoaderHandler {
 						}
 					}).catch((err) => {
 						console.log(err);
-						// todo send error message
 					});
 				}
 				if (actionTester.matches(SelectLayoutAction)) {

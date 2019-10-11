@@ -1,7 +1,8 @@
 import {NgModule} from '@angular/core';
-import {Routes, RouterModule} from '@angular/router';
+import {Routes, RouterModule, PreloadAllModules} from '@angular/router';
 import {PageNotFoundComponent} from './shared/components';
 import {NoLayoutGuard} from './layout/guards/no-layout.guard';
+import {LayoutGuard} from './layout/guards/layout.guard';
 
 const routes: Routes = [
 	{
@@ -15,6 +16,11 @@ const routes: Routes = [
 		canActivate: [NoLayoutGuard],
 	},
 	{
+		path: 'instruments',
+		loadChildren: './instrument/instrument.module#InstrumentModule',
+		canActivate: [LayoutGuard],
+	},
+	{
 		path: '**',
 		component: PageNotFoundComponent
 	}
@@ -22,7 +28,7 @@ const routes: Routes = [
 
 @NgModule({
 	imports: [
-		RouterModule.forRoot(routes, {useHash: true})
+		RouterModule.forRoot(routes, {useHash: true, preloadingStrategy: PreloadAllModules})
 	],
 	exports: [RouterModule]
 })

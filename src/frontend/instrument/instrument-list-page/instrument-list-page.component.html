@@ -1,0 +1,38 @@
+<mat-card>
+	<mat-card-header>
+		<mat-card-title>
+			Available instruments
+		</mat-card-title>
+	</mat-card-header>
+	<mat-card-content>
+		<div *ngIf="(instruments$ | async).length > 0">
+			<mat-list>
+				<mat-list-item *ngFor="let item of instruments$ | async">
+					<div style="display:flex; justify-content:space-between;align-items:center; width: 100%">
+						<div style="display:flex; align-items:center">
+							<div style="display:flex; flex-direction:column">
+								<div>
+									<h4 matLine> {{ item.name }}</h4>
+								</div>
+							</div>
+						</div>
+						<div style="margin-left: auto;" class="horizontal-group">
+							<button mat-raised-button color="primary">
+								<mat-icon>launch</mat-icon>
+								Parameter mappings
+							</button>
+							<button mat-raised-button color="primary">
+								<mat-icon>launch</mat-icon>
+								Parameter mappings
+							</button>
+						</div>
+					</div>
+					<mat-divider></mat-divider>
+				</mat-list-item>
+			</mat-list>
+		</div>
+		<div *ngIf="(instruments$ | async).length === 0">
+			No instruments are present in your bidule layout.
+		</div>
+	</mat-card-content>
+</mat-card>

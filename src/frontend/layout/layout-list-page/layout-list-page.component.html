@@ -22,7 +22,7 @@
 											<i>never opened</i>
 										</span>
 										<span *ngIf="layout.lastOpened">
-											{{ layout.lastOpened }}
+											<i>last opened {{ layout.lastOpened | date: 'd.M.yyyy H:mm' }}</i>
 										</span>
 									</p>
 								</div>

@@ -14,15 +14,16 @@ import {VST} from '../../../shared/vst/model/vst';
 })
 export class BiduleLayoutReader {
 
-	@Select(LayoutState.getActiveLayout)
-	protected activeLayout$: Observable<Layout>;
+	@Select(LayoutState.getActiveLayoutId)
+	protected activeLayoutId$: Observable<string|null>;
 
 	constructor(protected store: Store) {
 
-		this.activeLayout$.subscribe((layout) => {
+		this.activeLayoutId$.subscribe((layoutId) => {
+			const layout = this.store.selectSnapshot(LayoutState.getById)(layoutId);
+
 			if (layout !== null) {
 				BiduleLayoutParser.loadFile(layout.biduleFile).then((biduleLayout: BiduleLayout) => {
-console.log(biduleLayout);
 					for (const vstDefinition of biduleLayout.vstDefinitions) {
 						let vst: VST = null;
 						if (vstDefinition instanceof InstrumentDefinition) {

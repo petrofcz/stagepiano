@@ -1,5 +1,5 @@
 import {Layout} from '../model/layout';
-import {SaveEntityActionDecl} from '../../ngxs/entity/actions';
+import {SaveEntityActionDecl, UpdateEntityActionDecl} from '../../ngxs/entity/actions';
 
 // todo maybe remove selected layout?
 
@@ -18,6 +18,11 @@ export class SelectLayoutAction implements SelectLayoutActionDecl {
 export class SaveLayoutAction implements SaveEntityActionDecl<Layout> {
 	static readonly type = '[Layout] Save';
 	public constructor(public readonly entity: Layout) { }
+}
+
+export class UpdateLayoutAction implements UpdateEntityActionDecl<Layout> {
+	static readonly type = '[Layout] Update';
+	public constructor(public readonly entity: Partial<Layout>) { }
 }
 
 export class SetLayoutLoadingAction implements SetLayoutLoadingActionDecl {

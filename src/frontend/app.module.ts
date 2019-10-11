@@ -42,6 +42,9 @@ import {MaterialModule} from './material';
 import {LayoutState} from '../shared/layout/state/layout.state';
 import {FrontendState} from '../shared/frontend/state/frontend.state';
 import {VSTState} from '../shared/vst/state/vst.state';
+import {InstrumentModule} from './instrument/instrument.module';
+import {LayoutModule} from './layout/layout.module';
+import {LayoutRedirectService} from './model/navigation/layout-redirect.service';
 // import {IpcStorageEngine} from './core/services/storage/ipcStorageEngine.service';
 
 // AoT requires an exported function for factories
@@ -70,14 +73,19 @@ export function IpcActionReceiverFactory(ipcActionReceiver: IpcActionReceiver) {
 				deps: [HttpClient]
 			}
 		}),
-		NgxsModule.forRoot([LayoutState, FrontendState, VSTState]),
+		NgxsModule.forRoot([LayoutState, FrontendState, VSTState], {
+			selectorOptions: {
+				suppressErrors: false,
+				injectContainerState: false
+			}
+		}),
 		NgxsReduxDevtoolsPluginModule.forRoot(),
 		NgxsRouterPluginModule.forRoot(),
 		RouterModule.forRoot([]),
 		// NgxsLoggerPluginModule.forRoot(),   // todo-remove
 		HomeRoutingModule,
 		MaterialModule,
-		BrowserAnimationsModule
+		BrowserAnimationsModule,
 	],
 	providers: [
 		{
@@ -97,9 +105,11 @@ export function IpcActionReceiverFactory(ipcActionReceiver: IpcActionReceiver) {
 			useClass: StateLoaderPlugin,
 			multi: true
 		},
-		LayoutGuard, NoLayoutGuard
+		LayoutGuard, NoLayoutGuard,
+		LayoutRedirectService
 	],
 	bootstrap: [AppComponent]
 })
 export class AppModule {
+	constructor(lrs: LayoutRedirectService) { }
 }

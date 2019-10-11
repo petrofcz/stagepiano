@@ -5,11 +5,11 @@ import {
 	SelectLayoutAction,
 	SelectLayoutActionDecl,
 	SetLayoutLoadingAction,
-	SetLayoutLoadingActionDecl
+	SetLayoutLoadingActionDecl, UpdateLayoutAction
 } from './layout.actions';
-import {saveEntity} from '../../ngxs/entity/state-operators';
+import {saveEntity, updateEntity} from '../../ngxs/entity/state-operators';
 import {defaultEntityState, EntityStateModel} from '../../ngxs/entity/state-model';
-import {SaveEntityActionDecl} from '../../ngxs/entity/actions';
+import {SaveEntityActionDecl, UpdateEntityActionDecl} from '../../ngxs/entity/actions';
 
 export interface LayoutStateModel extends EntityStateModel<Layout> {
 	active?: string;
@@ -53,6 +53,11 @@ export class LayoutState {
 	}
 
 	@Selector()
+	public static getActiveLayoutId(state: LayoutStateModel): string|null {
+		return state.active;
+	}
+
+	@Selector()
 	public static getById(state: LayoutStateModel) {
 		return (id: string) => {
 			return id in state.entities ? state.entities[id] : null;
@@ -61,7 +66,9 @@ export class LayoutState {
 
 	@Selector()
 	public static getAll(state: LayoutStateModel) {
-		return state.ids.map(id => state.entities[id]);
+		return state.ids.map(id => state.entities[id]).sort((a, b) => {
+			return (b.lastOpened || 0) - (a.lastOpened || 0);
+		});
 	}
 
 	@Selector()
@@ -70,9 +77,18 @@ export class LayoutState {
 	}
 
 	@Action({type: SaveLayoutAction.type})
-	public update(ctx: StateContext<LayoutStateModel>, action: SaveEntityActionDecl<Layout>) {
+	public save(ctx: StateContext<LayoutStateModel>, action: SaveEntityActionDecl<Layout>) {
 		ctx.setState(
 			<StateOperator<LayoutStateModel>>saveEntity(
+				action.entity
+			)
+		);
+	}
+
+	@Action({type: UpdateLayoutAction.type})
+	public update(ctx: StateContext<LayoutStateModel>, action: UpdateEntityActionDecl<Layout>) {
+		ctx.setState(
+			<StateOperator<LayoutStateModel>>updateEntity(
 				action.entity
 			)
 		);

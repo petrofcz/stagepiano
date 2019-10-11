@@ -26,4 +26,6 @@ import {ReactiveFormsModule} from '@angular/forms';
 		LayoutGuard, NoLayoutGuard
 	]
 })
-export class LayoutModule {}
+export class LayoutModule {
+	constructor() { }
+}

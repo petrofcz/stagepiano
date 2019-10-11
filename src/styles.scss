@@ -5,7 +5,7 @@
 html, body {
   margin: 0;
   padding: 0;
-
+  font-family: Roboto,"Helvetica Neue",sans-serif;
   height: 100%;
 }
 
@@ -21,5 +21,14 @@ html, body {
 .form-buttons {
   button, a {
     margin: 10px;
+  }
+}
+
+.horizontal-group > * {
+  &:not(:first-child) {
+    margin-left: 10px;
+  }
+  &:not(:last-child) {
+    margin-right: 10px;
   }
 }

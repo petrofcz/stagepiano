@@ -3,21 +3,24 @@ import {actionMatcher, getActionTypeFromInstance, NgxsNextPluginFn, NgxsPlugin, 
 import {FileStateStorage} from '../electron/file-state-storage';
 import {LoadStateAction} from '../../shared/ngxs/load-state.action';
 import {PersistStateAction} from './persist-state.action';
+import {ActionTester} from '../../shared/ngxs/helper';
+import {RequestGlobalStateAction} from '../../shared/ngxs/request-global-state.action';
+import {IpcActionTransmitterPlugin} from './ipc-action-transmitter-plugin.service';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class StatePersisterPlugin implements NgxsPlugin {
 
-	constructor(protected stateStorage: FileStateStorage) { }
+	constructor(protected stateStorage: FileStateStorage, protected ipcActionTransmitter: IpcActionTransmitterPlugin) { }
 
 	handle(state: any, event: any, next: NgxsNextPluginFn): any {
-		const matches = actionMatcher(event);
+		const actionTester = new ActionTester(event);
 
 		console.log(state);
 
 		// persist state
-		if (matches(PersistStateAction)) {
+		if (actionTester.matches(PersistStateAction)) {
 			const globalKeys = ['layout', 'settings'];
 			const ignoreKeys = ['keyboard'];
 
@@ -40,6 +43,20 @@ export class StatePersisterPlugin implements NgxsPlugin {
 			if (activeLayoutId) {
 				this.stateStorage.saveLayout(layoutSnapshot, activeLayoutId);
 			}
+		}
+		if (actionTester.matches(RequestGlobalStateAction)) {
+			const enhanceData = (data) => {
+				if (!('frontend' in data)) {
+					data['frontend'] = {};
+				}
+				data['frontend']['initialized'] = true;
+				return data;
+			};
+			const snapshot = Object.assign({}, state);
+			// initialize state from store
+			this.ipcActionTransmitter.sendAction(
+				new LoadStateAction(enhanceData(snapshot))
+			);
 		}
 
 		return next(state, event);

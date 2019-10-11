@@ -10,7 +10,6 @@ export class StateLoaderPlugin implements NgxsPlugin {
 	constructor() { }
 
 	handle(state: any, event: any, next: NgxsNextPluginFn): any {
-		console.log('SLP', event);
 		const matches = actionMatcher(event);
 		if (matches(LoadStateAction) || event.type === LoadStateAction.type) {
 			const setStateEvent: LoadStateActionDecl = event;

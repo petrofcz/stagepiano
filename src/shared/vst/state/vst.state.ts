@@ -22,6 +22,20 @@ export class VSTState {
 		return state;
 	}
 
+	@Selector()
+	public static getInstruments(state: VSTStateModel) {
+		return state.ids.map(id => state.entities[id]).filter((vst) => {
+			return vst.type === 'instrument';
+		});
+	}
+
+	@Selector()
+	public static getEffects(state: VSTStateModel) {
+		return state.ids.map(id => state.entities[id]).filter((vst) => {
+			return vst.type === 'effect';
+		});
+	}
+
 	@Action({type: AddVSTAction.type})
 	public update(ctx: StateContext<VSTStateModel>, action: AddEntityActionDecl<VST>) {
 		ctx.setState(
