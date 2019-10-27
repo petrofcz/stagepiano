@@ -24,6 +24,7 @@ export class EffectListPageComponent implements OnInit {
 			width: '600px'
 		});
 		dialogRef.componentInstance.vstId = vstId;
+		dialogRef.componentInstance._withGlobal = true;
 	}
 
 	ngOnInit() {

@@ -13,4 +13,18 @@
 			</div>
 		</div>
 	</mat-list-item>
+	<ng-container *ngIf="_withGlobal">
+		<mat-divider></mat-divider>
+		<mat-list-item>
+			<div class="flex-row width100">
+				<div class="flex">
+					Global scope
+				</div>
+				<div class="flex text-right">
+					<mat-icon *ngIf="($globalEffectIds|async).indexOf(_vstId) !== -1" class="green">check</mat-icon>
+					<mat-icon *ngIf="($globalEffectIds|async).indexOf(_vstId) === -1" class="red">close</mat-icon>
+				</div>
+			</div>
+		</mat-list-item>
+	</ng-container>
 </mat-list>

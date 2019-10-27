@@ -10,6 +10,7 @@ import {Effect} from '../../../shared/vst/model/effect';
 import {VST} from '../../../shared/vst/model/vst';
 import {AddLayerAction, AddManualAction} from '../../../shared/manual/state/manual.actions';
 import {ResetLayoutAction} from '../../../shared/layout/state/layout.actions';
+import {SetAvailableGlobalEffectsAction} from '../../../shared/bidule/bidule.actions';
 
 // This service read bidule layout and imports all information from it to the app
 @Injectable({
@@ -66,6 +67,7 @@ export class BiduleLayoutReader {
 							store.dispatch(new AddLayerAction(layerId, layerDefinition.name, manualId, layerDefinition.vstIds));
 						}
 					}
+					store.dispatch(new SetAvailableGlobalEffectsAction(biduleLayout.globalEffectIds));
 				});
 			}
 		});
