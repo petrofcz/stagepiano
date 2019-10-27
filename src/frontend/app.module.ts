@@ -45,6 +45,7 @@ import {VSTState} from '../shared/vst/state/vst.state';
 import {InstrumentModule} from './instrument/instrument.module';
 import {LayoutModule} from './layout/layout.module';
 import {LayoutRedirectService} from './model/navigation/layout-redirect.service';
+import {ManualState} from '../shared/manual/state/manual.state';
 // import {IpcStorageEngine} from './core/services/storage/ipcStorageEngine.service';
 
 // AoT requires an exported function for factories
@@ -73,7 +74,7 @@ export function IpcActionReceiverFactory(ipcActionReceiver: IpcActionReceiver) {
 				deps: [HttpClient]
 			}
 		}),
-		NgxsModule.forRoot([LayoutState, FrontendState, VSTState], {
+		NgxsModule.forRoot([LayoutState, FrontendState, VSTState, ManualState], {
 			selectorOptions: {
 				suppressErrors: false,
 				injectContainerState: false

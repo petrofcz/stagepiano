@@ -10,10 +10,15 @@
 			[opened]="true">
 			<mat-toolbar color="primary">StagePiano</mat-toolbar>
 			<mat-nav-list *ngIf="layoutLoaded$ | async">
-				<a mat-list-item routerLink="/layouts">
-					<mat-icon mat-list-icon>toc</mat-icon>
+				<a mat-list-item routerLink="/instruments">
+					<mat-icon mat-list-icon>extension</mat-icon>
 					<span mat-line>Instruments</span>
-					<span mat-line class="secondary">Setup your virtual instruments.</span>
+					<span mat-line class="secondary">Setup your virtual instruments</span>
+				</a>
+				<a mat-list-item routerLink="/effects">
+					<mat-icon mat-list-icon>hearing</mat-icon>
+					<span mat-line>Effects</span>
+					<span mat-line class="secondary">Setup your effects</span>
 				</a>
 				<mat-divider></mat-divider>
 				<a mat-list-item (click)="closeLayout()">

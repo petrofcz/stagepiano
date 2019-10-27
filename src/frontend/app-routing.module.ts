@@ -19,6 +19,11 @@ const routes: Routes = [
 		path: 'instruments',
 		loadChildren: './instrument/instrument.module#InstrumentModule',
 		canActivate: [LayoutGuard],
+	},	
+	{
+		path: 'effects',
+		loadChildren: './effect/effect.module#EffectModule',
+		canActivate: [LayoutGuard],
 	},
 	{
 		path: '**',
