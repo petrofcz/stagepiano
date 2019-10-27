@@ -5,9 +5,9 @@ import {OscMessage} from '../../osc/osc.message';
 import {SelectLayoutAction, SetLayoutLoadingAction, UpdateLayoutAction} from '../../../shared/layout/state/layout.actions';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {Layout} from '../../../shared/layout/model/layout';
 import {app} from 'electron';
 
+// This service handles opening layout in Bidule
 @Injectable({
 	providedIn: 'root'
 })

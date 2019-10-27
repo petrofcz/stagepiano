@@ -8,7 +8,9 @@ import {AddVSTAction} from '../../../shared/vst/state/vst.actions';
 import {Instrument} from '../../../shared/vst/model/instrument';
 import {Effect} from '../../../shared/vst/model/effect';
 import {VST} from '../../../shared/vst/model/vst';
+import {AddLayerAction, AddManualAction} from '../../../shared/manual/state/manual.actions';
 
+// This service read bidule layout and imports all information from it to the app
 @Injectable({
 	providedIn: 'root'
 })
@@ -52,6 +54,14 @@ export class BiduleLayoutReader {
 							store.dispatch(new AddVSTAction(
 								vst
 							));
+						}
+					}
+					for (const manualDefinition of biduleLayout.manualDefinitions) {
+						const manualId = manualDefinition.id.toString();
+						store.dispatch(new AddManualAction(manualId, manualDefinition.name));
+						for (const layerDefinition of manualDefinition.layers) {
+							const layerId = manualId + '-' + layerDefinition.id.toString();
+							store.dispatch(new AddLayerAction(layerId, layerDefinition.name, manualId, layerDefinition.vstIds));
 						}
 					}
 				});

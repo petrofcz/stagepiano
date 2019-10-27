@@ -16,6 +16,7 @@ import {OscService} from './osc/osc.service';
 import {BiduleLayoutOpener} from './bidule/layout/layout-opener.service';
 import {VSTState} from '../shared/vst/state/vst.state';
 import {BiduleLayoutReader} from './bidule/layout/layout-reader';
+import {ManualState} from '../shared/manual/state/manual.state';
 
 export function IpcActionReceiverFactory(ipcActionReceiver: IpcActionReceiver) {
 	return () => ipcActionReceiver.init();
@@ -33,7 +34,7 @@ export function NoopAppInitializer() {
 	],
 	imports: [
 		ServerModule,
-		NgxsModule.forRoot([LayoutState, KeyboardState, VSTState])
+		NgxsModule.forRoot([LayoutState, KeyboardState, VSTState, ManualState])
 	],
 	providers: [
 		{
