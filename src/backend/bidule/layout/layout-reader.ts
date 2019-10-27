@@ -9,6 +9,7 @@ import {Instrument} from '../../../shared/vst/model/instrument';
 import {Effect} from '../../../shared/vst/model/effect';
 import {VST} from '../../../shared/vst/model/vst';
 import {AddLayerAction, AddManualAction} from '../../../shared/manual/state/manual.actions';
+import {ResetLayoutAction} from '../../../shared/layout/state/layout.actions';
 
 // This service read bidule layout and imports all information from it to the app
 @Injectable({
@@ -25,6 +26,7 @@ export class BiduleLayoutReader {
 			const layout = this.store.selectSnapshot(LayoutState.getById)(layoutId);
 
 			if (layout !== null) {
+				store.dispatch(new ResetLayoutAction());
 				BiduleLayoutParser.loadFile(layout.biduleFile).then((biduleLayout: BiduleLayout) => {
 					for (const vstDefinition of biduleLayout.vstDefinitions) {
 						let vst: VST = null;

@@ -29,3 +29,7 @@ export class SetLayoutLoadingAction implements SetLayoutLoadingActionDecl {
 	static readonly type = '[Layout] Set loading';
 	public constructor(public readonly loading: boolean) { }
 }
+
+export class ResetLayoutAction {
+	static readonly type = '[Layout] Reset';
+}

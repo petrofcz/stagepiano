@@ -2,6 +2,7 @@ import {State, Action, Selector, StateContext, StateOperator} from '@ngxs/store'
 import {Layer} from '../model/layer';
 import {Manual} from '../model/manual';
 import {AddLayerAction, AddLayerActionDecl, AddManualAction, AddManualActionDecl} from './manual.actions';
+import {ResetLayoutAction} from '../../layout/state/layout.actions';
 
 export interface ManualStateModel {
 	manuals: Manual[];
@@ -109,4 +110,13 @@ export class ManualState {
 		});
 	}
 
+	// todo mabybe refactor to use plugin for clear states?
+	@Action({type: ResetLayoutAction.type})
+	public clear(ctx: StateContext<ManualStateModel>, action) {
+		ctx.setState({
+			manuals: [],
+			layers: [],
+			currentLayerId: null
+		});
+	}
 }
