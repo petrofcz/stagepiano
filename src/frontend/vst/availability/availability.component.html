@@ -1,0 +1,16 @@
+<mat-list>
+	<mat-list-item *ngFor="let layer of $layers | async">
+		<div class="flex-row width100">
+			<div class="flex">
+				{{ manualNameById(layer.manualId) | async }}
+			</div>
+			<div class="flex">
+				{{ layer.name }}
+			</div>
+			<div class="flex text-right">
+				<mat-icon *ngIf="layer.availableVstIds.indexOf(_vstId) !== -1" class="green">check</mat-icon>
+				<mat-icon *ngIf="layer.availableVstIds.indexOf(_vstId) === -1" class="red">close</mat-icon>
+			</div>
+		</div>
+	</mat-list-item>
+</mat-list>

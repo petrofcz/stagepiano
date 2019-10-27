@@ -1,5 +1,6 @@
 @import '~@angular/material/theming';
 @import '~@angular/material/prebuilt-themes/indigo-pink.css';
+@import '~material-design-icons/iconfont/material-icons.css';
 
 /* You can add global styles to this file, and also import other style files */
 html, body {
@@ -47,4 +48,53 @@ html, body {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+.tag {
+	border-radius: 2px;
+	color: white;
+	background: #808080;
+	padding: 3px 5px;
+	font-size: 0.8em;
+	font-weight: bold;
+}
+
+.tag-red {
+	background-color: #b9362a;
+}
+
+.tag-green {
+	background-color: #18a22b;
+}
+
+.tag-blue {
+	background: #2577bd;
+}
+
+.red {
+	color: #b9362a;
+}
+
+.green {
+	color: #18a22b;
+}
+
+.blue {
+	color: #2577bd;
+}
+
+.text-right {
+	text-align: right;
+}
+
+.text-center {
+	text-align: center;
+}
+
+.text-left {
+	text-align: left;
+}
+
+.width100 {
+	width: 100%;
 }
