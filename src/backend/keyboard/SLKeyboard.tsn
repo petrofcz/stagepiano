@@ -1,0 +1,455 @@
+// Written by Jürgen Moßgraber - mossgrabers.de
+// (c) 2014-2017
+// Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
+
+import {USBDriver} from '../automap/usb-driver';
+import {MidiAdapter} from '../automap/midi-adapter';
+import {Display} from './display/Display';
+
+export class SLKeyboard {
+
+	public static readonly MKII_BUTTON_STATE_OFF = 0;
+	public static readonly MKII_BUTTON_STATE_ON = 1;
+
+	public static readonly MKII_KNOB_ROW2_1 = 8;
+	public static readonly MKII_KNOB_ROW2_2 = 9;
+	public static readonly MKII_KNOB_ROW2_3 = 10;
+	public static readonly MKII_KNOB_ROW2_4 = 11;
+	public static readonly MKII_KNOB_ROW2_5 = 12;
+	public static readonly MKII_KNOB_ROW2_6 = 13;
+	public static readonly MKII_KNOB_ROW2_7 = 14;
+	public static readonly MKII_KNOB_ROW2_8 = 15;
+	public static readonly MKII_SLIDER1 = 16;
+	public static readonly MKII_SLIDER2 = 17;
+	public static readonly MKII_SLIDER3 = 18;
+	public static readonly MKII_SLIDER4 = 19;
+	public static readonly MKII_SLIDER5 = 20;
+	public static readonly MKII_SLIDER6 = 21;
+	public static readonly MKII_SLIDER7 = 22;
+	public static readonly MKII_SLIDER8 = 23;
+	public static readonly MKII_BUTTON_ROW1_1 = 24;
+	public static readonly MKII_BUTTON_ROW1_2 = 25;
+	public static readonly MKII_BUTTON_ROW1_3 = 26;
+	public static readonly MKII_BUTTON_ROW1_4 = 27;
+	public static readonly MKII_BUTTON_ROW1_5 = 28;
+	public static readonly MKII_BUTTON_ROW1_6 = 29;
+	public static readonly MKII_BUTTON_ROW1_7 = 30;
+	public static readonly MKII_BUTTON_ROW1_8 = 31;
+	public static readonly MKII_BUTTON_ROW2_1 = 32;
+	public static readonly MKII_BUTTON_ROW2_2 = 33;
+	public static readonly MKII_BUTTON_ROW2_3 = 34;
+	public static readonly MKII_BUTTON_ROW2_4 = 35;
+	public static readonly MKII_BUTTON_ROW2_5 = 36;
+	public static readonly MKII_BUTTON_ROW2_6 = 37;
+	public static readonly MKII_BUTTON_ROW2_7 = 38;
+	public static readonly MKII_BUTTON_ROW2_8 = 39;
+	public static readonly MKII_BUTTON_ROW3_1 = 40;
+	public static readonly MKII_BUTTON_ROW3_2 = 41;
+	public static readonly MKII_BUTTON_ROW3_3 = 42;
+	public static readonly MKII_BUTTON_ROW3_4 = 43;
+	public static readonly MKII_BUTTON_ROW3_5 = 44;
+	public static readonly MKII_BUTTON_ROW3_6 = 45;
+	public static readonly MKII_BUTTON_ROW3_7 = 46;
+	public static readonly MKII_BUTTON_ROW3_8 = 47;
+	public static readonly MKII_BUTTON_ROW4_1 = 48;
+	public static readonly MKII_BUTTON_ROW4_2 = 49;
+	public static readonly MKII_BUTTON_ROW4_3 = 50;
+	public static readonly MKII_BUTTON_ROW4_4 = 51;
+	public static readonly MKII_BUTTON_ROW4_5 = 52;
+	public static readonly MKII_BUTTON_ROW4_6 = 53;
+	public static readonly MKII_BUTTON_ROW4_7 = 54;
+	public static readonly MKII_BUTTON_ROW4_8 = 55;
+	public static readonly MKII_KNOB_ROW1_1 = 56;
+	public static readonly MKII_KNOB_ROW1_2 = 57;
+	public static readonly MKII_KNOB_ROW1_3 = 58;
+	public static readonly MKII_KNOB_ROW1_4 = 59;
+	public static readonly MKII_KNOB_ROW1_5 = 60;
+	public static readonly MKII_KNOB_ROW1_6 = 61;
+	public static readonly MKII_KNOB_ROW1_7 = 62;
+	public static readonly MKII_KNOB_ROW1_8 = 63;
+	public static readonly MKII_TOUCHPAD_X = 68;	 // This is also the crossfader on the Zero
+	public static readonly MKII_TOUCHPAD_Y = 69;
+	public static readonly MKII_BUTTON_REWIND = 72;
+	public static readonly MKII_BUTTON_FORWARD = 73;
+	public static readonly MKII_BUTTON_STOP = 74;
+	public static readonly MKII_BUTTON_PLAY = 75;
+	public static readonly MKII_BUTTON_RECORD = 76;
+	public static readonly MKII_BUTTON_LOOP = 77;
+	public static readonly MKII_BUTTON_TRANSPORT = 79;
+	public static readonly MKII_BUTTON_ROWSEL1 = 80;
+	public static readonly MKII_BUTTON_ROWSEL2 = 81;
+	public static readonly MKII_BUTTON_ROWSEL3 = 82;
+	public static readonly MKII_BUTTON_ROWSEL4 = 83;
+	public static readonly MKII_BUTTON_ROWSEL5 = 84;
+	public static readonly MKII_BUTTON_ROWSEL6 = 85;
+	public static readonly MKII_BUTTON_ROWSEL7 = 86;
+	public static readonly MKII_BUTTON_ROWSEL8 = 87;
+	public static readonly MKII_BUTTON_P1_UP = 88;	 // Page left on the Zero
+	public static readonly MKII_BUTTON_P1_DOWN = 89;	 // Page right on the Zero
+	public static readonly MKII_BUTTON_P2_UP = 90;	 // Preview + Page left on the Zero
+	public static readonly MKII_BUTTON_P2_DOWN = 91;	 // Preview + Page right on the Zero
+
+	public static readonly MKI_BUTTON_TAP_TEMPO = 94;
+	public static readonly MKI_BUTTON_TAP_TEMPO_VALUE = 95;
+
+	public static readonly MKII_BUTTONS_ALL =
+		[
+			SLKeyboard.MKII_BUTTON_ROW1_1,
+			SLKeyboard.MKII_BUTTON_ROW1_2,
+			SLKeyboard.MKII_BUTTON_ROW1_3,
+			SLKeyboard.MKII_BUTTON_ROW1_4,
+			SLKeyboard.MKII_BUTTON_ROW1_5,
+			SLKeyboard.MKII_BUTTON_ROW1_6,
+			SLKeyboard.MKII_BUTTON_ROW1_7,
+			SLKeyboard.MKII_BUTTON_ROW1_8,
+			SLKeyboard.MKII_BUTTON_ROW2_1,
+			SLKeyboard.MKII_BUTTON_ROW2_2,
+			SLKeyboard.MKII_BUTTON_ROW2_3,
+			SLKeyboard.MKII_BUTTON_ROW2_4,
+			SLKeyboard.MKII_BUTTON_ROW2_5,
+			SLKeyboard.MKII_BUTTON_ROW2_6,
+			SLKeyboard.MKII_BUTTON_ROW2_7,
+			SLKeyboard.MKII_BUTTON_ROW2_8,
+			SLKeyboard.MKII_BUTTON_ROW3_1,
+			SLKeyboard.MKII_BUTTON_ROW3_2,
+			SLKeyboard.MKII_BUTTON_ROW3_3,
+			SLKeyboard.MKII_BUTTON_ROW3_4,
+			SLKeyboard.MKII_BUTTON_ROW3_5,
+			SLKeyboard.MKII_BUTTON_ROW3_6,
+			SLKeyboard.MKII_BUTTON_ROW3_7,
+			SLKeyboard.MKII_BUTTON_ROW3_8,
+			SLKeyboard.MKII_BUTTON_ROW4_1,
+			SLKeyboard.MKII_BUTTON_ROW4_2,
+			SLKeyboard.MKII_BUTTON_ROW4_3,
+			SLKeyboard.MKII_BUTTON_ROW4_4,
+			SLKeyboard.MKII_BUTTON_ROW4_5,
+			SLKeyboard.MKII_BUTTON_ROW4_6,
+			SLKeyboard.MKII_BUTTON_ROW4_7,
+			SLKeyboard.MKII_BUTTON_ROW4_8,
+			SLKeyboard.MKII_BUTTON_REWIND,
+			SLKeyboard.MKII_BUTTON_FORWARD,
+			SLKeyboard.MKII_BUTTON_STOP,
+			SLKeyboard.MKII_BUTTON_PLAY,
+			SLKeyboard.MKII_BUTTON_LOOP,
+			SLKeyboard.MKII_BUTTON_RECORD,
+			SLKeyboard.MKII_BUTTON_TRANSPORT,
+			SLKeyboard.MKII_BUTTON_ROWSEL1,
+			SLKeyboard.MKII_BUTTON_ROWSEL2,
+			SLKeyboard.MKII_BUTTON_ROWSEL3,
+			SLKeyboard.MKII_BUTTON_ROWSEL4,
+			SLKeyboard.MKII_BUTTON_ROWSEL5,
+			SLKeyboard.MKII_BUTTON_ROWSEL6,
+			SLKeyboard.MKII_BUTTON_ROWSEL7,
+			SLKeyboard.MKII_BUTTON_ROWSEL8,
+			SLKeyboard.MKII_BUTTON_P1_UP,
+			SLKeyboard.MKII_BUTTON_P1_DOWN,
+			SLKeyboard.MKII_BUTTON_P2_UP,
+			SLKeyboard.MKII_BUTTON_P2_DOWN
+		];
+
+
+	public static readonly SYSEX_HEADER = [0xF0, 0x00, 0x20, 0x29, 0x03, 0x03, 0x12, 0x00, 0x02, 0x00];
+	public static readonly SYSEX_FOOTER = [0xF7];
+	public static readonly SYSEX_AUTOMAP_ON = SLKeyboard.SYSEX_HEADER.concat([0x01, 0x01]).concat(SLKeyboard.SYSEX_FOOTER);
+	public static readonly SYSEX_AUTOMAP_OFF = SLKeyboard.SYSEX_HEADER.concat([0x01, 0x00]).concat(SLKeyboard.SYSEX_FOOTER);
+
+	// Necessary to store the value of CC94
+	// since it comprises part of the temp value
+	lastCC94Value = 0;
+
+	midiAdapter: MidiAdapter = null;
+
+	constructor(protected usbDriver: USBDriver) {
+		this.midiAdapter = new MidiAdapter(usbDriver);
+		this.display = new Display();
+		usbDriver.onConnect.subscribe(() => {
+			this.sendSysex(SLKeyboard.SYSEX_AUTOMAP_ON);
+			this.turnOffAllLEDs();
+		});
+	}
+
+	public createDisplayInstance() {
+		return new Display(this.midiAdapter);
+	}
+
+	// Switch to Ableton Automap mode
+	this.output.sendSysex(SLKeyboard.SYSEX_AUTOMAP_ON);
+	this.turnOffAllLEDs();
+
+	// Disable transport mode
+	this.turnOffTransport();
+
+	// Set LED continuous mode
+	for (i = 0; i < 8; i++)
+		this.output.sendCC(0x78 + i, 0);
+}
+
+SLKeyboard.prototype = new AbstractControlSurface();
+
+SLKeyboard.prototype.setButton = function (button, state) {
+	this.output.sendCC(button, state);
+};
+
+SLKeyboard.prototype.shutdown = function () {
+	this.display.clear();
+	this.turnOffAllLEDs();
+	this.output.sendSysex(SLKeyboard.SYSEX_AUTOMAP_OFF);
+};
+
+SLKeyboard.prototype.isSelectPressed = function () {
+	return false;
+};
+
+SLKeyboard.prototype.isShiftPressed = function () {
+	return this.isTransportActive;
+};
+
+//--------------------------------------
+// Handlers
+//--------------------------------------
+
+SLKeyboard.prototype.handleEvent = function (cc, value) {
+	var view = this.getActiveView();
+	if (view == null)
+		return;
+
+	var event = this.isButton(cc) ? new ButtonEvent(this.buttonStates[cc]) : null;
+
+	switch (cc) {
+		case MKII_BUTTON_ROW1_1:
+		case MKII_BUTTON_ROW1_2:
+		case MKII_BUTTON_ROW1_3:
+		case MKII_BUTTON_ROW1_4:
+		case MKII_BUTTON_ROW1_5:
+		case MKII_BUTTON_ROW1_6:
+		case MKII_BUTTON_ROW1_7:
+		case MKII_BUTTON_ROW1_8:
+			view.onButtonRow1(cc - MKII_BUTTON_ROW1_1, event);
+			break;
+
+		case MKII_KNOB_ROW1_1:
+		case MKII_KNOB_ROW1_2:
+		case MKII_KNOB_ROW1_3:
+		case MKII_KNOB_ROW1_4:
+		case MKII_KNOB_ROW1_5:
+		case MKII_KNOB_ROW1_6:
+		case MKII_KNOB_ROW1_7:
+		case MKII_KNOB_ROW1_8:
+			view.onKnobRow1(cc - MKII_KNOB_ROW1_1, value);
+			break;
+
+		case MKII_BUTTON_ROW2_1:
+		case MKII_BUTTON_ROW2_2:
+		case MKII_BUTTON_ROW2_3:
+		case MKII_BUTTON_ROW2_4:
+		case MKII_BUTTON_ROW2_5:
+		case MKII_BUTTON_ROW2_6:
+		case MKII_BUTTON_ROW2_7:
+		case MKII_BUTTON_ROW2_8:
+			view.onButtonRow2(cc - MKII_BUTTON_ROW2_1, event);
+			break;
+
+		case MKII_KNOB_ROW2_1:
+		case MKII_KNOB_ROW2_2:
+		case MKII_KNOB_ROW2_3:
+		case MKII_KNOB_ROW2_4:
+		case MKII_KNOB_ROW2_5:
+		case MKII_KNOB_ROW2_6:
+		case MKII_KNOB_ROW2_7:
+		case MKII_KNOB_ROW2_8:
+			view.onKnobRow2(cc - MKII_KNOB_ROW2_1, value);
+			break;
+
+		case MKII_SLIDER1:
+		case MKII_SLIDER2:
+		case MKII_SLIDER3:
+		case MKII_SLIDER4:
+		case MKII_SLIDER5:
+		case MKII_SLIDER6:
+		case MKII_SLIDER7:
+		case MKII_SLIDER8:
+			view.onSlider(cc - MKII_SLIDER1, value);
+			break;
+
+		case MKII_BUTTON_ROW3_1:
+		case MKII_BUTTON_ROW3_2:
+		case MKII_BUTTON_ROW3_3:
+		case MKII_BUTTON_ROW3_4:
+		case MKII_BUTTON_ROW3_5:
+		case MKII_BUTTON_ROW3_6:
+		case MKII_BUTTON_ROW3_7:
+		case MKII_BUTTON_ROW3_8:
+			view.onButtonRow3(cc - MKII_BUTTON_ROW3_1, event);
+			break;
+
+		case MKII_BUTTON_ROW4_1:
+		case MKII_BUTTON_ROW4_2:
+		case MKII_BUTTON_ROW4_3:
+		case MKII_BUTTON_ROW4_4:
+		case MKII_BUTTON_ROW4_5:
+		case MKII_BUTTON_ROW4_6:
+		case MKII_BUTTON_ROW4_7:
+		case MKII_BUTTON_ROW4_8:
+			view.onButtonRow4(cc - MKII_BUTTON_ROW4_1, event);
+			break;
+
+		//////////////////////////
+		// Row selections
+		//////////////////////////
+
+		// 1st button row
+		case MKII_BUTTON_ROWSEL1:
+			if (value > 0)
+				view.onButtonRow1Select();
+			break;
+
+		// 1st knob row
+		case MKII_BUTTON_ROWSEL2:
+			if (value > 0)
+				view.onKnobRow1Select();
+			break;
+
+		// 2nd button row
+		case MKII_BUTTON_ROWSEL3:
+			if (value > 0)
+				view.onButtonRow2Select();
+			break;
+
+		// 2nd knob row
+		case MKII_BUTTON_ROWSEL4:
+			if (value > 0)
+				view.onKnobRow2Select();
+			break;
+
+		// Drum pad row
+		case MKII_BUTTON_ROWSEL5:
+			if (value > 0)
+				view.onDrumPadRowSelect();
+			break;
+
+		// Slider row
+		case MKII_BUTTON_ROWSEL6:
+			if (value > 0)
+				view.onSliderRowSelect();
+			break;
+
+		// 3rd button row
+		case MKII_BUTTON_ROWSEL7:
+			if (value > 0)
+				view.onButtonRow3Select();
+			break;
+
+		// 4th button row
+		case MKII_BUTTON_ROWSEL8:
+			if (value > 0)
+				view.onButtonRow4Select();
+			break;
+
+		case MKII_BUTTON_P1_UP:
+			view.onButtonP1(true /* Up */, event);
+			break;
+
+		case MKII_BUTTON_P1_DOWN:
+			view.onButtonP1(false /* Down */, event);
+			break;
+
+		case MKII_BUTTON_P2_UP:
+			view.onButtonP2(true /* Up */, event);
+			break;
+
+		case MKII_BUTTON_P2_DOWN:
+			view.onButtonP2(false /* Down */, event);
+			break;
+
+		//////////////////////////
+		// Tap Tempo (only MkI)
+		//////////////////////////
+
+		case MKI_BUTTON_TAP_TEMPO:
+			lastCC94Value = value;
+			break;
+
+		case MKI_BUTTON_TAP_TEMPO_VALUE:
+			iter = lastCC94Value;
+			tempo = 0;
+			while (iter > 0) {
+				tempo += 128;
+				iter--;
+			}
+			tempo += value;
+			view.onTempoMKI(tempo);
+			break;
+
+		//////////////////////////
+		// Transport
+		//////////////////////////
+
+		case MKII_BUTTON_TRANSPORT:
+			// Toggle transport
+			this.isTransportActive = value > 0;
+			if (this.isTransportActive)
+				this.setPendingMode(MODE_VIEW_SELECT);
+			else
+				this.restoreMode();
+			break;
+
+		case MKII_BUTTON_REWIND:
+			view.onRewind(event);
+			break;
+
+		case MKII_BUTTON_FORWARD:
+			view.onForward(event);
+			break;
+
+		case MKII_BUTTON_PLAY:
+			view.onPlay(event);
+			break;
+
+		case MKII_BUTTON_STOP:
+			view.onStop(event);
+			break;
+
+		case MKII_BUTTON_RECORD:
+			view.onRecord(event);
+			break;
+
+		case MKII_BUTTON_LOOP:
+			view.onLoop(event);
+			break;
+
+		//////////////////////////
+		// On-/Offline
+		//////////////////////////
+
+		case 0x6B:
+			// Not used
+			break;
+
+		//////////////////////////
+		// Touchpad
+		//////////////////////////
+
+		case MKII_TOUCHPAD_X:
+			view.onTouchpadX(value);
+			break;
+
+		case MKII_TOUCHPAD_Y:
+			view.onTouchpadY(value);
+			break;
+
+		default:
+			println('Unused Midi CC: ' + cc);
+			break;
+	}
+};
+
+SLKeyboard.prototype.turnOffAllLEDs = function () {
+	this.output.sendCC(78, 127);
+	for (var i = 0; i < 128; i++)
+		this.buttonCache[i] = initArray(-1, 16);
+};
+
+SLKeyboard.prototype.turnOffTransport = function () {
+	this.isTransportActive = false;
+	this.output.sendCC(MKII_BUTTON_TRANSPORT, 0);
+};

@@ -2,6 +2,8 @@ import {State, Selector, Action, StateContext} from '@ngxs/store';
 import {keyboard, TestAction} from '../actions/set-knob-value.actions';
 import SetKnobValueAction = keyboard.SetKnobValueAction;
 import SetKnobValueActionDecl = keyboard.SetKnobValueActionDecl;
+import UpdateKnobValueAction = keyboard.UpdateKnobValueAction;
+import UpdateKnobValueActionDecl = keyboard.UpdateKnobValueActionDecl;
 
 export interface KeyboardStateModel {
 	knobValues: object;
@@ -33,6 +35,13 @@ export class KeyboardState {
 		return state.knobValues;
 	}
 
+	@Selector()
+	public static knobValue(state: KeyboardStateModel) {
+		return (knobId) => {
+			return state.knobValues[knobId];
+		};
+	}
+
 	@Action({type: SetKnobValueAction.type})
 	public setKnobValue(ctx: StateContext<KeyboardStateModel>, action: SetKnobValueActionDecl) {
 		console.log('HANDLING KNOBS');
@@ -40,6 +49,20 @@ export class KeyboardState {
 		const state = ctx.getState();
 		const kvo = {...state.knobValues};
 		kvo[knobId] = value;
+		ctx.patchState({
+			...state,
+			'knobValues': kvo
+		});
+	}
+
+	@Action({type: UpdateKnobValueAction.type})
+	public updateKnobValue(ctx: StateContext<KeyboardStateModel>, action: UpdateKnobValueActionDecl) {
+		console.log('HANDLING KNOBS');
+		const {knobId, value} = action;
+		const state = ctx.getState();
+		const kvo = {...state.knobValues};
+		kvo[knobId] += value;
+		kvo[knobId] = Math.min(Math.max(kvo[knobId], 0), 127);
 		ctx.patchState({
 			...state,
 			'knobValues': kvo
