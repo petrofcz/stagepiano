@@ -22,7 +22,7 @@ export class IpcActionTransmitterPlugin implements NgxsPlugin {
 				// console.log(event);
 				const obj =  Object.assign({}, action);
 				obj['type'] = actionType;
-				console.log(obj);
+				// console.log(obj);
 				this.browserWindowProvider.get().webContents.send('ngxs', JSON.stringify(obj));
 			}
 		}

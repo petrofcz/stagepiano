@@ -12,7 +12,11 @@ export class MidiAdapter {
 
 	public readonly onSysex = new EventEmitter<SysexMessage>();
 
+	public readonly onInit = new EventEmitter<SysexMessage>();
+
 	protected sysexBuffer: number[] = [];
+
+	protected initialized = false;
 
 	constructor(protected usbDriver: USBDriver) {
 		usbDriver.onMessage.subscribe((buffer: Buffer) => {
@@ -47,6 +51,21 @@ export class MidiAdapter {
 				case 11:
 					this.onCC.emit(new CCMessage((data[1] % 16) + 1, data[2], data[3]));
 					break;
+			}
+		});
+		usbDriver.onConnect.subscribe(() => {
+			this.initialized = false;
+			this.onInit.emit();
+		});
+		this.onSysex.subscribe((message: SysexMessage) => {
+			if (message.payload[4] === 3 && message.payload[5] === 3) {
+				if (!this.initialized && message.payload[11] === 1) {
+					this.initialized = true;
+					this.onInit.emit();
+				}
+				if (this.initialized && message.payload[11] === 0) {
+					this.initialized = false;
+				}
 			}
 		});
 	}

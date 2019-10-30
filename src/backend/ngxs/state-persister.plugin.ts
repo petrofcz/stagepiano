@@ -17,8 +17,6 @@ export class StatePersisterPlugin implements NgxsPlugin {
 	handle(state: any, event: any, next: NgxsNextPluginFn): any {
 		const actionTester = new ActionTester(event);
 
-		console.log(state);
-
 		// persist state
 		if (actionTester.matches(PersistStateAction)) {
 			const globalKeys = ['layout', 'settings'];

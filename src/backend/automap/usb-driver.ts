@@ -46,8 +46,8 @@ export class USBDriver {
 						this.outEndpoint = iface.endpoints[1];
 
 						inEndpoint.on('data', (data) => {
-							console.log('AUTOMAP IN');
-							console.log(data);
+							// console.log('AUTOMAP IN');
+							// console.log(data);
 							this._onMessage.emit(data);
 						});
 
@@ -79,8 +79,8 @@ export class USBDriver {
 			for (let i = 0; i < data.length; i++) {
 				array[i] = data[i];
 			}
-			console.log('AUTOMAP OUT');
-			console.log(array.buffer);
+			// console.log('AUTOMAP OUT');
+			// console.log(array.buffer);
 			this.outEndpoint.transfer(Buffer.from(array));
 		}
 	}

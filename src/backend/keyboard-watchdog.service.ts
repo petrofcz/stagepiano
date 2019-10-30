@@ -3,6 +3,7 @@ import {Observable} from 'rxjs';
 import {Select, Store} from '@ngxs/store';
 import {KeyboardState, KeyboardStateModel} from '../shared/keyboard/states/keyboard.state';
 
+// todo remove
 @Injectable({
 	providedIn: 'root'
 })
@@ -20,18 +21,18 @@ export class KeyboardWatchdogService {
 		const _this = this;
 		this.knobValues$.subscribe(
 			function (x) {
-				console.log('Knobs are now ', x);
-				console.log(
-					_this.store.selectSnapshot(KeyboardState.knobValues)
-				);
+				// console.log('Knobs are now ', x);
+				// console.log(
+				// 	_this.store.selectSnapshot(KeyboardState.knobValues)
+				// );
 			}
 		);
 		this.knobValuesMemoized$.subscribe(
 			function (x) {
-				console.log('(memoized) Knobs are now ', x);
-				console.log(
-					_this.store.selectSnapshot(KeyboardState.knobValues)
-				);
+				// console.log('(memoized) Knobs are now ', x);
+				// console.log(
+				// 	_this.store.selectSnapshot(KeyboardState.knobValues)
+				// );
 			}
 		);
 	}

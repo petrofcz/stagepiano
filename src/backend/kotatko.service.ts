@@ -3,13 +3,13 @@ import {KeyboardWatchdogService} from './keyboard-watchdog.service';
 import {Store} from '@ngxs/store';
 import {keyboard} from '../shared/keyboard/actions/set-knob-value.actions';
 import {DisplayRegionDriver} from './keyboard/display/display-region-driver';
-import {KnobMode, RotationKnobEvent} from './keyboard/display/knobs';
+import {KnobEvent, KnobMode, RotationKnobEvent} from './keyboard/display/knobs';
 import {RotationDirection} from './keyboard/common';
 import SetKnobValueAction = keyboard.SetKnobValueAction;
 import UpdateKnobValueAction = keyboard.UpdateKnobValueAction;
 import {KeyboardState} from '../shared/keyboard/states/keyboard.state';
-import {audit, auditTime, distinctUntilChanged, first, map, throttle, throttleTime} from 'rxjs/operators';
-import {interval, timer} from 'rxjs';
+import {audit, auditTime, debounceTime, distinctUntilChanged, filter, first, map, mapTo, throttle, throttleTime} from 'rxjs/operators';
+import {combineLatest, interval, merge, timer} from 'rxjs';
 
 @Injectable({
 	providedIn: 'root'
@@ -27,8 +27,31 @@ export class KotatkoService {
 				this.drd.knobs.setKnobValue(i, knobValue / 127);
 			});
 			// tslint:disable-next-line:max-line-length
-			this.store.select(KeyboardState.knobValue).pipe(map(filterFn => filterFn(i - 1))).pipe(distinctUntilChanged()).pipe(auditTime(50)).subscribe((knobValue) => {
-				this.drd.display.setCellContent(1, i, knobValue.toString());
+			const knobValueSelector = this.store.select(KeyboardState.knobValue).pipe(map(filterFn => filterFn(i - 1))).pipe(distinctUntilChanged()).pipe(auditTime(50));
+
+			const touchedSelector = merge(
+				this.drd.knobs.onKnobTouched.pipe(filter((knobEvent: KnobEvent) => { return knobEvent.knobId === i; })),
+				knobValueSelector
+			).pipe(mapTo(true));
+
+			const releasedSelector = merge(
+				this.drd.knobs.onKnobReleased.pipe(filter((knobEvent: KnobEvent) => { return knobEvent.knobId === i; })),
+				touchedSelector
+			).pipe(debounceTime(800)).pipe(mapTo(false));
+
+			const touchSelector = merge(
+				touchedSelector,
+				releasedSelector
+			).pipe(distinctUntilChanged());
+
+			combineLatest(
+				knobValueSelector, touchSelector
+			).subscribe(([knobValue, touched]) => {
+				if (touched) {
+					this.drd.display.setCellContent(1, i, knobValue.toString());
+				} else {
+					this.drd.display.setCellContent(1, i, 'Kote ' + i);
+				}
 			});
 		}
 

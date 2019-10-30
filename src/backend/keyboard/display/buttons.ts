@@ -1,22 +1,37 @@
-import {MidiAdapter} from '../../automap/midi-adapter';
+import {CCMessage, MidiAdapter} from '../../automap/midi-adapter';
+import {EventEmitter} from '@angular/core';
+import {ButtonEvent} from '../common';
 
 export class Buttons {
-	public static readonly BUTTON_ROW1_1 = 24;
-	public static readonly BUTTON_ROW1_2 = 25;
-	public static readonly BUTTON_ROW1_3 = 26;
-	public static readonly BUTTON_ROW1_4 = 27;
-	public static readonly BUTTON_ROW1_5 = 28;
-	public static readonly BUTTON_ROW1_6 = 29;
-	public static readonly BUTTON_ROW1_7 = 30;
-	public static readonly BUTTON_ROW1_8 = 31;
-	public static readonly BUTTON_ROW2_1 = 32;
-	public static readonly BUTTON_ROW2_2 = 33;
-	public static readonly BUTTON_ROW2_3 = 34;
-	public static readonly BUTTON_ROW2_4 = 35;
-	public static readonly BUTTON_ROW2_5 = 36;
-	public static readonly BUTTON_ROW2_6 = 37;
-	public static readonly BUTTON_ROW2_7 = 38;
-	public static readonly BUTTON_ROW2_8 = 39;
+	public static readonly FIRST_BUTTON_CC = 24;
+	public static readonly numRows = 2;
+	public static readonly numColumns = 8;
 
-	constructor(protected midiAdapter: MidiAdapter) { }
+	protected _onButtonClick = new EventEmitter<ButtonEvent>();
+
+	constructor(protected midiAdapter: MidiAdapter) {
+		midiAdapter.onCC.subscribe((message: CCMessage) => {
+			// tslint:disable-next-line:max-line-length
+			if (message.cc >= Buttons.FIRST_BUTTON_CC && message.cc <= (Buttons.FIRST_BUTTON_CC + (Buttons.numColumns * Buttons.numRows) - 1) && message.value === 1) {
+				this._onButtonClick.emit(new ButtonEvent(
+					Math.floor((message.cc - Buttons.FIRST_BUTTON_CC) / Buttons.numColumns) + 1,
+					((message.cc - Buttons.FIRST_BUTTON_CC) % Buttons.numColumns) + 1
+				));
+			}
+		});
+	}
+
+	public setLed(row: number, column: number, on: boolean) {
+		this.midiAdapter.sendCC(new CCMessage(16, Buttons.FIRST_BUTTON_CC + (Buttons.numColumns * (row-1)) + column - 1, on ? 1 : 0));
+	}
+
+	public turnOffAllLeds(row: number = null) {
+		for (let i = 1; i <= Buttons.numRows; i++) {
+			if (i === row || !row) {
+				for (let x = 1; x <= Buttons.numColumns; x++) {
+					this.setLed(i, x, false);
+				}
+			}
+		}
+	}
 }

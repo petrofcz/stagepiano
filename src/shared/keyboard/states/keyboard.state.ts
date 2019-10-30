@@ -44,7 +44,7 @@ export class KeyboardState {
 
 	@Action({type: SetKnobValueAction.type})
 	public setKnobValue(ctx: StateContext<KeyboardStateModel>, action: SetKnobValueActionDecl) {
-		console.log('HANDLING KNOBS');
+		// console.log('HANDLING KNOBS');
 		const {knobId, value} = action;
 		const state = ctx.getState();
 		const kvo = {...state.knobValues};
@@ -57,7 +57,6 @@ export class KeyboardState {
 
 	@Action({type: UpdateKnobValueAction.type})
 	public updateKnobValue(ctx: StateContext<KeyboardStateModel>, action: UpdateKnobValueActionDecl) {
-		console.log('HANDLING KNOBS');
 		const {knobId, value} = action;
 		const state = ctx.getState();
 		const kvo = {...state.knobValues};
@@ -69,10 +68,11 @@ export class KeyboardState {
 		});
 	}
 
+	// todo remove
 	@Action(TestAction)
 	public handleTestAction(ctx: StateContext<KeyboardStateModel>, action: TestAction) {
-		console.log('HANDLING TEST');
-		console.log(action);
+		// console.log('HANDLING TEST');
+		// console.log(action);
 	}
 
 

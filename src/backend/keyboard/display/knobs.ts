@@ -31,7 +31,7 @@ export class Knobs {
 				);
 			}
 			if (message.cc === 0x6c) {
-				if (message.value > 64) {
+				if (message.value >= 64) {
 					this._onKnobTouched.emit(new KnobEvent((message.value % 64) + 1));
 				} else {
 					this._onKnobReleased.emit(new KnobEvent((message.value % 64) + 1));
