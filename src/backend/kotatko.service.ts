@@ -2,14 +2,14 @@ import {Injectable} from '@angular/core';
 import {KeyboardWatchdogService} from './keyboard-watchdog.service';
 import {Store} from '@ngxs/store';
 import {keyboard} from '../shared/keyboard/actions/set-knob-value.actions';
-import {DisplayRegionDriver} from './keyboard/display/display-region-driver';
-import {KnobEvent, KnobMode, RotationKnobEvent} from './keyboard/display/knobs';
 import {RotationDirection} from './keyboard/common';
 import SetKnobValueAction = keyboard.SetKnobValueAction;
 import UpdateKnobValueAction = keyboard.UpdateKnobValueAction;
 import {KeyboardState} from '../shared/keyboard/states/keyboard.state';
-import {audit, auditTime, debounceTime, distinctUntilChanged, filter, first, map, mapTo, throttle, throttleTime} from 'rxjs/operators';
+import {audit, auditTime, debounceTime, distinctUntilChanged, filter, first, map, mapTo} from 'rxjs/operators';
 import {combineLatest, interval, merge, timer} from 'rxjs';
+import {DisplayRegionDriver} from './keyboard/hw/display/display-region-driver';
+import {KnobEvent, KnobMode, RotationKnobEvent} from './keyboard/hw/display/knobs';
 
 @Injectable({
 	providedIn: 'root'

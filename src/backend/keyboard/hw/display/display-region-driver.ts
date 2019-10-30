@@ -1,8 +1,8 @@
-import {MidiAdapter} from '../../automap/midi-adapter';
-import {Buttons} from './buttons';
+import {MidiAdapter} from '../../../automap/midi-adapter';
 import {Knobs} from './knobs';
 import {Display} from './display';
 import {Injectable} from '@angular/core';
+import {Buttons} from './buttons';
 
 @Injectable({
 	providedIn: 'root'

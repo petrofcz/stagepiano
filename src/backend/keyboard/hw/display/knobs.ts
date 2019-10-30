@@ -1,6 +1,6 @@
-import {CCMessage, MidiAdapter} from '../../automap/midi-adapter';
+import {CCMessage, MidiAdapter} from '../../../automap/midi-adapter';
 import {EventEmitter} from '@angular/core';
-import {RotationDirection} from '../common';
+import {RotationDirection} from '../../common';
 
 export class Knobs {
 

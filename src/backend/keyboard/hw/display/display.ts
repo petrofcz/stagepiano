@@ -1,5 +1,5 @@
-import {MidiAdapter, SysexMessage} from '../../automap/midi-adapter';
-import {SlMkII} from '../common';
+import {MidiAdapter, SysexMessage} from '../../../automap/midi-adapter';
+import {SlMkII} from '../../common';
 
 export class Display {
 

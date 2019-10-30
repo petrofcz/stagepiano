@@ -1,7 +1,14 @@
 import {State, Action, Selector, StateContext, StateOperator} from '@ngxs/store';
 import {Layer} from '../model/layer';
 import {Manual} from '../model/manual';
-import {AddLayerAction, AddLayerActionDecl, AddManualAction, AddManualActionDecl} from './manual.actions';
+import {
+	AddLayerAction,
+	AddLayerActionDecl,
+	AddManualAction,
+	AddManualActionDecl,
+	SelectLayerAction,
+	SelectLayerActionDecl
+} from './manual.actions';
 import {ResetLayoutAction} from '../../layout/state/layout.actions';
 
 export interface ManualStateModel {
@@ -94,7 +101,8 @@ export class ManualState {
 			id: action.id,
 			name: action.name,
 			manualId: action.manualId,
-			availableVstIds: action.availableVstIds
+			availableVstIds: action.availableVstIds,
+			position: action.position
 		};
 
 		const manuals = state.manuals;
@@ -107,6 +115,13 @@ export class ManualState {
 		ctx.patchState({
 			layers: [ ...state.layers, layer ],
 			manuals: manuals
+		});
+	}
+
+	@Action({type: SelectLayerAction.type})
+	public selectLayer(ctx: StateContext<ManualStateModel>, action: SelectLayerActionDecl) {
+		ctx.patchState({
+			currentLayerId: action.layerId
 		});
 	}
 

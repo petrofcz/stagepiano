@@ -3,5 +3,6 @@ export interface Layer {
 	id: string;
 	name: string;
 	manualId: string;
+	position: number;
 	availableVstIds: string[];
 }

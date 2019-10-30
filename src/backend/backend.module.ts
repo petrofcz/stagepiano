@@ -21,6 +21,7 @@ import {BiduleState} from '../shared/bidule/bidule.state';
 import {USBDriver} from './automap/usb-driver';
 import {MidiAdapter} from './automap/midi-adapter';
 import {KeyboardService} from './keyboard/keyboard.service';
+import {KeyboardRouter} from './keyboard/router/keyboardRouter';
 
 export function IpcActionReceiverFactory(ipcActionReceiver: IpcActionReceiver) {
 	return () => ipcActionReceiver.init();
@@ -72,7 +73,7 @@ export function NoopAppInitializer() {
 	bootstrap: [DummyComponent]
 })
 export class BackendModule {
-	constructor(ks: KotatkoService, blw: BiduleLayoutOpener, blr: BiduleLayoutReader, kbs: KeyboardService) {
+	constructor(ks: KotatkoService, blw: BiduleLayoutOpener, blr: BiduleLayoutReader, kbs: KeyboardService, kbdRouter: KeyboardRouter) {
 		ks.run();
 	}
 }

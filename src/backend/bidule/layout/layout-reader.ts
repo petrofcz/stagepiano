@@ -64,7 +64,7 @@ export class BiduleLayoutReader {
 						store.dispatch(new AddManualAction(manualId, manualDefinition.name));
 						for (const layerDefinition of manualDefinition.layers) {
 							const layerId = manualId + '-' + layerDefinition.id.toString();
-							store.dispatch(new AddLayerAction(layerId, layerDefinition.name, manualId, layerDefinition.vstIds));
+							store.dispatch(new AddLayerAction(layerId, layerDefinition.name, manualId, layerDefinition.vstIds, layerDefinition.id));
 						}
 					}
 					store.dispatch(new SetAvailableGlobalEffectsAction(biduleLayout.globalEffectIds));

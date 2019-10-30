@@ -11,17 +11,3 @@ export class SlMkII {
 		return this.SYSEX_HEADER.concat(bytes).concat(this.SYSEX_FOOTER);
 	}
 }
-
-export class ButtonEvent {
-	constructor(protected _row, protected _col) { }
-
-	// 1-st indexed
-	get row() {
-		return this._row;
-	}
-
-	// 1-st indexed
-	get col() {
-		return this._col;
-	}
-}
