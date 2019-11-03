@@ -1,15 +1,15 @@
 import {CCMessage} from '../../../../automap/midi-adapter';
 import {EventEmitter} from '@angular/core';
-import {ButtonEvent, ClickHandlerInterface} from '../../../model/buttons';
+import {ButtonClickEvent, ButtonPressEvent, ClickHandlerInterface} from '../../../model/buttons';
 
 export class SimpleClickHandler implements ClickHandlerInterface {
 
 	constructor() {
 	}
 
-	handle(ccMessage: CCMessage, emitter: EventEmitter<ButtonEvent>) {
-		if (ccMessage.value > 0) {  // button pressed, not released
-			emitter.emit(new ButtonEvent(ccMessage.cc));
+	handle(pressEvent: ButtonPressEvent, emitter: EventEmitter<ButtonClickEvent>) {
+		if (pressEvent.pressed) {  // button pressed, not released
+			emitter.emit(new ButtonClickEvent(pressEvent.buttonId));
 		}
 	}
 }

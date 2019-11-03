@@ -1,6 +1,6 @@
 <mat-list>
 	<mat-list-item *ngFor="let layer of $layers | async">
-		<div class="flex-row width100">
+		<div class="flex-row flex-content-center width100">
 			<div class="flex">
 				{{ manualNameById(layer.manualId) | async }}
 			</div>
@@ -16,7 +16,7 @@
 	<ng-container *ngIf="_withGlobal">
 		<mat-divider></mat-divider>
 		<mat-list-item>
-			<div class="flex-row width100">
+			<div class="flex-row flex-content-center width100">
 				<div class="flex">
 					Global scope
 				</div>

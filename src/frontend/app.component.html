@@ -20,6 +20,11 @@
 					<span mat-line>Effects</span>
 					<span mat-line class="secondary">Setup your effects</span>
 				</a>
+				<a mat-list-item routerLink="/presets">
+					<mat-icon mat-list-icon>favorite</mat-icon>
+					<span mat-line>Presets</span>
+					<span mat-line class="secondary">Manage sound presets</span>
+				</a>
 				<mat-divider></mat-divider>
 				<a mat-list-item (click)="closeLayout()">
 					<mat-icon mat-list-icon>arrow_back_ios</mat-icon>
@@ -67,6 +72,7 @@
 			</div>
 			<mat-toolbar color="primary">
 				<span>{{ pageTitle | async }}</span>
+				<div style="margin-left: auto; font-size: 0.76em; margin-right: 20px; color:  rgba(255,255,255,0.8);" *ngIf="currentLayer$ | async">Manual <strong>{{ ((currentManual$ | async)?.position) || '-' }}</strong> Layer <strong>{{ ((currentLayer$ | async)?.position) || '-'}}</strong></div>
 			</mat-toolbar>
 			<div class="main-content">
 				<router-outlet></router-outlet>

@@ -26,6 +26,11 @@ const routes: Routes = [
 		canActivate: [LayoutGuard],
 	},
 	{
+		path: 'presets',
+		loadChildren: './preset/preset.module#PresetModule',
+		canActivate: [LayoutGuard],
+	},
+	{
 		path: '**',
 		component: PageNotFoundComponent
 	}

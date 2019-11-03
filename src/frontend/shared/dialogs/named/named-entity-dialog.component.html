@@ -1,0 +1,17 @@
+<div mat-dialog-content>
+	<p>
+		<span *ngIf="data.phrase">
+			{{ data.phrase }}
+		</span>
+		<span *ngIf="!data.phrase">
+			Please enter name:
+		</span>
+	</p>
+	<mat-form-field>
+		<input matInput [(ngModel)]="data.name">
+	</mat-form-field>
+</div>
+<div mat-dialog-actions>
+	<button mat-button (click)="onCancelClick()">Cancel</button>
+	<button mat-button [mat-dialog-close]="data">Ok</button>
+</div>

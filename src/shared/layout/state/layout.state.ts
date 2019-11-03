@@ -2,8 +2,6 @@ import {State, Action, Selector, StateContext, StateOperator} from '@ngxs/store'
 import {Layout} from '../model/layout';
 import {
 	SaveLayoutAction,
-	SelectLayoutAction,
-	SelectLayoutActionDecl,
 	SetLayoutLoadingAction,
 	SetLayoutLoadingActionDecl, UpdateLayoutAction
 } from './layout.actions';

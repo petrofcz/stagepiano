@@ -20,7 +20,7 @@ export class StatePersisterPlugin implements NgxsPlugin {
 		// persist state
 		if (actionTester.matches(PersistStateAction)) {
 			const globalKeys = ['layout', 'settings'];
-			const ignoreKeys = ['keyboard', 'manual', 'bidule'];
+			const ignoreKeys = ['keyboard', 'manual', 'bidule', 'session'];
 
 			const layoutSnapshot = Object.assign({}, state);
 			const globalSnapshot = {};

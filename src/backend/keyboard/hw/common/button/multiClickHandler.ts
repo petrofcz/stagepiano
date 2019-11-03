@@ -1,42 +1,37 @@
-import {CCMessage} from '../../../../automap/midi-adapter';
 import {EventEmitter} from '@angular/core';
 import {buffer, bufferTime, debounce, debounceTime, delay, filter, groupBy, mergeMap, throttleTime} from 'rxjs/operators';
-import {ButtonEvent, ClickHandlerInterface} from '../../../model/buttons';
+import {ButtonClickEvent, ButtonPressEvent, ClickHandlerInterface} from '../../../model/buttons';
 
 export class MultiClickHandler implements ClickHandlerInterface {
 
-	protected throttleTime = 360; // in ms
+	protected throttleTime = 200; // in ms
 
-	protected emitter: EventEmitter<ButtonEvent>;
+	protected emitter: EventEmitter<ButtonClickEvent>;
 
-	protected subscriber: EventEmitter<CCMessage> = new EventEmitter<CCMessage>();
+	protected subscriber: EventEmitter<ButtonPressEvent> = new EventEmitter<ButtonPressEvent>();
 
 	constructor(protected maxClicks: number) {
 		const buttonPressSubscriber = this.subscriber
-			.pipe(filter((ccMessage: CCMessage) => { return ccMessage.value > 0; }))        // btn pressed, not released
+			.pipe(filter((evt: ButtonPressEvent) => { return evt.pressed; }))        // btn pressed, not released
 			.pipe(
-				groupBy((ccMessage: CCMessage) => { return ccMessage.cc; }),
+				groupBy((evt: ButtonPressEvent) => { return evt.buttonId;  }),
 				mergeMap(
-				// (group$) => group$.pipe(buffer(group$.pipe(throttleTime(this.throttleTime))))
-					// todo reenable
 				(group$) => group$.pipe(buffer(group$.pipe(debounceTime(this.throttleTime))))
 				)
-			).subscribe((messages: CCMessage[]) => {
-				console.log('BPSC');
-				console.log(messages);
-				if (messages.length > 0) {
-					this.emitter.emit(new MultiClickButtonEvent(messages[0].cc, Math.min(messages.length, this.maxClicks)));
+			).subscribe((events: ButtonPressEvent[]) => {
+				if (events.length > 0) {
+					this.emitter.emit(new MultiClickButtonEvent(events[0].buttonId, Math.min(events.length, this.maxClicks)));
 				}
 			});
 	}
 
-	handle(ccMessage: CCMessage, emitter: EventEmitter<ButtonEvent>) {
+	handle(pressEvent: ButtonPressEvent, emitter: EventEmitter<ButtonClickEvent>) {
 		this.emitter = emitter;
-		this.subscriber.emit(ccMessage);
+		this.subscriber.emit(pressEvent);
 	}
 }
 
-export class MultiClickButtonEvent extends ButtonEvent {
+export class MultiClickButtonEvent extends ButtonClickEvent {
 
 	constructor(buttonId: number, protected _clickCount: number) {
 		super(buttonId);

@@ -6,15 +6,13 @@ import {
 	AddLayerActionDecl,
 	AddManualAction,
 	AddManualActionDecl,
-	SelectLayerAction,
-	SelectLayerActionDecl
 } from './manual.actions';
 import {ResetLayoutAction} from '../../layout/state/layout.actions';
+import {SessionState, SessionStateModel} from '../../session/state/session.state';
 
 export interface ManualStateModel {
 	manuals: Manual[];
 	layers: Layer[];
-	currentLayerId: string|null;
 }
 
 @State<ManualStateModel>({
@@ -22,7 +20,6 @@ export interface ManualStateModel {
 	defaults: {
 		manuals: [],
 		layers: [],
-		currentLayerId: null
 	}
 })
 export class ManualState {
@@ -57,21 +54,6 @@ export class ManualState {
 	}
 
 	@Selector()
-	public static getCurrentLayer(state: ManualStateModel) {
-		for (const layer of state.layers) {
-			if (layer.id === state.currentLayerId) {
-				return layer;
-			}
-		}
-		return null;
-	}
-
-	@Selector()
-	public static getActiveLayerId(state: ManualStateModel) {
-		return state.currentLayerId;
-	}
-
-	@Selector()
 	public static getManuals(state: ManualStateModel) {
 		return state.manuals;
 	}
@@ -81,11 +63,28 @@ export class ManualState {
 		return state.layers;
 	}
 
+	@Selector([SessionState.getActiveLayerId])
+	public static getCurrentLayer(state: ManualStateModel, activeLayerId: string|null): Layer|null {
+		if (!activeLayerId) {
+			return null;
+		}
+		return this.getLayerById(state)(activeLayerId);
+	}
+
+	@Selector([SessionState.getActiveLayerId])
+	public static getCurrentManual(state: ManualStateModel, activeLayerId: string|null): Manual|null {
+		if (!activeLayerId) {
+			return null;
+		}
+		return this.getManualById(state)(this.getLayerById(state)(activeLayerId).manualId);
+	}
+
 	@Action({type: AddManualAction.type})
 	public addManual(ctx: StateContext<ManualStateModel>, action: AddManualActionDecl) {
 		const manual: Manual = {
 			id: action.id,
 			name: action.name,
+			position: action.position,
 			layerIds: []
 		};
 		ctx.patchState({
@@ -118,20 +117,12 @@ export class ManualState {
 		});
 	}
 
-	@Action({type: SelectLayerAction.type})
-	public selectLayer(ctx: StateContext<ManualStateModel>, action: SelectLayerActionDecl) {
-		ctx.patchState({
-			currentLayerId: action.layerId
-		});
-	}
-
 	// todo mabybe refactor to use plugin for clear states?
 	@Action({type: ResetLayoutAction.type})
 	public clear(ctx: StateContext<ManualStateModel>, action) {
 		ctx.setState({
 			manuals: [],
-			layers: [],
-			currentLayerId: null
+			layers: []
 		});
 	}
 }

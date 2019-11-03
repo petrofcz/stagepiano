@@ -12,6 +12,8 @@ import {
 	MatSpinner
 } from '@angular/material';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import {A11yModule} from '@angular/cdk/a11y';
 
 @NgModule({
 	imports: [
@@ -23,7 +25,9 @@ import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 		MatIconModule,
 		MatToolbarModule,
 		MatProgressSpinnerModule,
-		MatDialogModule
+		MatDialogModule,
+		DragDropModule,
+		A11yModule
 	],
 	exports: [
 		MatInputModule,
@@ -35,7 +39,9 @@ import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 		MatToolbarModule,
 		MatProgressSpinnerModule,
 		MatSpinner,
-		MatDialogModule
+		MatDialogModule,
+		DragDropModule,
+		A11yModule
 	],
 })
 export class MaterialModule {

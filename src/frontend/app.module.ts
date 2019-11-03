@@ -47,6 +47,8 @@ import {LayoutModule} from './layout/layout.module';
 import {LayoutRedirectService} from './model/navigation/layout-redirect.service';
 import {ManualState} from '../shared/manual/state/manual.state';
 import {BiduleState} from '../shared/bidule/bidule.state';
+import {SessionState} from '../shared/session/state/session.state';
+import {PresetCategoryState} from '../shared/preset/state/preset-category.state';
 // import {IpcStorageEngine} from './core/services/storage/ipcStorageEngine.service';
 
 // AoT requires an exported function for factories
@@ -75,11 +77,11 @@ export function IpcActionReceiverFactory(ipcActionReceiver: IpcActionReceiver) {
 				deps: [HttpClient]
 			}
 		}),
-		NgxsModule.forRoot([LayoutState, FrontendState, VSTState, ManualState, BiduleState], {
-			selectorOptions: {
-				suppressErrors: false,
-				injectContainerState: false
-			}
+		NgxsModule.forRoot([LayoutState, FrontendState, VSTState, ManualState, BiduleState, SessionState, PresetCategoryState], {
+			// selectorOptions: {
+			// 	suppressErrors: false,
+			// 	injectContainerState: false
+			// }
 		}),
 		NgxsReduxDevtoolsPluginModule.forRoot(),
 		NgxsRouterPluginModule.forRoot(),

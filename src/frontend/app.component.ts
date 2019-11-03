@@ -13,6 +13,10 @@ import {RequestGlobalStateAction} from '../shared/ngxs/request-global-state.acti
 import {LayoutState} from '../shared/layout/state/layout.state';
 import {Layout} from '../shared/layout/model/layout';
 import {SelectLayoutAction} from '../shared/layout/state/layout.actions';
+import {Layer} from '../shared/manual/model/layer';
+import {ManualState} from '../shared/manual/state/manual.state';
+import {Manual} from '../shared/manual/model/manual';
+import {SessionState} from '../shared/session/state/session.state';
 
 @Component({
 	selector: 'app-root',
@@ -31,6 +35,12 @@ export class AppComponent {
 
 	@Select(LayoutState.getActiveLayout)
 	activeLayout$: Observable<Layout>;
+
+	@Select(ManualState.getCurrentLayer)
+	currentLayer$: Observable<Layer>;
+
+	@Select(ManualState.getCurrentManual)
+	currentManual$: Observable<Manual>;
 
 	constructor(
 		public electronService: ElectronService,

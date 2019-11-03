@@ -1,6 +1,7 @@
 import {Entity} from '../../common/entity';
 import {StateOperator} from '@ngxs/store';
 import {EntityStateModel} from './state-model';
+import {moveItemInArray} from '@angular/cdk/drag-drop';
 
 // save entity, overwrites whole entity if exists
 export function saveEntity<T extends Entity>(entity: T): StateOperator<EntityStateModel<T>> {
@@ -37,5 +38,25 @@ export function addEntity<T extends Entity>(entity: T): StateOperator<EntityStat
 		} else {
 			return state;
 		}
+	};
+}
+
+// changes entities order
+export function moveEntity<T extends Entity>(oldIndex: number, newIndex: number): StateOperator<EntityStateModel<T>> {
+	return (state: Readonly<EntityStateModel<T>>) => {
+		if (oldIndex < 0 || newIndex < 0 || oldIndex >= state.ids.length || newIndex >= state.ids.length || newIndex === oldIndex) {
+			return state;
+		}
+		// const ids = [];
+		// ids.push(...state.ids.slice(0, Math.min(newIndex, oldIndex)));
+		// if(newIndex > oldIndex)
+		// ids.push(state.ids[oldIndex]);
+		// ids.push(...state.ids.slice(newIndex, newIndex));
+		const ids = state.ids;
+		moveItemInArray(ids, oldIndex, newIndex);
+		return {
+			...state,
+			ids: ids
+		};
 	};
 }

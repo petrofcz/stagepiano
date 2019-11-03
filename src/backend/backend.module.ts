@@ -22,6 +22,8 @@ import {USBDriver} from './automap/usb-driver';
 import {MidiAdapter} from './automap/midi-adapter';
 import {KeyboardService} from './keyboard/keyboard.service';
 import {KeyboardRouter} from './keyboard/router/keyboardRouter';
+import {PresetCategoryState} from '../shared/preset/state/preset-category.state';
+import {SessionState} from '../shared/session/state/session.state';
 
 export function IpcActionReceiverFactory(ipcActionReceiver: IpcActionReceiver) {
 	return () => ipcActionReceiver.init();
@@ -39,7 +41,7 @@ export function NoopAppInitializer() {
 	],
 	imports: [
 		ServerModule,
-		NgxsModule.forRoot([LayoutState, KeyboardState, VSTState, ManualState, BiduleState])
+		NgxsModule.forRoot([LayoutState, KeyboardState, VSTState, PresetCategoryState, ManualState, BiduleState, SessionState])
 	],
 	providers: [
 		{

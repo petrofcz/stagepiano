@@ -8,7 +8,7 @@
 		<div *ngIf="(effects$ | async).length > 0">
 			<mat-list>
 				<mat-list-item *ngFor="let item of effects$ | async">
-					<div class="flex-row" style="width: 100%">
+					<div class="flex-row flex-content-center" style="width: 100%">
 						<div class="flex">
 							<div>
 								<div>
@@ -22,7 +22,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="flex flex-row horizontal-group">
+						<div class="flex flex-row flex-content-center horizontal-group">
 							<button mat-raised-button color="primary" (click)="openAvailability(item.id)">
 								<mat-icon>power</mat-icon>
 								Availability

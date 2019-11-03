@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {Select, Store} from '@ngxs/store';
 import {LayoutState} from '../../../shared/layout/state/layout.state';
 import {Observable} from 'rxjs';
-import {Layout} from '../../../shared/layout/model/layout';
 import {BiduleLayout, BiduleLayoutParser, EffectDefinition, InstrumentDefinition} from './layout-parser';
 import {AddVSTAction} from '../../../shared/vst/state/vst.actions';
 import {Instrument} from '../../../shared/vst/model/instrument';
@@ -11,6 +10,7 @@ import {VST} from '../../../shared/vst/model/vst';
 import {AddLayerAction, AddManualAction} from '../../../shared/manual/state/manual.actions';
 import {ResetLayoutAction} from '../../../shared/layout/state/layout.actions';
 import {SetAvailableGlobalEffectsAction} from '../../../shared/bidule/bidule.actions';
+import {SelectLayerAction} from '../../../shared/session/state/session.actions';
 
 // This service read bidule layout and imports all information from it to the app
 @Injectable({
@@ -25,9 +25,8 @@ export class BiduleLayoutReader {
 
 		this.activeLayoutId$.subscribe((layoutId) => {
 			const layout = this.store.selectSnapshot(LayoutState.getById)(layoutId);
-
+			store.dispatch(new ResetLayoutAction());
 			if (layout !== null) {
-				store.dispatch(new ResetLayoutAction());
 				BiduleLayoutParser.loadFile(layout.biduleFile).then((biduleLayout: BiduleLayout) => {
 					for (const vstDefinition of biduleLayout.vstDefinitions) {
 						let vst: VST = null;
@@ -61,13 +60,14 @@ export class BiduleLayoutReader {
 					}
 					for (const manualDefinition of biduleLayout.manualDefinitions) {
 						const manualId = manualDefinition.id.toString();
-						store.dispatch(new AddManualAction(manualId, manualDefinition.name));
+						store.dispatch(new AddManualAction(manualId, manualDefinition.id + 1, manualDefinition.name));
 						for (const layerDefinition of manualDefinition.layers) {
 							const layerId = manualId + '-' + layerDefinition.id.toString();
-							store.dispatch(new AddLayerAction(layerId, layerDefinition.name, manualId, layerDefinition.vstIds, layerDefinition.id));
+							store.dispatch(new AddLayerAction(layerId, layerDefinition.name, manualId, layerDefinition.vstIds, layerDefinition.id + 1));
 						}
 					}
 					store.dispatch(new SetAvailableGlobalEffectsAction(biduleLayout.globalEffectIds));
+					this.store.dispatch(new SelectLayerAction('0-0'));  // default layer
 				});
 			}
 		});

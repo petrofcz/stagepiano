@@ -2,26 +2,30 @@ import {MidiAdapter} from '../../../automap/midi-adapter';
 import {Knobs} from './knobs';
 import {Display} from './display';
 import {Injectable} from '@angular/core';
-import {Buttons} from './buttons';
+import {ButtonMatrix} from '../common/button/buttonMatrix';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class DisplayRegionDriver {
 
-	private _buttons: Buttons;
+	private _buttonMatrix: ButtonMatrix;
 	private _knobs: Knobs;
 	private _display: Display;
 
 	constructor(midiAdapter: MidiAdapter) {
-		this._buttons = new Buttons(midiAdapter);
+		this._buttonMatrix = new ButtonMatrix(8, 2, 24, midiAdapter);
+		this._buttonMatrix.buttons.turnOffAllLeds();
+
+		// todo change to disable
+		this._buttonMatrix.buttons.enableAllButtons();
+
 		this._knobs = new Knobs(midiAdapter);
 		this._display = new Display(midiAdapter);
 	}
 
-
-	get buttons(): Buttons {
-		return this._buttons;
+	get buttonMatrix(): ButtonMatrix {
+		return this._buttonMatrix;
 	}
 
 	get knobs(): Knobs {

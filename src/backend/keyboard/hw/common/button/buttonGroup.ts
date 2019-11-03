@@ -1,38 +1,49 @@
 import {CCMessage, MidiAdapter} from '../../../../automap/midi-adapter';
 import {EventEmitter} from '@angular/core';
 import {SimpleClickHandler} from './simpleClickHandler';
-import {ButtonEvent, ClickHandlerInterface} from '../../../model/buttons';
+import {ButtonClickEvent, ButtonPressEvent, ClickHandlerInterface} from '../../../model/buttons';
 
 export class ButtonGroup {
 
 	private activeButtonIds: number[] = [];
 
-	protected _onButtonClick = new EventEmitter<ButtonEvent>();
+	protected _onButtonClick = new EventEmitter<ButtonClickEvent>();
 
 	protected _globalClickHandler: ClickHandlerInterface;
 
 	protected _clickHandlerByButton: { [key: number]: ClickHandlerInterface } = { };
 
-	constructor(protected midiAdapter: MidiAdapter, private buttonIds: number[]) {
+	protected enabledButtonIds: number[];
+
+	// all buttons are explicitly disabled!
+	constructor(protected midiAdapter: MidiAdapter, private buttonCCs: number[]) {
 		this._globalClickHandler = new SimpleClickHandler();
+		this.disableAllButtons();
 		midiAdapter.onCC.subscribe((message: CCMessage) => {
 			// highlighting on press
-			if (this.buttonIds.indexOf(message.cc) !== -1) {
+			if (this.buttonCCs.indexOf(message.cc) !== -1) {
+				const buttonId = this.buttonCCs.indexOf(message.cc) + 1;
+
 				if (message.value === 0) {
 					// highlight off
-					if (this.activeButtonIds.indexOf(message.cc) === -1) {
+					if (this.activeButtonIds.indexOf(buttonId) === -1) {
 						this.midiAdapter.sendCC(new CCMessage(16, message.cc, 0));
 					}
 				} else {
 					// highlight on
-					this.midiAdapter.sendCC(new CCMessage(16, message.cc, 1));
+					if (this.enabledButtonIds.indexOf(buttonId) > 0) {
+						this.midiAdapter.sendCC(new CCMessage(16, message.cc, 1));
+					}
 				}
 
 				// pass to click handler
-				if (message.cc in this._clickHandlerByButton && this._clickHandlerByButton[message.cc] !== null) {
-					this._clickHandlerByButton[message.cc].handle(message, this._onButtonClick);
+				const buttonPressEvent = new ButtonPressEvent(buttonId, message.value > 0);
+				if (buttonId in this._clickHandlerByButton && this._clickHandlerByButton[buttonId] !== null) {
+					this._clickHandlerByButton[buttonId].handle(
+						buttonPressEvent, this._onButtonClick
+					);
 				} else {
-					this._globalClickHandler.handle(message, this._onButtonClick);
+					this._globalClickHandler.handle(buttonPressEvent, this._onButtonClick);
 				}
 			}
 		});
@@ -51,14 +62,34 @@ export class ButtonGroup {
 				});
 			}
 		}
-		this.midiAdapter.sendCC(new CCMessage(16, buttonId, on ? 1 : 0));
+		this.midiAdapter.sendCC(new CCMessage(16, this.buttonCCs[buttonId - 1], on ? 1 : 0));
 	}
 
 	public turnOffAllLeds(force: boolean = false) {
-		const toTurnOff = force ? this.buttonIds : this.activeButtonIds;
-		for (const buttonId of toTurnOff) {
-			this.setLed(buttonId, false);
+		const toTurnOff = force ? this.buttonCCs : this.getAllButtonIds();
+		for (const cc of toTurnOff) {
+			this.setLed(cc, false);
 		}
+	}
+
+	public setButtonEnabled(buttonId: number, enabled: boolean) {
+		if (enabled) {
+			if (this.enabledButtonIds.indexOf(buttonId) === -1) {
+				this.enabledButtonIds.push(buttonId);
+			}
+		} else {
+			this.enabledButtonIds = this.enabledButtonIds.filter((iButtonId: number) => {
+				return iButtonId !== buttonId;
+			});
+		}
+	}
+
+	public enableAllButtons() {
+		this.enabledButtonIds = this.getAllButtonIds();
+	}
+
+	public disableAllButtons() {
+		this.enabledButtonIds = [];
 	}
 
 	public setGlobalClickHandler(clickHandler?: ClickHandlerInterface) {
@@ -69,16 +100,19 @@ export class ButtonGroup {
 		this._clickHandlerByButton[buttonId] = clickHandler;
 	}
 
-	public addButtonId(id: number) {
-		this.buttonIds.push(id);
-	}
-
 	public getButtonIds(): number[] {
-		return this.buttonIds;
+		return this.buttonCCs;
 	}
 
-	get onButtonClick(): EventEmitter<ButtonEvent> {
+	get onButtonClick(): EventEmitter<ButtonClickEvent> {
 		return this._onButtonClick;
 	}
 
+	public getAllButtonIds(): number[] {
+		const out = [];
+		for (let i = 1; i <= this.buttonCCs.length; i++) {
+			out.push(i);
+		}
+		return out;
+	}
 }

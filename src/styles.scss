@@ -10,6 +10,12 @@ html, body {
   height: 100%;
 }
 
+hr {
+	border-top: 0;
+	border-bottom: 1px solid #e0e0e0;
+	margin: 12px 0;
+}
+
 .form-content {
   display: flex;
   flex-direction: column;
@@ -47,7 +53,17 @@ html, body {
 .flex-row {
   display: flex;
   flex-direction: row;
-  align-items: center;
+}
+
+.flex-content-center {
+	align-items: center;
+}
+
+.flex-vertical-separator {
+	max-width: 1px;
+	margin: 0 16px;
+	border-left: 1px solid #e0e0e0;
+	flex-grow: 1;
 }
 
 .tag {
@@ -97,4 +113,12 @@ html, body {
 
 .width100 {
 	width: 100%;
+}
+
+.selected-item {
+	background: #f5f5f5;
+}
+
+.mat-list-text {
+	z-index: 10000;
 }

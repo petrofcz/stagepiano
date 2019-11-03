@@ -1,78 +1,78 @@
 import {MidiAdapter} from '../../../../automap/midi-adapter';
 import {EventEmitter} from '@angular/core';
 import {ButtonGroup} from './buttonGroup';
-import {ButtonEvent} from '../../../model/buttons';
+import {ButtonClickEvent} from '../../../model/buttons';
 
-export abstract class ButtonMatrix {
+export class ButtonMatrix {
 
-	private firstButtonCC;
-	private numColumns;
-	private numRows;
 	private _onButtonClick = new EventEmitter<ButtonMatrixEvent>();
 
-	private buttons: ButtonGroup;
+	private _buttons: ButtonGroup;
 
-	protected abstract getFirstButtonCC();
-	protected abstract getNumRows();
-	protected abstract getNumColumns();
+	protected getNumRows() {
+		return this.numRows;
+	}
 
-	constructor(protected midiAdapter: MidiAdapter) {
-		this.firstButtonCC = this.getFirstButtonCC();
-		this.numColumns = this.getNumColumns();
-		this.numRows = this.getNumRows();
+	protected getNumColumns() {
+		return this.numColumns;
+	}
 
-		const buttonIds = [];
+	get buttons(): ButtonGroup {
+		return this._buttons;
+	}
+
+	public getButtonId(column: number, row: number): number {
+		return (this.numColumns * (row - 1)) + column;
+	}
+
+	constructor(private numColumns: number, private numRows: number, firstCC: number, midiAdapter: MidiAdapter) {
+
+		const buttonCCs = [];
 		for (let y = 0; y < this.numRows; y++) {
 			for (let x = 0; x < this.numColumns; x++) {
-				buttonIds.push(this.firstButtonCC + (this.numColumns * y) + x);
+				buttonCCs.push(firstCC + (this.numColumns * y) + x);
 			}
 		}
-		this.buttons = new ButtonGroup(
-			midiAdapter, buttonIds
+		this._buttons = new ButtonGroup(
+			midiAdapter, buttonCCs
 		);
 
-
-
-		this.buttons.onButtonClick.subscribe((event: ButtonEvent) => {
+		this._buttons.onButtonClick.subscribe((event: ButtonClickEvent) => {
 			this.onButtonClick.emit(
 				new ButtonMatrixEvent(
-					Math.floor((event.buttonId - this.firstButtonCC) / this.numColumns) + 1,
-					((event.buttonId - this.firstButtonCC) % this.numColumns) + 1,
-					event.buttonId
+					Math.floor((event.buttonId - 1) / this.numColumns) + 1,
+					((event.buttonId - 1) % this.numColumns) + 1,
+					event
 				)
 			);
 		});
 	}
 
-	public setLed(row: number, column: number, on: boolean) {
-		this.buttons.setLed(
-			this.firstButtonCC + (this.numColumns * (row - 1)) + column - 1, on
-		);
-	}
-
-	public turnOffAllLedsForRow(row: number = null, force: boolean = false) {
+	public getIdsForRow(row: number = null, force: boolean = false): number[] {
+		const ids = [];
 		if (!row) {
-			this.buttons.turnOffAllLeds(force);
+			this._buttons.turnOffAllLeds(force);
 		} else {
 			for (let i = 1; i <= this.numRows; i++) {
 				if (i === row) {
 					for (let x = 1; x <= this.numColumns; x++) {
-						this.setLed(i, x, false);
+						ids.push(i, x, false);
 					}
 				}
 			}
 		}
+		return ids;
 	}
 
-	get onButtonClick(): EventEmitter<ButtonEvent> {
+	get onButtonClick(): EventEmitter<ButtonClickEvent> {
 		return this._onButtonClick;
 	}
 }
 
-export class ButtonMatrixEvent extends ButtonEvent {
+export class ButtonMatrixEvent extends ButtonClickEvent {
 
-	constructor(protected _row: number, protected _col: number, buttonId: number) {
-		super(buttonId);
+	constructor(protected _row: number, protected _col: number, protected _originalEvent: ButtonClickEvent) {
+		super(_originalEvent.buttonId);
 	}
 
 	// 1-st indexed
@@ -85,4 +85,7 @@ export class ButtonMatrixEvent extends ButtonEvent {
 		return this._col;
 	}
 
+	get originalEvent(): ButtonClickEvent {
+		return this._originalEvent;
+	}
 }
