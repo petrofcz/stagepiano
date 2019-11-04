@@ -5,7 +5,11 @@ import {MatDialog} from '@angular/material/dialog';
 import { v1 as uuid } from 'uuid';
 import {PresetCategoryState} from '../../../shared/preset/state/preset-category.state';
 import {PresetCategory} from '../../../shared/preset/model/model';
-import {MovePresetCategoryAction, SavePresetCategoryAction} from '../../../shared/preset/state/preset-category.actions';
+import {
+	AddPresetCategoryAction,
+	MovePresetCategoryAction,
+	UpdatePresetCategoryAction
+} from '../../../shared/preset/state/preset-category.actions';
 import {NamedEntityDialogComponent, NamedEntityDialogData} from '../../shared/dialogs/named/named-entity-dialog.component';
 import {SessionState} from '../../../shared/session/state/session.state';
 import {SelectPresetCategoryAction} from '../../../shared/session/state/session.actions';
@@ -47,10 +51,18 @@ export class PresetListPageComponent implements OnInit {
 		});
 
 		dialogRef.afterClosed().subscribe((result: NamedEntityDialogData) => {
-				this.store.dispatch(new SavePresetCategoryAction(<PresetCategory>{
-					id: result.id ? result.id : uuid(),
+			if (result.id) {
+				this.store.dispatch(new UpdatePresetCategoryAction(<Partial<PresetCategory>>{
+					id: result.id,
 					name: result.name
 				}));
+			} else {
+				this.store.dispatch(new AddPresetCategoryAction(<PresetCategory>{
+					id: uuid(),
+					name: result.name,
+					presetIds: []
+				}));
+			}
 		});
 	}
 

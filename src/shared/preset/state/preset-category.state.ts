@@ -1,13 +1,14 @@
 import {defaultEntityState, EntityStateModel} from '../../ngxs/entity/state-model';
 import {Action, Selector, State, StateContext, StateOperator} from '@ngxs/store';
 import {PresetCategory} from '../model/model';
-import {LayoutStateModel} from '../../layout/state/layout.state';
-import {SaveLayoutAction} from '../../layout/state/layout.actions';
-import {MoveEntityActionDecl, SaveEntityActionDecl} from '../../ngxs/entity/actions';
-import {Layout} from '../../layout/model/layout';
-import {moveEntity, saveEntity} from '../../ngxs/entity/state-operators';
-import {MovePresetCategoryAction, SavePresetCategoryAction} from './preset-category.actions';
-import {SessionState, SessionStateModel} from '../../session/state/session.state';
+import {AddEntityActionDecl, MoveEntityActionDecl, SaveEntityActionDecl, UpdateEntityActionDecl} from '../../ngxs/entity/actions';
+import {addEntity, moveEntity, saveEntity, updateEntity} from '../../ngxs/entity/state-operators';
+import {
+	AddPresetCategoryAction,
+	MovePresetCategoryAction,
+	UpdatePresetCategoryAction
+} from './preset-category.actions';
+import {SessionState} from '../../session/state/session.state';
 
 export interface PresetCategoryStateModel extends EntityStateModel<PresetCategory> {
 }
@@ -31,6 +32,11 @@ export class PresetCategoryState {
 	}
 
 	@Selector()
+	public static getIds(state: PresetCategoryStateModel) {
+		return state.ids;
+	}
+
+	@Selector()
 	public static getState(state: PresetCategoryStateModel) {
 		return state;
 	}
@@ -43,10 +49,19 @@ export class PresetCategoryState {
 		return this.getById(state)(id);
 	}
 
-	@Action({type: SavePresetCategoryAction.type})
-	public save(ctx: StateContext<PresetCategoryStateModel>, action: SaveEntityActionDecl<PresetCategory>) {
+	@Action({type: UpdatePresetCategoryAction.type})
+	public update(ctx: StateContext<PresetCategoryStateModel>, action: UpdateEntityActionDecl<PresetCategory>) {
 		ctx.setState(
-			<StateOperator<PresetCategoryStateModel>>saveEntity(
+			<StateOperator<PresetCategoryStateModel>>updateEntity(
+				action.entity
+			)
+		);
+	}
+
+	@Action({type: AddPresetCategoryAction.type})
+	public add(ctx: StateContext<PresetCategoryStateModel>, action: AddEntityActionDecl<PresetCategory>) {
+		ctx.setState(
+			<StateOperator<PresetCategoryStateModel>>addEntity(
 				action.entity
 			)
 		);

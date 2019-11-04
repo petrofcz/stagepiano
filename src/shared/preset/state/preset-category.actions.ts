@@ -1,8 +1,13 @@
-import {MoveEntityActionDecl, SaveEntityActionDecl, UpdateEntityActionDecl} from '../../ngxs/entity/actions';
+import {AddEntityActionDecl, MoveEntityActionDecl, SaveEntityActionDecl, UpdateEntityActionDecl} from '../../ngxs/entity/actions';
 import {PresetCategory} from '../model/model';
 
-export class SavePresetCategoryAction implements SaveEntityActionDecl<PresetCategory> {
-	static readonly type = '[PresetCategory] Save';
+export class UpdatePresetCategoryAction implements UpdateEntityActionDecl<PresetCategory> {
+	static readonly type = '[PresetCategory] Update';
+	public constructor(public readonly entity: Partial<PresetCategory>) { }
+}
+
+export class AddPresetCategoryAction implements AddEntityActionDecl<PresetCategory> {
+	static readonly type = '[PresetCategory] Add';
 	public constructor(public readonly entity: PresetCategory) { }
 }
 

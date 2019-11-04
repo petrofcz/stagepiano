@@ -21,6 +21,11 @@ export class KotatkoService {
 	}
 
 	run() {
+
+		return;
+
+		// todo move to knob value component
+
 		for (let i = 1; i <= 8; i++) {
 			this.drd.knobs.setKnobMode(i, KnobMode.MODE_CONTINUOUS);
 			this.store.select(KeyboardState.knobValue).pipe(map(filterFn => filterFn(i - 1))).pipe(distinctUntilChanged()).subscribe((knobValue) => {

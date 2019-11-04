@@ -31,19 +31,21 @@ export class ButtonGroup {
 					}
 				} else {
 					// highlight on
-					if (this.enabledButtonIds.indexOf(buttonId) > 0) {
+					if (this.enabledButtonIds.indexOf(buttonId) > -1) {
 						this.midiAdapter.sendCC(new CCMessage(16, message.cc, 1));
 					}
 				}
 
 				// pass to click handler
-				const buttonPressEvent = new ButtonPressEvent(buttonId, message.value > 0);
-				if (buttonId in this._clickHandlerByButton && this._clickHandlerByButton[buttonId] !== null) {
-					this._clickHandlerByButton[buttonId].handle(
-						buttonPressEvent, this._onButtonClick
-					);
-				} else {
-					this._globalClickHandler.handle(buttonPressEvent, this._onButtonClick);
+				if (this.enabledButtonIds.indexOf(buttonId) > -1) {
+					const buttonPressEvent = new ButtonPressEvent(buttonId, message.value > 0);
+					if (buttonId in this._clickHandlerByButton && this._clickHandlerByButton[buttonId] !== null) {
+						this._clickHandlerByButton[buttonId].handle(
+							buttonPressEvent, this._onButtonClick
+						);
+					} else {
+						this._globalClickHandler.handle(buttonPressEvent, this._onButtonClick);
+					}
 				}
 			}
 		});
@@ -82,6 +84,8 @@ export class ButtonGroup {
 				return iButtonId !== buttonId;
 			});
 		}
+		console.log('SET BUTTON ENABLED ' + buttonId + ' ' + enabled);
+		console.log(this.enabledButtonIds);
 	}
 
 	public enableAllButtons() {
@@ -90,6 +94,7 @@ export class ButtonGroup {
 
 	public disableAllButtons() {
 		this.enabledButtonIds = [];
+		console.log('disabled buttons');
 	}
 
 	public setGlobalClickHandler(clickHandler?: ClickHandlerInterface) {

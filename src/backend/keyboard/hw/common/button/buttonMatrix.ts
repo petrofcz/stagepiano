@@ -48,23 +48,15 @@ export class ButtonMatrix {
 		});
 	}
 
-	public getIdsForRow(row: number = null, force: boolean = false): number[] {
+	public getIdsForRow(row: number): number[] {
 		const ids = [];
-		if (!row) {
-			this._buttons.turnOffAllLeds(force);
-		} else {
-			for (let i = 1; i <= this.numRows; i++) {
-				if (i === row) {
-					for (let x = 1; x <= this.numColumns; x++) {
-						ids.push(i, x, false);
-					}
-				}
-			}
+		for (let x = 0; x < this.numColumns; x++) {
+			ids.push(((row - 1) * this.numColumns) + x + 1);
 		}
 		return ids;
 	}
 
-	get onButtonClick(): EventEmitter<ButtonClickEvent> {
+	get onButtonClick(): EventEmitter<ButtonMatrixEvent> {
 		return this._onButtonClick;
 	}
 }

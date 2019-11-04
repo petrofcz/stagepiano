@@ -16,12 +16,12 @@ export class DisplayRegionDriver {
 	constructor(midiAdapter: MidiAdapter) {
 		this._buttonMatrix = new ButtonMatrix(8, 2, 24, midiAdapter);
 		this._buttonMatrix.buttons.turnOffAllLeds();
-
-		// todo change to disable
-		this._buttonMatrix.buttons.enableAllButtons();
+		this._buttonMatrix.buttons.disableAllButtons();
 
 		this._knobs = new Knobs(midiAdapter);
+
 		this._display = new Display(midiAdapter);
+		this._display.clearDisplay();
 	}
 
 	get buttonMatrix(): ButtonMatrix {

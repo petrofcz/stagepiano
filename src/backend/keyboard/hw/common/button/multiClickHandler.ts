@@ -10,7 +10,7 @@ export class MultiClickHandler implements ClickHandlerInterface {
 
 	protected subscriber: EventEmitter<ButtonPressEvent> = new EventEmitter<ButtonPressEvent>();
 
-	constructor(protected maxClicks: number) {
+	constructor(protected maxClicks: number|null) {
 		const buttonPressSubscriber = this.subscriber
 			.pipe(filter((evt: ButtonPressEvent) => { return evt.pressed; }))        // btn pressed, not released
 			.pipe(
@@ -20,7 +20,9 @@ export class MultiClickHandler implements ClickHandlerInterface {
 				)
 			).subscribe((events: ButtonPressEvent[]) => {
 				if (events.length > 0) {
-					this.emitter.emit(new MultiClickButtonEvent(events[0].buttonId, Math.min(events.length, this.maxClicks)));
+					this.emitter.emit(
+						new MultiClickButtonEvent(events[0].buttonId, this.maxClicks ? Math.min(events.length, this.maxClicks) : events.length)
+					);
 				}
 			});
 	}
