@@ -12,24 +12,35 @@ export class InterruptionClock {
 	protected static readonly FASTMED_FREQ = 4;
 	protected static readonly FAST_FREQ = 6;
 
-	private _slow: Observable<boolean>;
-	private _slowMed: Observable<boolean>;
-	private _fastMed: Observable<boolean>;
-	private _fast: Observable<boolean>;
+	private _slow: EventEmitter<boolean> = new EventEmitter<boolean>();
+	private _slowMed: EventEmitter<boolean> = new EventEmitter<boolean>();
+	private _fastMed: EventEmitter<boolean> = new EventEmitter<boolean>();
+	private _fast: EventEmitter<boolean> = new EventEmitter<boolean>();
 
 	constructor() {
-		this._slow = interval(1000 / InterruptionClock.SLOW_FREQ).pipe(map((seq: number) => {
+		this._slow = new EventEmitter();
+
+		interval(1000 / InterruptionClock.SLOW_FREQ).pipe(map((seq: number) => {
 			return seq % 2 === 0;
-		}));
-		this._slowMed = interval(1000 / InterruptionClock.SLOWMED_FREQ).pipe(map((seq: number) => {
+		})).subscribe((val) => {
+			this._slow.emit(val);
+		});
+
+		interval(1000 / InterruptionClock.SLOWMED_FREQ).pipe(map((seq: number) => {
 			return seq % 2 === 0;
-		}));
-		this._fastMed = interval(1000 / InterruptionClock.FASTMED_FREQ).pipe(map((seq: number) => {
+		})).subscribe(val => {
+			this._slowMed.emit(val);
+		});
+		interval(1000 / InterruptionClock.FASTMED_FREQ).pipe(map((seq: number) => {
 			return seq % 2 === 0;
-		}));
-		this._fast = interval(1000 / InterruptionClock.FAST_FREQ).pipe(map((seq: number) => {
+		})).subscribe(val => {
+			this._fastMed.emit(val);
+		});
+		interval(1000 / InterruptionClock.FAST_FREQ).pipe(map((seq: number) => {
 			return seq % 2 === 0;
-		}));
+		})).subscribe(val => {
+			this._fast.emit(val);
+		});
 	}
 
 	// 0-based, max 3!
@@ -48,19 +59,19 @@ export class InterruptionClock {
 		}
 	}
 
-	get slow(): Observable<boolean> {
+	get slow(): EventEmitter<boolean> {
 		return this._slow;
 	}
 
-	get slowMed(): Observable<boolean> {
+	get slowMed(): EventEmitter<boolean> {
 		return this._slowMed;
 	}
 
-	get fastMed(): Observable<boolean> {
+	get fastMed(): EventEmitter<boolean> {
 		return this._fastMed;
 	}
 
-	get fast(): Observable<boolean> {
+	get fast(): EventEmitter<boolean> {
 		return this._fast;
 	}
 }

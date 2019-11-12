@@ -70,10 +70,38 @@ export class Display {
 		}
 	}
 
-	public clearDisplay() {
+	public writeMessage(message: string) {
+		this.clearDisplay();
+		console.log('[DISP] WRITE MESSAGE ' + message);
 		this.midiAdapter.sendSysex(new SysexMessage(
-			SlMkII.buildSysex([0x02, 0x02, 0x04])
+			SlMkII.buildSysex(
+				[0x02, 0x01, Math.floor(Math.max(0, (Display.realColSize * Display.cols) - message.length) / 2), 0x01, 0x04]
+					.concat(this.strToAscii(message))
+			)
 		));
+		// todo update local cache;
+	}
+
+	public clearDisplay() {
+		// todo check, didnt work
+		// this.midiAdapter.sendSysex(new SysexMessage(
+		// 	SlMkII.buildSysex([0x02, 0x02, 0x04])
+		// ));
+		console.log('[DISP] CLEAR DISPLAY');
+		this.clearRow(1);
+		this.clearRow(2);
+		// todo update local cache?
+	}
+
+	public clearRow(row: number) {
+		console.log('[DISP] CLEAR ROW ' + row);
+		this.midiAdapter.sendSysex(new SysexMessage(
+			// tslint:disable-next-line:max-line-length
+			SlMkII.buildSysex([0x02, 0x01, 0, row === 1 ? 0x01 : 0x03, 0x04].concat(this.strToAscii(
+				' '.repeat(Display.cols * Display.realColSize)
+			)))
+		));
+		// todo update local cache
 	}
 
 	protected pad (str, align) {
@@ -107,4 +135,5 @@ export class Display {
 		numbers.push(0);
 		return numbers;
 	}
+
 }

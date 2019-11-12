@@ -1,6 +1,4 @@
-// todo zkontroluj navrh - jedna uroven asi chybi (vice endpointu pro 1 knob)
-
-export interface ParamMappingRecord {
+export interface ParamMappingGroup {
 	id: number;
 	name: string;
 	paramMappings: ParamMapping[];
@@ -9,7 +7,7 @@ export interface ParamMappingRecord {
 export interface ParamMapping {
 	name: string;
 	items: ParamMappingItem[];
-	mainItemId: boolean;	 // This mapping will be displayed if multiple mapping items are available
+	mainItemId: number;	 // This mapping will be displayed if multiple mapping items are available
 }
 
 export interface ParamMappingItem {

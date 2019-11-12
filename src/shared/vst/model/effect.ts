@@ -5,6 +5,10 @@ export enum EffectPlacement {
 	Pre,
 	Post
 }
+export enum EffectScope {
+	Local,
+	Global
+}
 
 export interface Effect extends VST {
 	// this is wrong!? only one param mapping should be used?

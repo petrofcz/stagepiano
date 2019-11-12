@@ -35,8 +35,8 @@ export class BiduleLayoutReader {
 								type: 'instrument',
 								id: vstDefinition.id,
 								name: vstDefinition.name,
-								defaultParamMappingRecordId: null,
-								paramMappingRecords: []
+								defaultParamMappingGroupId: null,
+								paramMappingGroups: []
 							};
 							vst = instrument;
 						} else if (vstDefinition instanceof EffectDefinition) {

@@ -5,6 +5,7 @@ import {defaultEntityState, EntityStateModel} from '../../ngxs/entity/state-mode
 import {AddEntityActionDecl} from '../../ngxs/entity/actions';
 import {AddVSTAction} from './vst.actions';
 import {ResetLayoutAction} from '../../layout/state/layout.actions';
+import {Effect} from '../model/effect';
 
 export interface VSTStateModel extends EntityStateModel<VST> {
 }
@@ -31,10 +32,17 @@ export class VSTState {
 	}
 
 	@Selector()
-	public static getEffects(state: VSTStateModel) {
-		return state.ids.map(id => state.entities[id]).filter((vst) => {
+	public static getEffects(state: VSTStateModel): Effect[] {
+		return <Effect[]> state.ids.map(id => state.entities[id]).filter((vst) => {
 			return vst.type === 'effect';
 		});
+	}
+
+	@Selector()
+	public static getVstById(state: VSTStateModel) {
+		return (id: string) => {
+			return id in state.entities ? state.entities[id] : null;
+		};
 	}
 
 	@Action({type: AddVSTAction.type})

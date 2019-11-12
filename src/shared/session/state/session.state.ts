@@ -6,17 +6,25 @@ import {PresetCategory} from '../../preset/model/model';
 import {
 	SelectLayerAction,
 	SelectLayerActionDecl,
-	SelectPresetAction, SelectPresetActionDecl,
+	SelectPresetAction,
+	SelectPresetActionDecl,
 	SelectPresetCategoryAction,
-	SelectPresetCategoryActionDecl
+	SelectPresetCategoryActionDecl,
+	SetEffectDispositionAction,
+	SetEffectDispositionActionDecl,
+	SetKeyboardRouteAction,
+	SetKeyboardRouteActionDecl
 } from './session.actions';
 import {ResetLayoutAction} from '../../layout/state/layout.actions';
-import {Manual} from '../../manual/model/manual';
+import {EffectPlacement, EffectScope} from '../../vst/model/effect';
+import {EffectDisposition, EffectDispositionInterface} from '../model/effectDisposition';
 
 export interface SessionStateModel {
 	currentLayerId: string|null;
 	presetCategories: {[key: string]: string};      // current category id by layer id
 	presets: {[key: string]: string};               // current preset id by layer id
+	keyboardRoute: string|null;
+	effectDisposition: EffectDispositionInterface;
 }
 
 @State<SessionStateModel>({
@@ -24,7 +32,9 @@ export interface SessionStateModel {
 	defaults: {
 		currentLayerId: null,
 		presetCategories: {},
-		presets: {}
+		presets: {},
+		keyboardRoute: null,
+		effectDisposition: null,
 	}
 })
 export class SessionState {
@@ -57,6 +67,16 @@ export class SessionState {
 		return null;
 	}
 
+	@Selector()
+	public static getKeyboardRoute(state: SessionStateModel): string {
+		return state.keyboardRoute;
+	}
+
+	@Selector()
+	public static getEffectDisposition(state: SessionStateModel): EffectDispositionInterface {
+		return state.effectDisposition;
+	}
+
 	@Action({type: SelectLayerAction.type})
 	public selectLayer(ctx: StateContext<SessionStateModel>, action: SelectLayerActionDecl) {
 		if (this.store.selectSnapshot(ManualState.getLayerById)(action.layerId)) {
@@ -86,12 +106,28 @@ export class SessionState {
 		});
 	}
 
+	@Action({type: SetKeyboardRouteAction.type})
+	public setKeyboardRoute(ctx: StateContext<SessionStateModel>, action: SetKeyboardRouteActionDecl) {
+		ctx.patchState({
+			keyboardRoute: action.route
+		});
+	}
+
+	@Action({type: SetEffectDispositionAction.type})
+	public setEffectDisposition(ctx: StateContext<SessionStateModel>, action: SetEffectDispositionActionDecl) {
+		ctx.patchState({
+			effectDisposition: action.disposition
+		});
+	}
+
 	@Action({type: ResetLayoutAction.type})
 	public clear(ctx: StateContext<SessionStateModel>, action) {
 		ctx.setState({
 			presetCategories: {},
 			presets: {},
-			currentLayerId: null
+			currentLayerId: null,
+			keyboardRoute: null,
+			effectDisposition: null
 		});
 	}
 

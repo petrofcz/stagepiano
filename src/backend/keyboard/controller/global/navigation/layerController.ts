@@ -1,14 +1,14 @@
-import {MortalInterface} from '../../model/MortalInterface';
+import {MortalInterface} from '../../../model/mortalInterface';
 import {Store} from '@ngxs/store';
-import {NavigationRegionDriver} from '../../hw/navigation/navigationRegionDriver';
-import {MultiClickButtonEvent, MultiClickHandler} from '../../hw/common/button/multiClickHandler';
+import {NavigationRegionDriver} from '../../../hw/navigation/navigationRegionDriver';
+import {MultiClickButtonEvent, MultiClickHandler} from '../../../hw/common/button/multiClickHandler';
 import {Subscription} from 'rxjs';
-import {ManualState} from '../../../../shared/manual/state/manual.state';
-import {Manual} from '../../../../shared/manual/model/manual';
-import {InterruptionClock} from '../../model/InterruptionClock';
+import {ManualState} from '../../../../../shared/manual/state/manual.state';
+import {Manual} from '../../../../../shared/manual/model/manual';
+import {InterruptionClock} from '../../../model/interruptionClock';
 import {Injectable} from '@angular/core';
-import {SelectLayerAction} from '../../../../shared/session/state/session.actions';
-import {SessionState} from '../../../../shared/session/state/session.state';
+import {SelectLayerAction} from '../../../../../shared/session/state/session.actions';
+import {SessionState} from '../../../../../shared/session/state/session.state';
 import {withLatestFrom} from 'rxjs/operators';
 
 @Injectable({
