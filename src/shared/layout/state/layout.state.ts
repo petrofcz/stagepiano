@@ -1,6 +1,7 @@
 import {State, Action, Selector, StateContext, StateOperator} from '@ngxs/store';
 import {Layout} from '../model/layout';
 import {
+	ResetLayoutAction,
 	SaveLayoutAction,
 	SetLayoutLoadingAction,
 	SetLayoutLoadingActionDecl, UpdateLayoutAction
@@ -8,6 +9,11 @@ import {
 import {saveEntity, updateEntity} from '../../ngxs/entity/state-operators';
 import {defaultEntityState, EntityStateModel} from '../../ngxs/entity/state-model';
 import {SaveEntityActionDecl, UpdateEntityActionDecl} from '../../ngxs/entity/actions';
+import {StateReset} from 'ngxs-reset-plugin';
+import {VSTState} from '../../vst/state/vst.state';
+import {ManualState} from '../../manual/state/manual.state';
+import {SessionState} from '../../session/state/session.state';
+import {BiduleState} from '../../bidule/bidule.state';
 
 export interface LayoutStateModel extends EntityStateModel<Layout> {
 	active?: string;
@@ -97,6 +103,13 @@ export class LayoutState {
 		ctx.patchState({
 			loading: action.loading
 		});
+	}
+
+	@Action({type: ResetLayoutAction.type})
+	public resetLayoutState(ctx: StateContext<LayoutStateModel>) {
+		ctx.dispatch(new StateReset(
+			BiduleState, VSTState, ManualState, SessionState
+		));
 	}
 
 }

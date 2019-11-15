@@ -7,7 +7,6 @@ import {
 	AddManualAction,
 	AddManualActionDecl,
 } from './manual.actions';
-import {ResetLayoutAction} from '../../layout/state/layout.actions';
 import {SessionState, SessionStateModel} from '../../session/state/session.state';
 
 export interface ManualStateModel {
@@ -117,12 +116,4 @@ export class ManualState {
 		});
 	}
 
-	// todo mabybe refactor to use plugin for clear states?
-	@Action({type: ResetLayoutAction.type})
-	public clear(ctx: StateContext<ManualStateModel>, action) {
-		ctx.setState({
-			manuals: [],
-			layers: []
-		});
-	}
 }

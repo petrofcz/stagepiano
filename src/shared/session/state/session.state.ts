@@ -15,7 +15,6 @@ import {
 	SetKeyboardRouteAction,
 	SetKeyboardRouteActionDecl
 } from './session.actions';
-import {ResetLayoutAction} from '../../layout/state/layout.actions';
 import {EffectPlacement, EffectScope} from '../../vst/model/effect';
 import {EffectDisposition, EffectDispositionInterface} from '../model/effectDisposition';
 
@@ -120,16 +119,17 @@ export class SessionState {
 		});
 	}
 
-	@Action({type: ResetLayoutAction.type})
-	public clear(ctx: StateContext<SessionStateModel>, action) {
-		ctx.setState({
-			presetCategories: {},
-			presets: {},
-			currentLayerId: null,
-			keyboardRoute: null,
-			effectDisposition: null
-		});
-	}
+	// @Action({type: ResetLayoutAction.type})
+	// public clear(ctx: StateContext<SessionStateModel>, action) {
+	// 	ctx.setState({
+	// 		presetCategories: {},
+	// 		presets: {},
+	// 		currentLayerId: null,
+	// 		keyboardRoute: null,
+	// 		effectDisposition: null,
+	// 		isEditing: false
+	// 	});
+	// }
 
 
 }

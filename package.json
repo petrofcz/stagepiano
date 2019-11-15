@@ -103,6 +103,7 @@
     "angular2-uuid": "^1.1.1",
     "entity-state": "^0.1.9",
     "material-design-icons": "^3.0.1",
+    "ngxs-reset-plugin": "^1.2.0",
     "node-gyp": "^6.0.1",
     "osc-js": "^2.0.4",
     "url-pattern": "^1.0.3",

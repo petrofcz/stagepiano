@@ -4,7 +4,6 @@ import {addEntity} from '../../ngxs/entity/state-operators';
 import {defaultEntityState, EntityStateModel} from '../../ngxs/entity/state-model';
 import {AddEntityActionDecl} from '../../ngxs/entity/actions';
 import {AddVSTAction} from './vst.actions';
-import {ResetLayoutAction} from '../../layout/state/layout.actions';
 import {Effect} from '../model/effect';
 
 export interface VSTStateModel extends EntityStateModel<VST> {
@@ -51,14 +50,6 @@ export class VSTState {
 			<StateOperator<VSTStateModel>>addEntity(
 				action.entity
 			)
-		);
-	}
-
-	// todo mabybe refactor to use plugin for clear states?
-	@Action({type: ResetLayoutAction.type})
-	public clear(ctx: StateContext<VSTStateModel>, action) {
-		ctx.setState(
-			defaultEntityState<VST>()
 		);
 	}
 
