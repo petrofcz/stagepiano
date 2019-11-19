@@ -8,17 +8,12 @@ import {Store} from '@ngxs/store';
 import {SetKeyboardRouteAction} from '../../../shared/session/state/session.actions';
 import {DisplayModeController} from '../controller/global/navigation/displayModeController';
 import {SessionState} from '../../../shared/session/state/session.state';
+import {KeyboardRoute} from './keyboardRoute';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class KeyboardRouter {
-
-	public static readonly ROUTE_EFFECT_OVERVIEW = 'effectOverview';
-	public static readonly ROUTE_EFFECT = 'effect';
-	public static readonly ROUTE_PRESET = 'preset';
-	public static readonly ROUTE_INSTRUMENT = 'instrument';
-	public static readonly ROUTE_EMPTY = 'empty';
 
 	protected currentDisplayController = null;
 
@@ -34,24 +29,24 @@ export class KeyboardRouter {
 			this.navigate(route);
 		});
 
-		this.store.dispatch(new SetKeyboardRouteAction(KeyboardRouter.ROUTE_EMPTY));
+		this.store.dispatch(new SetKeyboardRouteAction(KeyboardRoute.EMPTY));
 	}
 
 	protected navigate(route: string, setupControllerCallback = null) {
 		switch (route) {
-			case KeyboardRouter.ROUTE_EFFECT_OVERVIEW:
+			case KeyboardRoute.EFFECT_OVERVIEW:
 				this.switchDisplayController(
 					this.effectOverviewController, setupControllerCallback
 				);
 				break;
-			case KeyboardRouter.ROUTE_PRESET:
+			case KeyboardRoute.PRESET:
 				this.switchDisplayController(
 					this.presetController
 				);
 				break;
-			case KeyboardRouter.ROUTE_EMPTY:
+			case KeyboardRoute.EMPTY:
 			default:
-				route = KeyboardRouter.ROUTE_EMPTY;
+				route = KeyboardRoute.EMPTY;
 				this.switchDisplayController(this.emptyController);
 				break;
 		}

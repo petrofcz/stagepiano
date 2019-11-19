@@ -25,6 +25,7 @@ import {KeyboardRouter} from './keyboard/router/keyboardRouter';
 import {PresetCategoryState} from '../shared/preset/state/preset-category.state';
 import {SessionState} from '../shared/session/state/session.state';
 import {NgxsResetPluginModule} from 'ngxs-reset-plugin';
+import {ParamMappingPageState} from '../shared/paramMapping/state/paramMappingPage.state';
 
 export function IpcActionReceiverFactory(ipcActionReceiver: IpcActionReceiver) {
 	return () => ipcActionReceiver.init();
@@ -42,7 +43,7 @@ export function NoopAppInitializer() {
 	],
 	imports: [
 		ServerModule,
-		NgxsModule.forRoot([LayoutState, KeyboardState, VSTState, PresetCategoryState, ManualState, BiduleState, SessionState]),
+		NgxsModule.forRoot([LayoutState, KeyboardState, VSTState, ManualState, BiduleState, SessionState, PresetCategoryState, ParamMappingPageState]),
 		NgxsResetPluginModule.forRoot()
 	],
 	providers: [

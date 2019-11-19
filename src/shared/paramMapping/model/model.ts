@@ -1,13 +1,22 @@
+import {Mapping} from '../../../../.node_modules/source-map';
+
 export interface ParamMappingGroup {
+	// todo move to preset namespace (and rename) ?
 	id: number;
 	name: string;
-	paramMappings: ParamMapping[];
+	paramMappingPage: ParamMappingPage;
+}
+
+export interface ParamMappingPage {
+	mappings: {[key: string]: ParamMapping};
+	ids: string[];
 }
 
 export interface ParamMapping {
+	id: string; // 0 .. 8
 	name: string;
 	items: ParamMappingItem[];
-	mainItemId: number;	 // This mapping will be displayed if multiple mapping items are available
+	mainItemId: number|null;	 // This mapping will be displayed if multiple mapping items are available
 }
 
 export interface ParamMappingItem {

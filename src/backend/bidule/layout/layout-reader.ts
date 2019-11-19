@@ -45,7 +45,7 @@ export class BiduleLayoutReader {
 								id: vstDefinition.id,
 								name: vstDefinition.name,
 								mainParamMappingId: null,
-								paramMappings: [],
+								paramMappingPage: {ids: [], mappings: {}},
 								placement: vstDefinition.placement
 							};
 							vst = effect;

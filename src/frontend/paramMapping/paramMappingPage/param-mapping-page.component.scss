@@ -1,0 +1,28 @@
+.param-mapping-col {
+	max-width: 12.5%;
+
+	&:not(:last-child):not(.action) {
+		border-right: 1px solid #f0f0f0;
+	}
+
+	&.action {
+		.add {
+			padding: 12px;
+		}
+		padding-left: 20px;
+	}
+
+	.name {
+		text-align: center;
+		font-weight: 700;
+		font-size: 1.2em;
+		margin-bottom: 20px;
+		border-bottom: 1px solid #f0f0f0;
+		padding: 20px 10px;
+		cursor: pointer;
+
+		&.selected {
+			background-color: #F0F0F0;
+		}
+	}
+}

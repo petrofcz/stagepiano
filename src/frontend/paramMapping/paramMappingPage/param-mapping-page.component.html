@@ -1,0 +1,18 @@
+<div class="flex-row" style="width: 100%">
+	<div class="flex param-mapping-col" *ngFor="let mapping of (mappings$|async)">
+		<div class="name" (dblclick)="onEditNameClick(mapping.id)">
+			{{ mapping.name }}
+			<button mat-raised-button color="warn" (click)="onRemoveClick(mapping.id)">
+				<mat-icon>delete</mat-icon>
+			</button>
+		</div>
+	</div>
+	<div class="flex param-mapping-col action" *ngIf="(mappings$|async).length < 8">
+		<div class="add">
+			<button mat-raised-button color="primary" (click)="onAddClick()">
+				<mat-icon>add</mat-icon>
+				Add
+			</button>
+		</div>
+	</div>
+</div>

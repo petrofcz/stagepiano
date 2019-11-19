@@ -13,5 +13,5 @@
 </div>
 <div mat-dialog-actions>
 	<button mat-button (click)="onCancelClick()">Cancel</button>
-	<button mat-button [mat-dialog-close]="data">Ok</button>
+	<button *ngIf="data.name" mat-button [mat-dialog-close]="data">Ok</button>
 </div>

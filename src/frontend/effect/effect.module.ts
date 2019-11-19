@@ -8,6 +8,8 @@ import {VSTState} from '../../shared/vst/state/vst.state';
 import {EffectPlacementPipe} from './ui/effect-placement-pipe';
 import {AvailabilityComponent} from '../vst/availability/availability.component';
 import {VstModule} from '../vst/vst.module';
+import {EffectParamMappingPageComponent} from './effect-param-mapping-page/effect-param-mapping-page.component';
+import {ParamMappingModule} from '../paramMapping/paramMapping.module';
 
 @NgModule({
 	imports: [
@@ -15,10 +17,12 @@ import {VstModule} from '../vst/vst.module';
 		MaterialModule,
 		EffectRoutingModule,
 		VstModule,
+		ParamMappingModule,
 		NgxsModule.forFeature([VSTState])
 	],
 	declarations: [
 		EffectListPageComponent,
+		EffectParamMappingPageComponent,
 		EffectPlacementPipe
 	],
 	entryComponents: [

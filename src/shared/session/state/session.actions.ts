@@ -1,5 +1,6 @@
-import {EffectPlacement, EffectScope} from '../../vst/model/effect';
-import {EffectDisposition, EffectDispositionInterface} from '../model/effectDisposition';
+import {EffectDisposition} from '../model/effectDisposition';
+import {ParamMappingPage} from '../../paramMapping/model/model';
+import {KeyboardRoute} from '../../../backend/keyboard/router/keyboardRoute';
 
 export interface SelectLayerActionDecl {
 	layerId: string;
@@ -27,19 +28,28 @@ export class SelectPresetAction implements SelectPresetActionDecl {
 }
 
 export interface SetKeyboardRouteActionDecl {
-	readonly route: string;
+	readonly route: KeyboardRoute;
 }
 
 export class SetKeyboardRouteAction implements SetKeyboardRouteActionDecl {
 	static readonly type = '[Session] Set keyboard route';
-	public constructor(public readonly route: string) { }
+	public constructor(public readonly route: KeyboardRoute) { }
 }
 
 export interface SetEffectDispositionActionDecl {
-	readonly disposition: EffectDispositionInterface;
+	readonly disposition: EffectDisposition;
 }
 
 export class SetEffectDispositionAction implements SetEffectDispositionActionDecl {
 	static readonly type = '[Session] Set effect disposition';
-	public constructor(public readonly disposition: EffectDispositionInterface) { }
+	public constructor(public readonly disposition: EffectDisposition) { }
+}
+
+export interface SetParamMappingPageActionDecl {
+	readonly page: ParamMappingPage;
+}
+
+export class SetParamMappingPageAction implements SetParamMappingPageActionDecl {
+	static readonly type = '[Session] Set param mapping page';
+	public constructor(public readonly page: ParamMappingPage) { }
 }

@@ -13,6 +13,7 @@ import {DisplayRegionDriver} from '../../../hw/display/display-region-driver';
 import {SessionState} from '../../../../../shared/session/state/session.state';
 import {SetKeyboardRouteAction} from '../../../../../shared/session/state/session.actions';
 import {KeyboardRouter} from '../../../router/keyboardRouter';
+import {LoadParamMappingPageFromEffectAction} from '../../../../../shared/paramMapping/state/paramMappingPage.actions';
 
 @Injectable({
 	providedIn: 'root'
@@ -60,6 +61,9 @@ export class EffectOverviewController implements MortalInterface {
 		// prepare available effects
 		availableEffects$ = this.store.select(SessionState.getEffectDisposition)
 			.pipe(switchMap((disposition) => {
+				if (!disposition) {
+					return [];
+				}
 				let effects$: Observable<Effect[]>;
 				if (disposition.scope === EffectScope.Global) {
 					effects$ = combineLatest(
@@ -112,8 +116,7 @@ export class EffectOverviewController implements MortalInterface {
 			this.display.buttonMatrix.onButtonClick.pipe(filter(evt => {
 				return evt.row === EffectOverviewController.ROW_NAMES;
 			})).pipe(withLatestFrom(availableEffects$)).subscribe(([clickEvt, effects]) => {
-				console.log('ROUTE TO ' + effects[clickEvt.col - 1]);
-				this.store.dispatch(new SetKeyboardRouteAction(KeyboardRouter.ROUTE_EFFECT));
+				this.store.dispatch(new LoadParamMappingPageFromEffectAction(effects[clickEvt.col - 1].id));
 			})
 		);
 

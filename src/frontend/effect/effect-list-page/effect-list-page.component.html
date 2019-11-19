@@ -27,7 +27,7 @@
 								<mat-icon>power</mat-icon>
 								Availability
 							</button>
-							<button mat-raised-button color="primary">
+							<button mat-raised-button color="primary" (click)="openParameterMapping(item.id)" [disabled]="(paramMappingEnabled$|async).indexOf(item.id) === -1">
 								<mat-icon>launch</mat-icon>
 								Parameter mapping
 							</button>

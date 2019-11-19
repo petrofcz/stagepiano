@@ -41,6 +41,23 @@ export function addEntity<T extends Entity>(entity: T): StateOperator<EntityStat
 	};
 }
 
+// remove entity if present
+export function removeEntity<T extends Entity>(id: string): StateOperator<EntityStateModel<T>> {
+	return (state: Readonly<EntityStateModel<T>>) => {
+		if (state.ids.indexOf(id) !== -1) {
+			const entities = state.entities;
+			delete entities[id];
+			return {
+				...state,
+				entities: entities,
+				ids: state.ids.filter(iId => iId !== id)
+			};
+		} else {
+			return state;
+		}
+	};
+}
+
 // changes entities order
 export function moveEntity<T extends Entity>(oldIndex: number, newIndex: number): StateOperator<EntityStateModel<T>> {
 	return (state: Readonly<EntityStateModel<T>>) => {

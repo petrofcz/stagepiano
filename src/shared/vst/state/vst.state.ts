@@ -1,10 +1,12 @@
-import {State, Action, Selector, StateContext, StateOperator} from '@ngxs/store';
+import {State, Action, Selector, StateContext, StateOperator, Store} from '@ngxs/store';
 import {VST} from '../model/VST';
-import {addEntity} from '../../ngxs/entity/state-operators';
+import {addEntity, updateEntity} from '../../ngxs/entity/state-operators';
 import {defaultEntityState, EntityStateModel} from '../../ngxs/entity/state-model';
 import {AddEntityActionDecl} from '../../ngxs/entity/actions';
-import {AddVSTAction} from './vst.actions';
+import {AddVSTAction, SaveEffectParamMappingPageAction, SaveEffectParamMappingPageActionDecl} from './vst.actions';
 import {Effect} from '../model/effect';
+import {ParamMappingPageState} from '../../paramMapping/state/paramMappingPage.state';
+import {Navigate} from '@ngxs/router-plugin';
 
 export interface VSTStateModel extends EntityStateModel<VST> {
 }
@@ -17,6 +19,8 @@ export interface VSTStateModel extends EntityStateModel<VST> {
 	)
 })
 export class VSTState {
+
+	constructor(protected store: Store) { }
 
 	@Selector()
 	public static getState(state: VSTStateModel) {
@@ -51,6 +55,23 @@ export class VSTState {
 				action.entity
 			)
 		);
+	}
+
+	@Action({type: SaveEffectParamMappingPageAction.type})
+	public saveEffectParamMapping(ctx: StateContext<VSTStateModel>, action: SaveEffectParamMappingPageActionDecl) {
+		const currentParamMappingPage = this.store.selectSnapshot(ParamMappingPageState.getPage);
+		if (!currentParamMappingPage) {
+			return;
+		}
+		ctx.setState(
+			<StateOperator<VSTStateModel>>updateEntity(
+				<Effect>{
+					id: action.effectId,
+					paramMappingPage: currentParamMappingPage
+				}
+			)
+		);
+		this.store.dispatch(new Navigate(['/effects']));
 	}
 
 }

@@ -15,15 +15,16 @@ import {
 	SetKeyboardRouteAction,
 	SetKeyboardRouteActionDecl
 } from './session.actions';
-import {EffectPlacement, EffectScope} from '../../vst/model/effect';
-import {EffectDisposition, EffectDispositionInterface} from '../model/effectDisposition';
+import {EffectDisposition} from '../model/effectDisposition';
+import {KeyboardRoute} from '../../../backend/keyboard/router/keyboardRoute';
 
 export interface SessionStateModel {
 	currentLayerId: string|null;
 	presetCategories: {[key: string]: string};      // current category id by layer id
 	presets: {[key: string]: string};               // current preset id by layer id
 	keyboardRoute: string|null;
-	effectDisposition: EffectDispositionInterface;
+	effectDisposition: EffectDisposition;
+	isEditing: boolean;                             // user is editing mapping / preset in app
 }
 
 @State<SessionStateModel>({
@@ -34,6 +35,7 @@ export interface SessionStateModel {
 		presets: {},
 		keyboardRoute: null,
 		effectDisposition: null,
+		isEditing: false,
 	}
 })
 export class SessionState {
@@ -72,7 +74,7 @@ export class SessionState {
 	}
 
 	@Selector()
-	public static getEffectDisposition(state: SessionStateModel): EffectDispositionInterface {
+	public static getEffectDisposition(state: SessionStateModel): EffectDisposition {
 		return state.effectDisposition;
 	}
 
@@ -107,9 +109,13 @@ export class SessionState {
 
 	@Action({type: SetKeyboardRouteAction.type})
 	public setKeyboardRoute(ctx: StateContext<SessionStateModel>, action: SetKeyboardRouteActionDecl) {
-		ctx.patchState({
+		const state = {
 			keyboardRoute: action.route
-		});
+		};
+		if (action.route !== KeyboardRoute.PARAM_MAPPING && action.route !== KeyboardRoute.EFFECT_OVERVIEW) {
+			state['effectDisposition'] = null;
+		}
+		ctx.patchState(state);
 	}
 
 	@Action({type: SetEffectDispositionAction.type})
