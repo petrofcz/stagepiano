@@ -8,7 +8,6 @@ import {Instrument} from '../../../shared/vst/model/instrument';
 import {Effect} from '../../../shared/vst/model/effect';
 import {VST} from '../../../shared/vst/model/vst';
 import {AddLayerAction, AddManualAction} from '../../../shared/manual/state/manual.actions';
-import {ResetLayoutAction} from '../../../shared/layout/state/layout.actions';
 import {SetAvailableGlobalEffectsAction} from '../../../shared/bidule/bidule.actions';
 import {SelectLayerAction} from '../../../shared/session/state/session.actions';
 
@@ -25,7 +24,6 @@ export class BiduleLayoutReader {
 
 		this.activeLayoutId$.subscribe((layoutId) => {
 			const layout = this.store.selectSnapshot(LayoutState.getById)(layoutId);
-			store.dispatch(new ResetLayoutAction());
 			if (layout !== null) {
 				BiduleLayoutParser.loadFile(layout.biduleFile).then((biduleLayout: BiduleLayout) => {
 					for (const vstDefinition of biduleLayout.vstDefinitions) {

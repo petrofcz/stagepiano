@@ -3,7 +3,7 @@ import {Actions, InitState, ofAction, ofActionDispatched, ofActionSuccessful, St
 import {LoadStateAction} from '../../shared/ngxs/load-state.action';
 import {FileStateStorage} from '../electron/file-state-storage';
 import {RequestGlobalStateAction} from '../../shared/ngxs/request-global-state.action';
-import {SelectLayoutAction, SelectLayoutActionDecl} from '../../shared/layout/state/layout.actions';
+import {ResetLayoutAction, SelectLayoutAction, SelectLayoutActionDecl} from '../../shared/layout/state/layout.actions';
 import {ActionTester} from '../../shared/ngxs/helper';
 
 @Injectable({
@@ -32,7 +32,7 @@ export class StateLoaderHandler {
 				if (actionTester.matches(SelectLayoutAction)) {
 					const action: SelectLayoutActionDecl = val.action;
 					if (!action.layoutId) {
-						// todo reset layout state
+						store.dispatch(new ResetLayoutAction());
 						this.store.dispatch(new LoadStateAction({
 							'layout.active': null,
 							'layout.loading': false
@@ -41,7 +41,7 @@ export class StateLoaderHandler {
 						this.stateStorage.loadLayout(action.layoutId).then((data) => {
 							let loadStateData = {};
 							if (data === null) {
-								// todo reset layout state
+								store.dispatch(new ResetLayoutAction());
 							} else {
 								loadStateData = data;
 							}
