@@ -49,7 +49,6 @@ export class EffectParamMappingPageComponent implements OnInit, OnDestroy {
 	}
 
 	onSaveClick() {
-		console.log(this._effect);
 		if (!this._effect) {
 			return;
 		}

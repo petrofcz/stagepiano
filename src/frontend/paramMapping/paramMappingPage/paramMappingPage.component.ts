@@ -32,7 +32,7 @@ export class ParamMappingPageComponent implements OnInit {
 	@Select(ParamMappingPageState.getMappings)
 	mappings$: Observable<ParamMapping[]>;
 
-	// todo component (modal) for setting name (or add new mapping)
+	_currentMappingId: string|null;
 
 	// todo component for learn (endpoint name)
 
@@ -42,7 +42,9 @@ export class ParamMappingPageComponent implements OnInit {
 
 	constructor(private store: Store, private dialog: MatDialog) { }
 
-	ngOnInit() { }
+	ngOnInit() {
+		this._currentMappingId = null;
+	}
 
 	onAddClick() {
 		this.openNameDialog(null);
@@ -82,5 +84,10 @@ export class ParamMappingPageComponent implements OnInit {
 
 	onRemoveClick(id: string) {
 		this.store.dispatch(new RemoveParamMappingAction(id));
+		this._currentMappingId = null;
+	}
+
+	onSelectClick(id: string) {
+		this._currentMappingId = id;
 	}
 }
