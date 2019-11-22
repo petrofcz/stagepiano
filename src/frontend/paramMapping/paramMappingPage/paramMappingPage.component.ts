@@ -6,7 +6,7 @@ import {ManualState} from '../../../shared/manual/state/manual.state';
 import {map, tap, timeout} from 'rxjs/operators';
 import {BiduleState} from '../../../shared/bidule/state/bidule.state';
 import {ParamMappingPageState} from '../../../shared/paramMapping/state/paramMappingPage.state';
-import {ParamMapping, ParamMappingPage} from '../../../shared/paramMapping/model/model';
+import {LinearParamMappingStrategy, ParamMapping, ParamMappingPage, ParamMappingStrategy} from '../../../shared/paramMapping/model/model';
 import {PresetCategoryState} from '../../../shared/preset/state/preset-category.state';
 import {NamedEntityDialogComponent, NamedEntityDialogData} from '../../shared/dialogs/named/named-entity-dialog.component';
 import {AddPresetCategoryAction, UpdatePresetCategoryAction} from '../../../shared/preset/state/preset-category.actions';
@@ -15,11 +15,12 @@ import {MatDialog} from '@angular/material/dialog';
 import {
 	AddParamMappingAction,
 	RemoveParamMappingAction, SelectParamMappingAction, SetEndpointLearningAction,
-	UpdateParamMappingAction
+	UpdateParamMappingAction, UpdateParamMappingStrategyAction
 } from '../../../shared/paramMapping/state/paramMappingPage.actions';
 import { v1 as uuid } from 'uuid';
 import {SendOscMessageAction} from '../../../shared/bidule/state/bidule.actions';
 import {BiduleOscHelper} from '../../../shared/bidule/osc/bidule-osc-helper';
+import {ParamMappingStrategies} from '../../../shared/paramMapping/model/paramMappingStrategies';
 
 @Component({
 	selector: 'app-param-mapping-page',
@@ -41,12 +42,6 @@ export class ParamMappingPageComponent implements OnInit, OnDestroy {
 	isParamLearning$: Observable<boolean>;
 
 	private _subscriptions: Subscription[] = [];
-
-	// todo component for learn (endpoint name)
-
-	// todo component for given strategy
-
-	// todo handle saving (to instrument / effect)
 
 	constructor(private store: Store, private dialog: MatDialog) { }
 
@@ -113,5 +108,24 @@ export class ParamMappingPageComponent implements OnInit, OnDestroy {
 		setTimeout(() => {
 			this.store.dispatch(new SetEndpointLearningAction(learning));
 		}, BiduleOscHelper.TIMEOUT_OPEN_UI);
+	}
+
+	onStrategySelected(value: any) {
+		let strategy: ParamMappingStrategy = null;
+		if (value === ParamMappingStrategies.LINEAR) {
+			strategy = <LinearParamMappingStrategy>{
+				type: ParamMappingStrategies.LINEAR,
+				oscFrom: 0,
+				oscTo: 1,
+				oscInverse: false,
+				dispFrom: 0,
+				dispTo: 100,
+				dispDecimals: 0,
+				dispSuffix: null
+			};
+		}
+		if (strategy) { // todo transfer common values between linear and linearlist
+			this.store.dispatch(new UpdateParamMappingStrategyAction(0, strategy));
+		}
 	}
 }

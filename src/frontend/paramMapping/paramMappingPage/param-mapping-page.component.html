@@ -13,7 +13,7 @@
 		</div>
 	</div>
 </div>
-<div *ngIf="(selectedMapping$|async) as selectedMapping" class="mapping-detail">
+<div *ngIf="(selectedMapping$|async) as selectedMapping" class="mapping-detail key-value-container">
 	<hr>
 	<div class="text-right">
 		<button mat-raised-button color="warn" (click)="onRemoveClick(selectedMapping.id)">
@@ -44,6 +44,28 @@
 					Stop
 				</button>
 			</span>
+		</div>
+	</div>
+	<div class="key-value" *ngIf="selectedMapping.mainItemId !== null" class="strategy-select">
+		<div class="key">
+			Strategy:
+		</div>
+		<div class="value">
+			<mat-button-toggle-group name="strategy" aria-label="Font Style" [(value)]="selectedMapping.items[selectedMapping.mainItemId].mappingStrategy.type">
+				<mat-button-toggle value="linear" (change)="onStrategySelected($event.value)">Linear</mat-button-toggle>
+				<mat-button-toggle value="linearList" (change)="onStrategySelected($event.value)">Linear steps</mat-button-toggle>
+				<mat-button-toggle value="list" (change)="onStrategySelected($event.value)">List</mat-button-toggle>
+			</mat-button-toggle-group>
+		</div>
+	</div>
+	<div class="key-value" *ngFor="let mappingItem of selectedMapping.items; let i = index">
+		<div class="key">
+			Mapping details:
+		</div>
+		<div class="value">
+			<div *ngIf="mappingItem.mappingStrategy.type === 'linear'" class="mapping-strategy">
+				<app-linear-param-mapping-strategy [currentItemId]="i"></app-linear-param-mapping-strategy>
+			</div>
 		</div>
 	</div>
 </div>

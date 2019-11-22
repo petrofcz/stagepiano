@@ -1,5 +1,5 @@
 import {AddEntityActionDecl, MoveEntityActionDecl, RemoveEntityActionDecl, UpdateEntityActionDecl} from '../../ngxs/entity/actions';
-import {ParamMapping} from '../model/model';
+import {ParamMapping, ParamMappingStrategy} from '../model/model';
 
 export class UpdateParamMappingAction implements UpdateEntityActionDecl<ParamMapping> {
 	static readonly type = '[ParamMappingPage] Update param mapping';
@@ -46,4 +46,14 @@ export interface SetEndpointLearningActionDecl {
 export class SetEndpointLearningAction implements SetEndpointLearningActionDecl {
 	static readonly type = '[ParamMappingPage] Set endpoint learning';
 	constructor(public readonly isLearning: boolean) { }
+}
+
+export interface UpdateParamMappingStrategyActionDecl {
+	itemId: number;
+	strategy: ParamMappingStrategy;
+}
+
+export class UpdateParamMappingStrategyAction implements UpdateParamMappingStrategyActionDecl {
+	static readonly type = '[ParamMappingPage] Update param mapping strategy';
+	public constructor(public readonly itemId: number, public readonly strategy: ParamMappingStrategy) { }
 }

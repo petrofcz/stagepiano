@@ -6,6 +6,8 @@ import {ParamMappingPageState} from '../../shared/paramMapping/state/paramMappin
 import {ParamMappingPageComponent} from './paramMappingPage/paramMappingPage.component';
 import {NamedEntityDialogComponent} from '../shared/dialogs/named/named-entity-dialog.component';
 import {SharedModule} from '../shared/shared.module';
+import {LinearParamMappingStrategyComponent} from './strategyComponents/linear/linear-param-mapping-strategy.component';
+import {ReactiveFormsModule} from '@angular/forms';
 
 @NgModule({
 	imports: [
@@ -13,12 +15,15 @@ import {SharedModule} from '../shared/shared.module';
 		MaterialModule,
 		SharedModule,
 		NgxsModule.forFeature([ParamMappingPageState]),
+		ReactiveFormsModule
 	],
 	exports: [
-		ParamMappingPageComponent
+		ParamMappingPageComponent,
+		LinearParamMappingStrategyComponent
 	],
 	declarations: [
-		ParamMappingPageComponent
+		ParamMappingPageComponent,
+		LinearParamMappingStrategyComponent
 	],
 	entryComponents: [
 		NamedEntityDialogComponent

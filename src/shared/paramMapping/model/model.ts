@@ -1,4 +1,5 @@
 import {Mapping} from '../../../../.node_modules/source-map';
+import {ParamMappingStrategies} from './paramMappingStrategies';
 
 export interface ParamMappingGroup {
 	// todo move to preset namespace (and rename) ?
@@ -26,4 +27,15 @@ export interface ParamMappingItem {
 
 export interface ParamMappingStrategy {
 	type: string;
+}
+
+export interface LinearParamMappingStrategy extends ParamMappingStrategy {
+	type: ParamMappingStrategies.LINEAR;
+	oscFrom: number;
+	oscTo: number;
+	oscInverse: boolean;
+	dispFrom: number;
+	dispTo: number;
+	dispDecimals: number;
+	dispSuffix: string|null;
 }

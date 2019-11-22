@@ -11,7 +11,7 @@ import {
 	RemoveParamMappingAction,
 	SelectParamMappingAction,
 	SetEndpointLearningAction,
-	UpdateParamMappingAction
+	UpdateParamMappingAction, UpdateParamMappingStrategyAction, UpdateParamMappingStrategyActionDecl
 } from './paramMappingPage.actions';
 import {VSTState} from '../../vst/state/vst.state';
 import {Effect, EffectScope} from '../../vst/model/effect';
@@ -131,6 +131,21 @@ export class ParamMappingPageState {
 				action.entity
 			)
 		);
+	}
+
+	@Action({type: UpdateParamMappingStrategyAction.type})
+	public updateStrategy(ctx: StateContext<ParamMappingPageStateModel>, action: UpdateParamMappingStrategyActionDecl) {
+		const state = ctx.getState();
+		if (!state.selectedMappingId) {
+			return state;
+		}
+		const entities = state.entities;
+		entities[state.selectedMappingId].items[action.itemId].mappingStrategy = action.strategy;
+
+		ctx.setState({
+			...state,
+			entities: entities
+		});
 	}
 
 	@Action({type: AddParamMappingAction.type})
