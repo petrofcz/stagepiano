@@ -2,6 +2,7 @@ import {BiduleSettingsLoader} from '../bidule/settings/BiduleSettingsLoader';
 import {OscMessage} from './osc.message';
 import {Injectable} from '@angular/core';
 import {OscSubscription} from './osc.subscription';
+import {Observable} from 'rxjs';
 
 let OSC;
 
@@ -40,10 +41,25 @@ export class OscService {
 		this.osc.send(new OSC.Message(message.path, ...message.args));
 	}
 
+	public observe(pathPattern: string): Observable<OscMessage> {
+		console.log("[OSC] OBSERVING " + pathPattern);
+		return new Observable((subscriber) => {
+			const subscription = this.on(pathPattern, (oscMessage) => {
+				subscriber.next(oscMessage);
+			});
+			return () => {
+				console.log("[OSC] NOT OBSERVING " + subscription.path);
+				this.off(subscription);
+			};
+		});
+	}
+
 	public on(pathPattern: string, callback): OscSubscription {
 		return new OscSubscription(
 			pathPattern,
-			this.osc.on(pathPattern, callback)
+			this.osc.on(pathPattern, (oscEvent) => {
+				callback(new OscMessage(oscEvent.address, oscEvent.args));
+			})
 		);
 	}
 

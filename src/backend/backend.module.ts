@@ -17,7 +17,7 @@ import {BiduleLayoutOpener} from './bidule/layout/layout-opener.service';
 import {VSTState} from '../shared/vst/state/vst.state';
 import {BiduleLayoutReader} from './bidule/layout/layout-reader';
 import {ManualState} from '../shared/manual/state/manual.state';
-import {BiduleState} from '../shared/bidule/bidule.state';
+import {BiduleState} from '../shared/bidule/state/bidule.state';
 import {USBDriver} from './automap/usb-driver';
 import {MidiAdapter} from './automap/midi-adapter';
 import {KeyboardService} from './keyboard/keyboard.service';
@@ -26,6 +26,8 @@ import {PresetCategoryState} from '../shared/preset/state/preset-category.state'
 import {SessionState} from '../shared/session/state/session.state';
 import {NgxsResetPluginModule} from 'ngxs-reset-plugin';
 import {ParamMappingPageState} from '../shared/paramMapping/state/paramMappingPage.state';
+import {BiduleOscTransmitter} from './bidule/osc/ngxs/bidule-osc-transmitter.service';
+import {ParamMappingOscService} from './bidule/osc/paramMapping/param-mapping-osc.service';
 
 export function IpcActionReceiverFactory(ipcActionReceiver: IpcActionReceiver) {
 	return () => ipcActionReceiver.init();
@@ -70,7 +72,7 @@ export function NoopAppInitializer() {
 		},
 		{ provide: APP_INITIALIZER, useFactory: AutosaveFactory, multi: true, deps: [AutosaveService] },
 		{ provide: APP_INITIALIZER, useFactory: NoopAppInitializer, multi: true, deps: [
-			StateLoaderHandler,
+			StateLoaderHandler, BiduleOscTransmitter
 		]},
 		BiduleSettingsLoader,
 		OscService
@@ -78,7 +80,7 @@ export function NoopAppInitializer() {
 	bootstrap: [DummyComponent]
 })
 export class BackendModule {
-	constructor(ks: KotatkoService, blw: BiduleLayoutOpener, blr: BiduleLayoutReader, kbs: KeyboardService, kbdRouter: KeyboardRouter) {
+	constructor(ks: KotatkoService, blw: BiduleLayoutOpener, blr: BiduleLayoutReader, kbs: KeyboardService, kbdRouter: KeyboardRouter, pmos: ParamMappingOscService) {
 		ks.run();
 	}
 }

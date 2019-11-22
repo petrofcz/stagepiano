@@ -1,6 +1,6 @@
 <div class="flex-row" style="width: 100%">
 	<div class="flex param-mapping-col" *ngFor="let mapping of (mappings$|async)">
-		<div [class]="'name' + (mapping.id === _currentMappingId ? ' active' : '')" (click)="onSelectClick(mapping.id)" (dblclick)="onEditNameClick(mapping.id)">
+		<div [class]="'name' + (mapping.id === ((selectedMapping$|async)?.id) ? ' active' : '')" (click)="onSelectClick(mapping.id)" (dblclick)="onEditNameClick(mapping.id)">
 			{{ mapping.name }}
 		</div>
 	</div>
@@ -13,13 +13,37 @@
 		</div>
 	</div>
 </div>
-<div *ngIf="_currentMappingId">
+<div *ngIf="(selectedMapping$|async) as selectedMapping" class="mapping-detail">
 	<hr>
 	<div class="text-right">
-		<button mat-raised-button color="warn" (click)="onRemoveClick(_currentMappingId)">
+		<button mat-raised-button color="warn" (click)="onRemoveClick(selectedMapping.id)">
 			<mat-icon>delete</mat-icon>
 			Remove mapping item
 		</button>
 	</div>
-	{{ _currentMappingId }}
+	<div class="key-value">
+		<div class="key">
+			Endpoint
+		</div>
+		<div class="value">
+			<span *ngIf="selectedMapping.mainItemId === null" class="empty">
+				no endpoint
+			</span>
+			<span *ngIf="selectedMapping.mainItemId !== null" class="endpoint-value">
+				{{ selectedMapping.items[selectedMapping.mainItemId].endpoint }}
+			</span>
+			<br><br>
+			<span *ngIf="!(isParamLearning$|async)">
+				<button mat-raised-button color="primary" (click)="setParamLearning(true)">
+					Learn
+				</button>
+			</span>
+			<span *ngIf="isParamLearning$|async" class="learning">
+				Learning...
+				<button mat-raised-button color="primary" (click)="setParamLearning(false)">
+					Stop
+				</button>
+			</span>
+		</div>
+	</div>
 </div>

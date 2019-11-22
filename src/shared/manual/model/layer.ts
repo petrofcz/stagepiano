@@ -1,5 +1,5 @@
 export interface Layer {
-	// ids are 00 - mn
+	// ids are "0-0" - "m-n"
 	id: string;
 	name: string;
 	manualId: string;

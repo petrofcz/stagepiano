@@ -1,10 +1,10 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {Observable} from 'rxjs';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Observable, Subscription} from 'rxjs';
 import {Layer} from '../../../shared/manual/model/layer';
 import {Select, Store} from '@ngxs/store';
 import {ManualState} from '../../../shared/manual/state/manual.state';
-import {map} from 'rxjs/operators';
-import {BiduleState} from '../../../shared/bidule/bidule.state';
+import {map, tap, timeout} from 'rxjs/operators';
+import {BiduleState} from '../../../shared/bidule/state/bidule.state';
 import {ParamMappingPageState} from '../../../shared/paramMapping/state/paramMappingPage.state';
 import {ParamMapping, ParamMappingPage} from '../../../shared/paramMapping/model/model';
 import {PresetCategoryState} from '../../../shared/preset/state/preset-category.state';
@@ -14,17 +14,19 @@ import {PresetCategory} from '../../../shared/preset/model/model';
 import {MatDialog} from '@angular/material/dialog';
 import {
 	AddParamMappingAction,
-	RemoveParamMappingAction,
+	RemoveParamMappingAction, SelectParamMappingAction, SetEndpointLearningAction,
 	UpdateParamMappingAction
 } from '../../../shared/paramMapping/state/paramMappingPage.actions';
 import { v1 as uuid } from 'uuid';
+import {SendOscMessageAction} from '../../../shared/bidule/state/bidule.actions';
+import {BiduleOscHelper} from '../../../shared/bidule/osc/bidule-osc-helper';
 
 @Component({
 	selector: 'app-param-mapping-page',
 	templateUrl: './param-mapping-page.component.html',
 	styleUrls: ['./param-mapping-page.component.scss']
 })
-export class ParamMappingPageComponent implements OnInit {
+export class ParamMappingPageComponent implements OnInit, OnDestroy {
 
 	@Select(ParamMappingPageState.getPage)
 	page$: Observable<ParamMappingPage>;
@@ -32,7 +34,13 @@ export class ParamMappingPageComponent implements OnInit {
 	@Select(ParamMappingPageState.getMappings)
 	mappings$: Observable<ParamMapping[]>;
 
-	_currentMappingId: string|null;
+	@Select(ParamMappingPageState.getSelectedMapping)
+	selectedMapping$: Observable<ParamMapping|null>;
+
+	@Select(ParamMappingPageState.isEndpointLearning)
+	isParamLearning$: Observable<boolean>;
+
+	private _subscriptions: Subscription[] = [];
 
 	// todo component for learn (endpoint name)
 
@@ -43,7 +51,13 @@ export class ParamMappingPageComponent implements OnInit {
 	constructor(private store: Store, private dialog: MatDialog) { }
 
 	ngOnInit() {
-		this._currentMappingId = null;
+
+	}
+
+	ngOnDestroy() {
+		this._subscriptions.forEach(sub => sub.unsubscribe());
+		this._subscriptions = [];
+		this.store.dispatch(new SetEndpointLearningAction(false));
 	}
 
 	onAddClick() {
@@ -84,10 +98,20 @@ export class ParamMappingPageComponent implements OnInit {
 
 	onRemoveClick(id: string) {
 		this.store.dispatch(new RemoveParamMappingAction(id));
-		this._currentMappingId = null;
 	}
 
 	onSelectClick(id: string) {
-		this._currentMappingId = id;
+		this.store.dispatch(new SelectParamMappingAction(id));
+	}
+
+	setParamLearning(learning: boolean) {
+		if (learning) {
+			this.store.dispatch(new SendOscMessageAction(
+				this.store.selectSnapshot(ParamMappingPageState.getVstPathPrefix) + 'Open_UI', [1.0]
+			));
+		}
+		setTimeout(() => {
+			this.store.dispatch(new SetEndpointLearningAction(learning));
+		}, BiduleOscHelper.TIMEOUT_OPEN_UI);
 	}
 }

@@ -1,8 +1,4 @@
 import {Action, Selector, State, StateContext, Store} from '@ngxs/store';
-import {ManualState} from '../../manual/state/manual.state';
-import {Layer} from '../../manual/model/layer';
-import {PresetCategoryState} from '../../preset/state/preset-category.state';
-import {PresetCategory} from '../../preset/model/model';
 import {
 	SelectLayerAction,
 	SelectLayerActionDecl,
@@ -23,7 +19,7 @@ export interface SessionStateModel {
 	presetCategories: {[key: string]: string};      // current category id by layer id
 	presets: {[key: string]: string};               // current preset id by layer id
 	keyboardRoute: string|null;
-	effectDisposition: EffectDisposition;
+	effectDisposition: EffectDisposition|null;
 	isEditing: boolean;                             // user is editing mapping / preset in app
 }
 
@@ -74,17 +70,15 @@ export class SessionState {
 	}
 
 	@Selector()
-	public static getEffectDisposition(state: SessionStateModel): EffectDisposition {
+	public static getEffectDisposition(state: SessionStateModel): EffectDisposition|null {
 		return state.effectDisposition;
 	}
 
 	@Action({type: SelectLayerAction.type})
 	public selectLayer(ctx: StateContext<SessionStateModel>, action: SelectLayerActionDecl) {
-		if (this.store.selectSnapshot(ManualState.getLayerById)(action.layerId)) {
-			ctx.patchState({
-				currentLayerId: action.layerId
-			});
-		}
+		ctx.patchState({
+			currentLayerId: action.layerId
+		});
 	}
 
 	@Action({type: SelectPresetCategoryAction.type})

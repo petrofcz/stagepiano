@@ -1,33 +1,42 @@
 import {defaultEntityState, EntityStateModel} from '../../ngxs/entity/state-model';
 import {Action, Selector, State, StateContext, StateOperator, Store} from '@ngxs/store';
 import {ParamMapping, ParamMappingPage} from '../model/model';
+import {AddEntityActionDecl, MoveEntityActionDecl, RemoveEntityActionDecl, UpdateEntityActionDecl} from '../../ngxs/entity/actions';
+import {addEntity, moveEntity, removeEntity, updateEntity} from '../../ngxs/entity/state-operators';
 import {
-	AddEntityActionDecl,
-	MoveEntityActionDecl,
-	RemoveEntityActionDecl,
-	SaveEntityActionDecl,
-	UpdateEntityActionDecl
-} from '../../ngxs/entity/actions';
-import {addEntity, moveEntity, removeEntity, saveEntity, updateEntity} from '../../ngxs/entity/state-operators';
-import {
-	AddParamMappingAction, LoadParamMappingPageFromEffectAction,
+	AddParamMappingAction,
+	LoadParamMappingPageFromEffectAction,
 	LoadParamMappingPageFromEffectActionDecl,
-	MoveParamMappingAction, RemoveParamMappingAction,
+	MoveParamMappingAction,
+	RemoveParamMappingAction,
+	SelectParamMappingAction,
+	SetEndpointLearningAction,
 	UpdateParamMappingAction
 } from './paramMappingPage.actions';
 import {VSTState} from '../../vst/state/vst.state';
-import {Effect} from '../../vst/model/effect';
+import {Effect, EffectScope} from '../../vst/model/effect';
 import {SetKeyboardRouteAction} from '../../session/state/session.actions';
-import {KeyboardRouter} from '../../../backend/keyboard/router/keyboardRouter';
 import {KeyboardRoute} from '../../../backend/keyboard/router/keyboardRoute';
+import {SessionState} from '../../session/state/session.state';
+import {ManualState} from '../../manual/state/manual.state';
+import {BiduleOscHelper} from '../../bidule/osc/bidule-osc-helper';
 
 export interface ParamMappingPageStateModel extends EntityStateModel<ParamMapping> {
+	selectedMappingId: string|null;
+	isEndpointLearning: boolean;
+	vstPathPrefix: string|null;
 }
 
 // this state represents current param page
 @State<ParamMappingPageStateModel>({
 	name: 'paramMappingPage',
-	defaults: defaultEntityState<ParamMapping>()
+	defaults: Object.assign(
+		defaultEntityState<ParamMapping>(), {
+			selectedMappingId: null,
+			isEndpointLearning: false,
+			vstPathPrefix: null
+		}
+	)
 })
 export class ParamMappingPageState {
 
@@ -70,13 +79,48 @@ export class ParamMappingPageState {
 		return state.ids.map(id => state.entities[id]);
 	}
 
+	@Selector()
+	public static getSelectedMapping(state: ParamMappingPageStateModel): ParamMapping|null {
+		if (!state.selectedMappingId) {
+			return null;
+		}
+		return state.entities[state.selectedMappingId];
+	}
+
+	@Selector()
+	public static isEndpointLearning(state: ParamMappingPageStateModel): boolean {
+		return state.isEndpointLearning;
+	}
+
+	@Selector()
+	public static getVstPathPrefix(state: ParamMappingPageStateModel): string {
+		return state.vstPathPrefix;
+	}
+
 	@Action({type: LoadParamMappingPageFromEffectAction.type})
 	public loadFromEffect(ctx: StateContext<ParamMappingPageStateModel>, action: LoadParamMappingPageFromEffectActionDecl) {
-		const page = (<Effect> this.store.selectSnapshot(VSTState.getVstById)(action.effectId)).paramMappingPage;
+		const effect = (<Effect> this.store.selectSnapshot(VSTState.getVstById)(action.effectId));
+		const effectDisposition = this.store.selectSnapshot(SessionState.getEffectDisposition);
+		const page = effect.paramMappingPage;
+		let vstPathPrefix: string;
+
+		if (effectDisposition && effectDisposition.scope === EffectScope.Global) {
+			vstPathPrefix = BiduleOscHelper.getGlobalEffectPrefix();
+		} else {
+			const currentLayer = this.store.selectSnapshot(ManualState.getCurrentLayer);
+			vstPathPrefix = BiduleOscHelper.getLocalVstPrefix(currentLayer);
+		}
+		vstPathPrefix += effect.id + '/';
+
 		ctx.setState({
 			ids: page.ids,
-			entities: page.mappings
+			entities: page.mappings,
+			selectedMappingId: null,
+			isEndpointLearning: false,
+			vstPathPrefix: vstPathPrefix
 		});
+
+		// todo maybe add nr flag? (no retransmit - both states on back and front transmits)
 		ctx.dispatch(new SetKeyboardRouteAction(KeyboardRoute.PARAM_MAPPING));
 	}
 
@@ -109,11 +153,31 @@ export class ParamMappingPageState {
 
 	@Action({type: RemoveParamMappingAction.type})
 	public remove(ctx: StateContext<ParamMappingPageStateModel>, action: RemoveEntityActionDecl) {
+		if (action.id === ctx.getState().selectedMappingId) {
+			ctx.patchState({
+				selectedMappingId: null
+			});
+		}
 		ctx.setState(
 			<StateOperator<ParamMappingPageStateModel>>removeEntity(
 				action.id
 			)
 		);
+	}
+
+	@Action({type: SelectParamMappingAction.type})
+	public selectMapping(ctx: StateContext<ParamMappingPageStateModel>, action: SelectParamMappingAction) {
+		ctx.patchState({
+			selectedMappingId: action.paramMappingId,
+			isEndpointLearning: false
+		});
+	}
+
+	@Action({type: SetEndpointLearningAction.type})
+	public setLastEndpointUsed(ctx: StateContext<ParamMappingPageStateModel>, action: SetEndpointLearningAction) {
+		ctx.patchState({
+			isEndpointLearning: action.isLearning
+		});
 	}
 
 }

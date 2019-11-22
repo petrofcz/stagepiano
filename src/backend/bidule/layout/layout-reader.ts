@@ -8,7 +8,7 @@ import {Instrument} from '../../../shared/vst/model/instrument';
 import {Effect} from '../../../shared/vst/model/effect';
 import {VST} from '../../../shared/vst/model/vst';
 import {AddLayerAction, AddManualAction} from '../../../shared/manual/state/manual.actions';
-import {SetAvailableGlobalEffectsAction} from '../../../shared/bidule/bidule.actions';
+import {SetAvailableGlobalEffectsAction} from '../../../shared/bidule/state/bidule.actions';
 import {SelectLayerAction} from '../../../shared/session/state/session.actions';
 
 // This service read bidule layout and imports all information from it to the app

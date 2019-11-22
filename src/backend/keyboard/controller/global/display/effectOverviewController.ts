@@ -4,7 +4,7 @@ import {Select, Store} from '@ngxs/store';
 import {ManualState} from '../../../../../shared/manual/state/manual.state';
 import {combineLatest, Observable, Subscription} from 'rxjs';
 import {Layer} from '../../../../../shared/manual/model/layer';
-import {BiduleState} from '../../../../../shared/bidule/bidule.state';
+import {BiduleState} from '../../../../../shared/bidule/state/bidule.state';
 import {VST} from '../../../../../shared/vst/model/vst';
 import {VSTState} from '../../../../../shared/vst/state/vst.state';
 import {filter, map, switchMap, withLatestFrom} from 'rxjs/operators';

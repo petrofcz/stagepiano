@@ -13,7 +13,7 @@ import {StateReset} from 'ngxs-reset-plugin';
 import {VSTState} from '../../vst/state/vst.state';
 import {ManualState} from '../../manual/state/manual.state';
 import {SessionState} from '../../session/state/session.state';
-import {BiduleState} from '../../bidule/bidule.state';
+import {BiduleState} from '../../bidule/state/bidule.state';
 
 export interface LayoutStateModel extends EntityStateModel<Layout> {
 	active?: string;

@@ -4,7 +4,7 @@ import {Layer} from '../../../shared/manual/model/layer';
 import {Select, Store} from '@ngxs/store';
 import {ManualState} from '../../../shared/manual/state/manual.state';
 import {map} from 'rxjs/operators';
-import {BiduleState} from '../../../shared/bidule/bidule.state';
+import {BiduleState} from '../../../shared/bidule/state/bidule.state';
 
 @Component({
 	selector: 'app-vst-availability',

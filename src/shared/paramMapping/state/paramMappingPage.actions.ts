@@ -30,3 +30,20 @@ export class LoadParamMappingPageFromEffectAction implements LoadParamMappingPag
 	constructor(public readonly effectId: string) { }
 }
 
+export interface SelectParamMappingActionDecl {
+	paramMappingId: string|null;
+}
+
+export class SelectParamMappingAction implements SelectParamMappingActionDecl {
+	static readonly type = '[ParamMappingPage] Select param mapping';
+	constructor(public readonly paramMappingId: string|null) { }
+}
+
+export interface SetEndpointLearningActionDecl {
+	isLearning: boolean;
+}
+
+export class SetEndpointLearningAction implements SetEndpointLearningActionDecl {
+	static readonly type = '[ParamMappingPage] Set endpoint learning';
+	constructor(public readonly isLearning: boolean) { }
+}

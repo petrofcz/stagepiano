@@ -7,6 +7,7 @@ import {Store} from '@ngxs/store';
 import {VSTState} from '../../../shared/vst/state/vst.state';
 import {LoadParamMappingPageFromEffectAction} from '../../../shared/paramMapping/state/paramMappingPage.actions';
 import {SaveEffectParamMappingPageAction} from '../../../shared/vst/state/vst.actions';
+import {ParamMappingPageState} from '../../../shared/paramMapping/state/paramMappingPage.state';
 
 @Component({
 	selector: 'app-effect-param-mapping',
@@ -52,6 +53,10 @@ export class EffectParamMappingPageComponent implements OnInit, OnDestroy {
 		if (!this._effect) {
 			return;
 		}
-		this.store.dispatch(new SaveEffectParamMappingPageAction(this._effect.id));
+		const currentParamMappingPage = this.store.selectSnapshot(ParamMappingPageState.getPage);
+		if (!currentParamMappingPage) {
+			return;
+		}
+		this.store.dispatch(new SaveEffectParamMappingPageAction(this._effect.id, currentParamMappingPage));
 	}
 }

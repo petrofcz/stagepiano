@@ -21,7 +21,7 @@ export interface ParamMapping {
 
 export interface ParamMappingItem {
 	endpoint: string;   // VST's parameter name
-	mappingStrategy: ParamMappingStrategy;
+	mappingStrategy: ParamMappingStrategy|null;
 }
 
 export interface ParamMappingStrategy {

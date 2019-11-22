@@ -1,15 +1,17 @@
 import {Action, Selector, State, StateContext} from '@ngxs/store';
-import {ManualStateModel} from '../manual/state/manual.state';
+import {ManualStateModel} from '../../manual/state/manual.state';
 import {SetAvailableGlobalEffectsAction, SetAvailableGlobalEffectsActionDecl} from './bidule.actions';
 
 export interface BiduleStateModel {
 	availableGlobalEffectIds: string[];
+	openUIOscPath: string|null;
 }
 
 @State<BiduleStateModel>({
 	name: 'Bidule',
 	defaults: {
-		availableGlobalEffectIds: []
+		availableGlobalEffectIds: [],
+		openUIOscPath: null,
 	}
 })
 export class BiduleState {

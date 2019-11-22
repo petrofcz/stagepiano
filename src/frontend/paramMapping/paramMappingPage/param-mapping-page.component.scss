@@ -25,4 +25,20 @@
 			background-color: #F0F0F0;
 		}
 	}
+
+}
+
+.mapping-detail {
+	.empty {
+		font-style: italic;
+	}
+
+	.endpoint-value {
+		font-weight: bold;
+	}
+
+	.learning {
+		color: red;
+		font-style: italic;
+	}
 }

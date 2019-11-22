@@ -59,15 +59,11 @@ export class VSTState {
 
 	@Action({type: SaveEffectParamMappingPageAction.type})
 	public saveEffectParamMapping(ctx: StateContext<VSTStateModel>, action: SaveEffectParamMappingPageActionDecl) {
-		const currentParamMappingPage = this.store.selectSnapshot(ParamMappingPageState.getPage);
-		if (!currentParamMappingPage) {
-			return;
-		}
 		ctx.setState(
 			<StateOperator<VSTStateModel>>updateEntity(
 				<Effect>{
 					id: action.effectId,
-					paramMappingPage: currentParamMappingPage
+					paramMappingPage: action.paramMappingPage
 				}
 			)
 		);

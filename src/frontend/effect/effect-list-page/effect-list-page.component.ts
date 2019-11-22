@@ -8,7 +8,7 @@ import {AvailabilityComponent} from '../../vst/availability/availability.compone
 import {SessionState} from '../../../shared/session/state/session.state';
 import {ManualState} from '../../../shared/manual/state/manual.state';
 import {map} from 'rxjs/operators';
-import {BiduleState} from '../../../shared/bidule/bidule.state';
+import {BiduleState} from '../../../shared/bidule/state/bidule.state';
 import {Router} from '@angular/router';
 
 @Component({

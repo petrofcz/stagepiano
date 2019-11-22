@@ -46,7 +46,7 @@ import {InstrumentModule} from './instrument/instrument.module';
 import {LayoutModule} from './layout/layout.module';
 import {LayoutRedirectService} from './model/navigation/layout-redirect.service';
 import {ManualState} from '../shared/manual/state/manual.state';
-import {BiduleState} from '../shared/bidule/bidule.state';
+import {BiduleState} from '../shared/bidule/state/bidule.state';
 import {SessionState} from '../shared/session/state/session.state';
 import {PresetCategoryState} from '../shared/preset/state/preset-category.state';
 import {NgxsResetPluginModule} from 'ngxs-reset-plugin';
