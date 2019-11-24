@@ -15,7 +15,7 @@ export interface ManualStateModel {
 }
 
 @State<ManualStateModel>({
-	name: 'Manual',
+	name: 'manual',
 	defaults: {
 		manuals: [],
 		layers: [],

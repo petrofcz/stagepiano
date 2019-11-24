@@ -38,10 +38,10 @@ export class LayerController implements MortalInterface {
 						break;
 					}
 				}
-				console.log('MAN ID ' + manualId);
-				console.log(manuals);
-				console.log(manual);
-				console.log(event);
+				// console.log('MAN ID ' + manualId);
+				// console.log(manuals);
+				// console.log(manual);
+				// console.log(event);
 				if (manual) {
 					this.store.dispatch(
 						new SelectLayerAction(
@@ -74,6 +74,7 @@ export class LayerController implements MortalInterface {
 		this.store.select(ManualState.getManuals).subscribe((manuals: Manual[]) => {
 			this.navigation.leftRow.disableAllButtons();
 			for (let i = 1; i <= manuals.length; i++) {
+				// console.log('LAYER CTRL BUTTON TRUE ' + i);
 				this.navigation.leftRow.setButtonEnabled(i, true);
 			}
 		});

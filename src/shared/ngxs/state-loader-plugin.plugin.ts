@@ -14,7 +14,7 @@ export class StateLoaderPlugin implements NgxsPlugin {
 		if (matches(LoadStateAction) || event.type === LoadStateAction.type) {
 			const setStateEvent: LoadStateActionDecl = event;
 			for (const key of Object.keys(setStateEvent.items)) {
-				console.log('Setting', key, setStateEvent.items[key]);
+				// console.log('Setting', key, setStateEvent.items[key]);
 				state = setValue(state, key, setStateEvent.items[key]);
 			}
 		}

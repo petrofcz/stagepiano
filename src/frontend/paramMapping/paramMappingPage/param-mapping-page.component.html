@@ -46,12 +46,12 @@
 			</span>
 		</div>
 	</div>
-	<div class="key-value" *ngIf="selectedMapping.mainItemId !== null" class="strategy-select">
+	<div *ngIf="selectedMapping.mainItemId !== null" class="strategy-select key-value">
 		<div class="key">
 			Strategy:
 		</div>
 		<div class="value">
-			<mat-button-toggle-group name="strategy" aria-label="Font Style" [(value)]="selectedMapping.items[selectedMapping.mainItemId].mappingStrategy.type">
+			<mat-button-toggle-group name="strategy" aria-label="Font Style" [value]="selectedMapping.items[selectedMapping.mainItemId]?.mappingStrategy?.type">
 				<mat-button-toggle value="linear" (change)="onStrategySelected($event.value)">Linear</mat-button-toggle>
 				<mat-button-toggle value="linearList" (change)="onStrategySelected($event.value)">Linear steps</mat-button-toggle>
 				<mat-button-toggle value="list" (change)="onStrategySelected($event.value)">List</mat-button-toggle>
@@ -63,7 +63,7 @@
 			Mapping details:
 		</div>
 		<div class="value">
-			<div *ngIf="mappingItem.mappingStrategy.type === 'linear'" class="mapping-strategy">
+			<div *ngIf="mappingItem?.mappingStrategy?.type === 'linear'" class="mapping-strategy">
 				<app-linear-param-mapping-strategy [currentItemId]="i"></app-linear-param-mapping-strategy>
 			</div>
 		</div>

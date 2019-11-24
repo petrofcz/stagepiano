@@ -7,10 +7,10 @@ import {
 	AddParamMappingAction,
 	LoadParamMappingPageFromEffectAction,
 	LoadParamMappingPageFromEffectActionDecl,
-	MoveParamMappingAction,
+	MoveParamMappingAction, PatchParamMappingStrategyAction, PatchParamMappingStrategyActionDecl,
 	RemoveParamMappingAction,
 	SelectParamMappingAction,
-	SetEndpointLearningAction,
+	SetEndpointLearningAction, SetParamMappingValueLearningAction, SetParamMappingValueLearningActionDecl,
 	UpdateParamMappingAction, UpdateParamMappingStrategyAction, UpdateParamMappingStrategyActionDecl
 } from './paramMappingPage.actions';
 import {VSTState} from '../../vst/state/vst.state';
@@ -24,7 +24,12 @@ import {BiduleOscHelper} from '../../bidule/osc/bidule-osc-helper';
 export interface ParamMappingPageStateModel extends EntityStateModel<ParamMapping> {
 	selectedMappingId: string|null;
 	isEndpointLearning: boolean;
-	vstPathPrefix: string|null;
+
+	// for learning values
+	learningMappingItemId: number|null;   // not learning if null
+	valueLearningIndex: number|null;    // linear mapping
+
+	vstPathPrefix: string|null;     // OSC path's prefix for given instance
 }
 
 // this state represents current param page
@@ -34,7 +39,9 @@ export interface ParamMappingPageStateModel extends EntityStateModel<ParamMappin
 		defaultEntityState<ParamMapping>(), {
 			selectedMappingId: null,
 			isEndpointLearning: false,
-			vstPathPrefix: null
+			valueLearningIndex: null,
+			vstPathPrefix: null,
+			learningMappingItemId: null,
 		}
 	)
 })
@@ -97,6 +104,16 @@ export class ParamMappingPageState {
 		return state.vstPathPrefix;
 	}
 
+	@Selector()
+	public static getLearningMappingItemId(state: ParamMappingPageStateModel): number|null {
+		return state.learningMappingItemId;
+	}
+
+	@Selector()
+	public static getValueLearningIndex(state: ParamMappingPageStateModel): number|null {
+		return state.valueLearningIndex;
+	}
+
 	@Action({type: LoadParamMappingPageFromEffectAction.type})
 	public loadFromEffect(ctx: StateContext<ParamMappingPageStateModel>, action: LoadParamMappingPageFromEffectActionDecl) {
 		const effect = (<Effect> this.store.selectSnapshot(VSTState.getVstById)(action.effectId));
@@ -117,7 +134,9 @@ export class ParamMappingPageState {
 			entities: page.mappings,
 			selectedMappingId: null,
 			isEndpointLearning: false,
-			vstPathPrefix: vstPathPrefix
+			valueLearningIndex: null,
+			vstPathPrefix: vstPathPrefix,
+			learningMappingItemId: null
 		});
 
 		// todo maybe add nr flag? (no retransmit - both states on back and front transmits)
@@ -140,7 +159,28 @@ export class ParamMappingPageState {
 			return state;
 		}
 		const entities = state.entities;
-		entities[state.selectedMappingId].items[action.itemId].mappingStrategy = action.strategy;
+		entities[state.selectedMappingId] = {
+			...(entities[state.selectedMappingId]),
+			items: entities[state.selectedMappingId].items.map((item, index) => index !== action.itemId ? item : {...item, mappingStrategy: action.strategy})
+		};
+
+		ctx.setState({
+			...state,
+			entities: entities
+		});
+	}
+
+	@Action({type: PatchParamMappingStrategyAction.type})
+	public patchStrategy(ctx: StateContext<ParamMappingPageStateModel>, action: PatchParamMappingStrategyActionDecl) {
+		const state = ctx.getState();
+		if (!state.selectedMappingId || action.itemId === null) {
+			return state;
+		}
+		const entities = state.entities;
+		entities[state.selectedMappingId] = {
+			...(entities[state.selectedMappingId]),
+			items: entities[state.selectedMappingId].items.map((item, index) => index !== action.itemId ? item : {...item, mappingStrategy: { ...item.mappingStrategy, ... action.strategy }})
+		};
 
 		ctx.setState({
 			...state,
@@ -184,14 +224,25 @@ export class ParamMappingPageState {
 	public selectMapping(ctx: StateContext<ParamMappingPageStateModel>, action: SelectParamMappingAction) {
 		ctx.patchState({
 			selectedMappingId: action.paramMappingId,
-			isEndpointLearning: false
+			isEndpointLearning: false,
+			learningMappingItemId: null,
+			valueLearningIndex: null
 		});
 	}
 
 	@Action({type: SetEndpointLearningAction.type})
-	public setLastEndpointUsed(ctx: StateContext<ParamMappingPageStateModel>, action: SetEndpointLearningAction) {
+	public setEndpointLearning(ctx: StateContext<ParamMappingPageStateModel>, action: SetEndpointLearningAction) {
 		ctx.patchState({
 			isEndpointLearning: action.isLearning
+		});
+	}
+
+	@Action({type: SetParamMappingValueLearningAction.type})
+	public setParamMappingValueLearning(ctx: StateContext<ParamMappingPageStateModel>, action: SetParamMappingValueLearningActionDecl) {
+		ctx.patchState({
+			learningMappingItemId: action.paramMappingItemId,
+			valueLearningIndex: action.learningIndex,
+			isEndpointLearning: false
 		});
 	}
 

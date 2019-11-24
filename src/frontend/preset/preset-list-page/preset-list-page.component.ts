@@ -51,6 +51,9 @@ export class PresetListPageComponent implements OnInit {
 		});
 
 		dialogRef.afterClosed().subscribe((result: NamedEntityDialogData) => {
+			if (!result) {
+				return;
+			}
 			if (result.id) {
 				this.store.dispatch(new UpdatePresetCategoryAction(<Partial<PresetCategory>>{
 					id: result.id,

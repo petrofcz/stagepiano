@@ -8,7 +8,7 @@ export interface BiduleStateModel {
 }
 
 @State<BiduleStateModel>({
-	name: 'Bidule',
+	name: 'bidule',
 	defaults: {
 		availableGlobalEffectIds: [],
 		openUIOscPath: null,

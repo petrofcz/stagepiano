@@ -57,3 +57,23 @@ export class UpdateParamMappingStrategyAction implements UpdateParamMappingStrat
 	static readonly type = '[ParamMappingPage] Update param mapping strategy';
 	public constructor(public readonly itemId: number, public readonly strategy: ParamMappingStrategy) { }
 }
+
+export interface PatchParamMappingStrategyActionDecl {
+	itemId: number;
+	strategy: Partial<ParamMappingStrategy>;
+}
+
+export class PatchParamMappingStrategyAction implements PatchParamMappingStrategyActionDecl {
+	static readonly type = '[ParamMappingPage] Patch param mapping strategy';
+	public constructor(public readonly itemId: number, public readonly strategy: Partial<ParamMappingStrategy>) { }
+}
+
+export interface SetParamMappingValueLearningActionDecl {
+	paramMappingItemId: number|null;
+	learningIndex: number|null;
+}
+
+export class SetParamMappingValueLearningAction implements SetParamMappingValueLearningActionDecl {
+	static readonly type = '[ParamMappingPage] Set param mapping value learning';
+	constructor (public paramMappingItemId: number|null, public learningIndex: number|null) { }
+}

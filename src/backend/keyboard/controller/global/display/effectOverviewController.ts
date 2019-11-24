@@ -98,6 +98,7 @@ export class EffectOverviewController implements MortalInterface {
 			availableEffects$.subscribe(availableEffects => {
 				this.display.display.clearRow(EffectOverviewController.ROW_NAMES);
 				this.buttonsByRow[EffectOverviewController.ROW_NAMES].forEach((buttonId) => {
+					// console.log('EO BTN OFF ' + buttonId);
 					this.display.buttonMatrix.buttons.setButtonEnabled(buttonId, false);
 				});
 				for (let i = 0; i < availableEffects.length; i++) {
@@ -106,6 +107,7 @@ export class EffectOverviewController implements MortalInterface {
 						i + 1,
 						availableEffects[i].name
 					);
+					// console.log('EO BTN ON ' + i);
 					this.display.buttonMatrix.buttons.setButtonEnabled(this.buttonsByRow[EffectOverviewController.ROW_NAMES][i], true);
 				}
 			})

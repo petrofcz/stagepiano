@@ -46,7 +46,6 @@ export class ParamMappingPageComponent implements OnInit, OnDestroy {
 	constructor(private store: Store, private dialog: MatDialog) { }
 
 	ngOnInit() {
-
 	}
 
 	ngOnDestroy() {
@@ -71,6 +70,9 @@ export class ParamMappingPageComponent implements OnInit, OnDestroy {
 		});
 
 		dialogRef.afterClosed().subscribe((result: NamedEntityDialogData) => {
+			if(!result) {
+				return;
+			}
 			if (result.id) {
 				this.store.dispatch(new UpdateParamMappingAction(<Partial<ParamMapping>>{
 					id: result.id,

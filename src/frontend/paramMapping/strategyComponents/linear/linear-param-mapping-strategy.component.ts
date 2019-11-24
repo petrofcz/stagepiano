@@ -3,10 +3,13 @@ import {AbstractParamMappingComponent} from '../abstractParamMappingComponent';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {LinearParamMappingStrategy} from '../../../../shared/paramMapping/model/model';
 import {ParamMappingStrategies} from '../../../../shared/paramMapping/model/paramMappingStrategies';
-import {Store} from '@ngxs/store';
+import {Select, Store} from '@ngxs/store';
 import {ParamMappingPageState} from '../../../../shared/paramMapping/state/paramMappingPage.state';
-import {distinctUntilChanged, map} from 'rxjs/operators';
-import {UpdateParamMappingStrategyAction} from '../../../../shared/paramMapping/state/paramMappingPage.actions';
+import {distinctUntilChanged, filter, map, tap} from 'rxjs/operators';
+import {
+	SetParamMappingValueLearningAction,
+	UpdateParamMappingStrategyAction
+} from '../../../../shared/paramMapping/state/paramMappingPage.actions';
 
 @Component({
 	selector: 'app-linear-param-mapping-strategy',
@@ -31,6 +34,9 @@ export class LinearParamMappingStrategyComponent extends AbstractParamMappingCom
 		dispSuffix: null
 	};
 
+	@Select(ParamMappingPageState.getValueLearningIndex)
+	learningValueIndex$;
+
 	constructor(fb: FormBuilder, protected store: Store) {
 		super();
 		this.form = fb.group({
@@ -45,13 +51,21 @@ export class LinearParamMappingStrategyComponent extends AbstractParamMappingCom
 	}
 
 	ngOnInit(): void {
+		console.log('[LPMS INIT]');
+
+		this.store.select(ParamMappingPageState.getSelectedMapping).subscribe((val) => console.log('[LPMS] CUR CHANGED'));
+		this.store.select(ParamMappingPageState.getMappings).subscribe((val) => console.log('[LPMS] ALL CHANGED'));
+
 		this.subscriptions.push(
 			this.store.select(ParamMappingPageState.getSelectedMapping)
+				.pipe(filter(val => val !== null))
 				.pipe(map(mapping => mapping.items[this.currentItemId]))
+				.pipe(tap(val => console.log('[LPMS] CUR ITEM', val)))
 				.pipe(distinctUntilChanged())
 				.subscribe(mappingItem => {
 					this.model = <LinearParamMappingStrategy> mappingItem.mappingStrategy;
 					this.noRetransmit = true;
+					console.log('[LPMS] UPDATING FORM VALUES FROM MODEL', this.model);
 					this.updateFormValuesFromModel();
 				})
 		);
@@ -86,4 +100,21 @@ export class LinearParamMappingStrategyComponent extends AbstractParamMappingCom
 		}
 	}
 
+	setParamLearning(index: number | null) {
+		if (index === null) {   // stop learning
+			this.store.dispatch(
+				new SetParamMappingValueLearningAction(
+					null,
+					null
+				)
+			);
+		} else {
+			this.store.dispatch(
+				new SetParamMappingValueLearningAction(
+					this.currentItemId,
+					index
+				)
+			);
+		}
+	}
 }

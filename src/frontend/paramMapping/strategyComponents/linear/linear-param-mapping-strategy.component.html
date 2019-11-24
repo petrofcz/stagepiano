@@ -1,40 +1,81 @@
 <form [formGroup]="form" mat-form>
 	<div class="form-content">
-		<mat-form-field>
-			<mat-label>OSC param minimal value:</mat-label>
-			<input matInput placeholder="OSC param minimal value:" formControlName="oscFrom">
-			<mat-error *ngIf="form.controls['oscFrom'].invalid">This field is required.</mat-error>
-		</mat-form-field>
-		<mat-form-field>
-			<mat-label>OSC param maximal value:</mat-label>
-			<input matInput placeholder="OSC param maximal value:" formControlName="oscTo">
-			<mat-error *ngIf="form.controls['oscTo'].invalid">This field is required.</mat-error>
-		</mat-form-field>
-		<mat-label>Reverse:</mat-label>
-		<div>
-			<mat-checkbox formControlName="oscInverse">
-			</mat-checkbox>
-			Inverse
+		<div class="flex-row">
+			<div class="flex">
+				<mat-form-field>
+					<mat-label>OSC param minimal value:</mat-label>
+					<input matInput placeholder="OSC param minimal value:" formControlName="oscFrom">
+					<mat-error *ngIf="form.controls['oscFrom'].invalid">This field is required.</mat-error>
+				</mat-form-field>
+				<div class="learn-button" *ngIf="(learningValueIndex$|async) === null || (learningValueIndex$|async) === 0">
+					<span *ngIf="(learningValueIndex$|async) === null">
+						<button mat-raised-button color="primary" (click)="setParamLearning(0)">
+							Learn
+						</button>
+					</span>
+					<span *ngIf="(learningValueIndex$|async) === 0">
+						<button mat-raised-button color="warn" (click)="setParamLearning(null)">
+							Stop
+						</button>
+					</span>
+				</div>
+			</div>
+			<div class="flex">
+				<mat-form-field>
+					<mat-label>OSC param maximal value:</mat-label>
+					<input matInput placeholder="OSC param maximal value:" formControlName="oscTo">
+					<mat-error *ngIf="form.controls['oscTo'].invalid">This field is required.</mat-error>
+				</mat-form-field>
+				<div class="learn-button" *ngIf="(learningValueIndex$|async) === null || (learningValueIndex$|async) === 1">
+					<span *ngIf="(learningValueIndex$|async) === null">
+						<button mat-raised-button color="primary" (click)="setParamLearning(1)">
+							Learn
+						</button>
+					</span>
+					<span *ngIf="(learningValueIndex$|async) === 1">
+						<button mat-raised-button color="warn" (click)="setParamLearning(null)">
+							Stop
+						</button>
+					</span>
+				</div>
+			</div>
+			<div class="flex">
+				<div>
+					<mat-checkbox formControlName="oscInverse">
+					</mat-checkbox>
+					Inverse
+				</div>
+			</div>
 		</div>
-		<mat-form-field>
-			<mat-label>Display minimal value:</mat-label>
-			<input matInput placeholder="Display minimal value:" formControlName="dispFrom">
-			<mat-error *ngIf="form.controls['dispFrom'].invalid">This field is required.</mat-error>
-		</mat-form-field>
-		<mat-form-field>
-			<mat-label>Display maximal value:</mat-label>
-			<input matInput placeholder="Display maximal value:" formControlName="dispTo">
-			<mat-error *ngIf="form.controls['dispTo'].invalid">This field is required.</mat-error>
-		</mat-form-field>
-		<mat-form-field>
-			<mat-label>Display decimal positions:</mat-label>
-			<input matInput placeholder="Display decimal positions:" formControlName="dispDecimals">
-			<mat-error *ngIf="form.controls['dispDecimals'].invalid">This field is required.</mat-error>
-		</mat-form-field>
-		<mat-form-field>
-			<mat-label>Display suffix:</mat-label>
-			<input matInput placeholder="Display suffix: (ex. dB)" formControlName="dispSuffix">
-			<mat-error *ngIf="form.controls['dispSuffix'].invalid">This field is required.</mat-error>
-		</mat-form-field>
+		<div class="flex-row">
+			<div class="flex">
+				<mat-form-field>
+					<mat-label>Display minimal value:</mat-label>
+					<input matInput placeholder="Display minimal value:" formControlName="dispFrom">
+					<mat-error *ngIf="form.controls['dispFrom'].invalid">This field is required.</mat-error>
+				</mat-form-field>
+			</div>
+			<div class="flex">
+				<mat-form-field>
+					<mat-label>Display maximal value:</mat-label>
+					<input matInput placeholder="Display maximal value:" formControlName="dispTo">
+					<mat-error *ngIf="form.controls['dispTo'].invalid">This field is required.</mat-error>
+				</mat-form-field>
+			</div>
+			<div class="flex">
+				<mat-form-field>
+					<mat-label>Display decimal positions:</mat-label>
+					<input matInput placeholder="Display decimal positions:" formControlName="dispDecimals">
+					<mat-error *ngIf="form.controls['dispDecimals'].invalid">This field is required.</mat-error>
+				</mat-form-field>
+			</div>
+			<div class="flex">
+				<mat-form-field>
+					<mat-label>Display suffix:</mat-label>
+					<input matInput placeholder="Display suffix: (ex. dB)" formControlName="dispSuffix">
+					<mat-error *ngIf="form.controls['dispSuffix'].invalid">This field is required.</mat-error>
+				</mat-form-field>
+			</div>
+		</div>
 	</div>
 </form>

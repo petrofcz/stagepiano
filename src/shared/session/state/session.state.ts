@@ -24,7 +24,7 @@ export interface SessionStateModel {
 }
 
 @State<SessionStateModel>({
-	name: 'Session',
+	name: 'session',
 	defaults: {
 		currentLayerId: null,
 		presetCategories: {},

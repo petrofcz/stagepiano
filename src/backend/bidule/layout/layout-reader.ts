@@ -23,6 +23,7 @@ export class BiduleLayoutReader {
 	constructor(protected store: Store) {
 
 		this.activeLayoutId$.subscribe((layoutId) => {
+			console.log('ACTIVE layout id is ' + layoutId);
 			const layout = this.store.selectSnapshot(LayoutState.getById)(layoutId);
 			if (layout !== null) {
 				BiduleLayoutParser.loadFile(layout.biduleFile).then((biduleLayout: BiduleLayout) => {
@@ -58,9 +59,11 @@ export class BiduleLayoutReader {
 					}
 					for (const manualDefinition of biduleLayout.manualDefinitions) {
 						const manualId = manualDefinition.id.toString();
+						console.log('ADD MANUAL ' + manualId);
 						store.dispatch(new AddManualAction(manualId, manualDefinition.id + 1, manualDefinition.name));
 						for (const layerDefinition of manualDefinition.layers) {
 							const layerId = manualId + '-' + layerDefinition.id.toString();
+							console.log('ADD LAYER ' + layerId);
 							store.dispatch(new AddLayerAction(layerId, layerDefinition.name, manualId, layerDefinition.vstIds, layerDefinition.id + 1));
 						}
 					}

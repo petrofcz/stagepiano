@@ -84,8 +84,8 @@ export class ButtonGroup {
 				return iButtonId !== buttonId;
 			});
 		}
-		console.log('SET BUTTON ENABLED ' + buttonId + ' ' + enabled);
-		console.log(this.enabledButtonIds);
+		// console.log('SET BUTTON ENABLED ' + buttonId + ' ' + enabled);
+		// console.log(this.enabledButtonIds);
 	}
 
 	public enableAllButtons() {
