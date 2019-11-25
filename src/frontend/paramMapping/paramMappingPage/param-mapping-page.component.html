@@ -1,5 +1,15 @@
 <div class="flex-row" style="width: 100%">
 	<div class="flex param-mapping-col" *ngFor="let mapping of (mappings$|async)">
+		<div class="active-select" *ngIf="hasDefaultSelect">
+			<div class="selected" *ngIf="mapping.id === defaultMappingId">
+				<mat-icon>check_circle</mat-icon>
+			</div>
+			<div class="not-selected" *ngIf="mapping.id !== defaultMappingId">
+				<div (click)="selectDefault(mapping.id)">
+					<mat-icon>check_circle_outline</mat-icon>
+				</div>
+			</div>
+		</div>
 		<div [class]="'name' + (mapping.id === ((selectedMapping$|async)?.id) ? ' active' : '')" (click)="onSelectClick(mapping.id)" (dblclick)="onEditNameClick(mapping.id)">
 			{{ mapping.name }}
 		</div>

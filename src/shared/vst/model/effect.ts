@@ -13,7 +13,7 @@ export enum EffectScope {
 export interface Effect extends VST {
 	// this is wrong!? only one param mapping should be used?
 	paramMappingPage: ParamMappingPage;  // Mappings associated to the effect
-	mainParamMappingId: number;	 // This will be the main parameter mapping (usually on / off switch or wet)
+	mainParamMappingId: string;	 // This will be the main parameter mapping (usually on / off switch or wet)
 	placement: EffectPlacement;
 	type: 'effect';
 }

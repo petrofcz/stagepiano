@@ -35,7 +35,8 @@ export class BiduleLayoutReader {
 								id: vstDefinition.id,
 								name: vstDefinition.name,
 								defaultParamMappingGroupId: null,
-								paramMappingGroups: []
+								paramMappingGroups: [],
+								snapshot: null
 							};
 							vst = instrument;
 						} else if (vstDefinition instanceof EffectDefinition) {
@@ -45,7 +46,8 @@ export class BiduleLayoutReader {
 								name: vstDefinition.name,
 								mainParamMappingId: null,
 								paramMappingPage: {ids: [], mappings: {}},
-								placement: vstDefinition.placement
+								placement: vstDefinition.placement,
+								snapshot: null
 							};
 							vst = effect;
 						}

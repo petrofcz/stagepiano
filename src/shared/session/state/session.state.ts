@@ -9,7 +9,7 @@ import {
 	SetEffectDispositionAction,
 	SetEffectDispositionActionDecl,
 	SetKeyboardRouteAction,
-	SetKeyboardRouteActionDecl
+	SetKeyboardRouteActionDecl, TakeEffectSnapshotAction, TakeEffectSnapshotActionDecl
 } from './session.actions';
 import {EffectDisposition} from '../model/effectDisposition';
 import {KeyboardRoute} from '../../../backend/keyboard/router/keyboardRoute';
@@ -21,6 +21,10 @@ export interface SessionStateModel {
 	keyboardRoute: string|null;
 	effectDisposition: EffectDisposition|null;
 	isEditing: boolean;                             // user is editing mapping / preset in app
+	effectSnapshot: {
+		effectId: string,
+		vstPath: string
+	}|null;
 }
 
 @State<SessionStateModel>({
@@ -32,6 +36,7 @@ export interface SessionStateModel {
 		keyboardRoute: null,
 		effectDisposition: null,
 		isEditing: false,
+		effectSnapshot: null
 	}
 })
 export class SessionState {
@@ -72,6 +77,14 @@ export class SessionState {
 	@Selector()
 	public static getEffectDisposition(state: SessionStateModel): EffectDisposition|null {
 		return state.effectDisposition;
+	}
+
+	@Selector()
+	public static getEffectSnapshot(state: SessionStateModel): {
+		effectId: string,
+		vstPath: string
+	}|null {
+		return state.effectSnapshot;
 	}
 
 	@Action({type: SelectLayerAction.type})
@@ -118,6 +131,17 @@ export class SessionState {
 			effectDisposition: action.disposition
 		});
 	}
+
+	@Action({type: TakeEffectSnapshotAction.type})
+	public takeEffectSnapshot(ctx: StateContext<SessionStateModel>, action: TakeEffectSnapshotActionDecl) {
+		ctx.patchState({
+			effectSnapshot: action.id === null ? null : {
+				effectId: action.id,
+				vstPath: action.vstPath
+			}
+		});
+	}
+
 
 	// @Action({type: ResetLayoutAction.type})
 	// public clear(ctx: StateContext<SessionStateModel>, action) {

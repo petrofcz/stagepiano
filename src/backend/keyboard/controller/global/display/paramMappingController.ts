@@ -52,21 +52,23 @@ export class ParamMappingController implements MortalInterface {
 		for (let i = 0; i < 8; i++) {
 			// mapping for given column index
 			const mapping$ = this.store.select(ParamMappingPageState.getAll).pipe(debounceTime(50))
-				.pipe(tap((val) => console.log('[PMC] Mappings', val, i)))
-				.pipe(map((paramMappings => paramMappings.length > i ? paramMappings[i] : null)));
+				//.pipe(tap((val) => console.log('[PMC] Mappings' + i)))
+				.pipe(map((paramMappings => paramMappings.length > i ? paramMappings[i] : null)))
+				.pipe(distinctUntilChanged())
+				//.pipe(tap((val) => console.log('[PMC] Mapping ' + i, val)))
 
 			const paramMappingIsDisplayable = (paramMappnig: ParamMapping) => {
 				return paramMappnig !== null && paramMappnig.mainItemId !== null && paramMappnig.items[paramMappnig.mainItemId].mappingStrategy !== null;
 			};
 
-			mapping$.subscribe((val) => console.log('[PMC] Mapping', val));
+			// mapping$.subscribe((val) => console.log('[PMC] Mapping',));
 
 			// reset columns for not active mappings
 			this.subscriptions.push(
 				mapping$
 					.pipe(filter(paramMapping => !paramMappingIsDisplayable(paramMapping)))
 					.subscribe(() => {
-						console.log('[PMC] MAPPING IS NOT DISPLAYABLE');
+						//console.log('[PMC] MAPPING IS NOT DISPLAYABLE ' + i);
 						this.display.display.setCellContent(this._row, i + 1, null);
 						this.display.knobs.setKnobValue(i + 1, 0);
 						this.display.buttonMatrix.getIdsForRow(this._row).forEach(buttonId => {
@@ -79,10 +81,10 @@ export class ParamMappingController implements MortalInterface {
 			const mappingItem$ = mapping$
 				.pipe(filter(paramMapping => paramMapping !== null))
 				.pipe(filter(paramMapping => paramMappingIsDisplayable(paramMapping)))
-				.pipe(tap((val) => console.log('[PMC] Mapping IS displayable', val)))
+				//.pipe(tap((val) => console.log('[PMC] Mapping IS displayable ' + i)))
 				.pipe(map(paramMapping => { return {...(paramMapping.items[paramMapping.mainItemId]), paramMapping: paramMapping }; }))
-				.pipe(distinctUntilChanged())
-				.pipe(tap((val) => console.log('[PMC] PMI', val)))
+				.pipe(distinctUntilChanged());
+				//.pipe(tap((val) => console.log('[PMC] PMI', val)))
 
 			this.subscriptions.push(
 				mappingItem$.subscribe(paramMappingItem => {
@@ -108,13 +110,13 @@ export class ParamMappingController implements MortalInterface {
 						vstPathPrefix: values[1]
 					}; } ));
 				}))
-				.pipe(tap((val) => console.log('[PMC] With prefix', val)))
+				//.pipe(tap((val) => console.log('[PMC] With prefix', val)))
 				.pipe(switchMap(
 					args => this.osc.observeValues(args.vstPathPrefix + args.paramMappingItem.endpoint)
 						.pipe(map(oscMessage => { return { oscMessage: oscMessage, paramMappingItem: args.paramMappingItem }; }))
 
 				))
-				.pipe(tap((val) => console.log('[PMC] FINAL', val)));;
+				//.pipe(tap((val) => console.log('[PMC] FINAL ' + i, val)));
 
 			// subscribe for active mappings
 			const touched$ = merge(
@@ -134,7 +136,8 @@ export class ParamMappingController implements MortalInterface {
 
 			const final$ = combineLatest(
 				values$, touch$
-			).subscribe(([value, touched]) => {
+			)   .pipe(tap((val) => console.log('[PMC] REAL FINAL ' + i, val)))
+				.subscribe(([value, touched]) => {
 				const handler = this.handlerByColumn[i];
 				if (touched) {
 					this.display.display.setCellContent(
@@ -168,20 +171,11 @@ export class ParamMappingController implements MortalInterface {
 				})
 			);
 
-			// this.store.select(KeyboardState.knobValue).pipe(map(filterFn => filterFn(i - 1))).pipe(distinctUntilChanged()).subscribe((knobValue) => {
-			// 	this.display.knobs.setKnobValue(i, knobValue / 127);
-			// });
-
 			// tslint:disable-next-line:max-line-length
 			// const knobValueSelector = this.store.select(KeyboardState.knobValue).pipe(map(filterFn => filterFn(i - 1))).pipe(distinctUntilChanged()).pipe(auditTime(50));
 
 		}
 
-		// todo
-		// this.display.knobs.onKnobRotated.subscribe((event: RotationKnobEvent) => {
-		// 	// tslint:disable-next-line:max-line-length
-		// 	this.store.dispatch(new UpdateKnobValueAction(event.knobId - 1, (event.direction === RotationDirection.FORWARD ? 1 : -1) * event.amount));
-		// });
 	}
 
 	onDestroy(): void {

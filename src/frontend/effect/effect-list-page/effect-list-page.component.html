@@ -23,13 +23,21 @@
 							</div>
 						</div>
 						<div class="flex flex-row flex-content-center horizontal-group">
+							<button mat-raised-button [color]="(!item.snapshot || (snapshot$|async)?.effectId === item.id) ? 'warn' : 'primary'" confirm (confirmed)="takeSnapshot(item.id)" [disabled]="(paramMappingEnabled$|async).indexOf(item.id) === -1 || ((snapshot$|async) !== null && (snapshot$|async).effectId !== item.id)">
+								<mat-icon>camera_alt</mat-icon>
+								Snapshot
+							</button>
 							<button mat-raised-button color="primary" (click)="openAvailability(item.id)">
 								<mat-icon>power</mat-icon>
 								Availability
 							</button>
+							<button mat-raised-button color="primary" (click)="openUI(item.id)" [disabled]="(paramMappingEnabled$|async).indexOf(item.id) === -1">
+								<mat-icon>settings_input_hdmi</mat-icon>
+								Open UI
+							</button>
 							<button mat-raised-button color="primary" (click)="openParameterMapping(item.id)" [disabled]="(paramMappingEnabled$|async).indexOf(item.id) === -1">
-								<mat-icon>launch</mat-icon>
-								Parameter mapping
+								<mat-icon>view_week</mat-icon>
+								Parameters
 							</button>
 						</div>
 					</div>

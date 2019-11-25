@@ -5,6 +5,7 @@ export class BiduleOscHelper {
 	public static readonly TIMEOUT_OSC_PARAM_UPDATE = 300;
 	public static readonly TIMEOUT_OPEN_UI = 500;
 	public static readonly TIMEOUT_OSC_VALUE_LEARN = 30;
+	public static readonly TIMEOUT_YIELD_PARAMS_LEARN = 500;
 
 	public static getGlobalEffectPrefix() {
 		return '/';
@@ -19,11 +20,34 @@ export class BiduleOscHelper {
 			'Open_UI',
 			'Mutate',
 			'Randomize',
-			'Mode'
+			'Mode',
+			'monitor',
+			'name_set',
+			'parameter_min_set',
+			'parameter_max_set',
+			'parameters_osc_update',
+			'presets_save',
+			'presets_load',
+			'presets_add',
+			'presets_slot_add',
 		];
 		if (considerPresetChange) {
 			disabled.push('Preset_Number');
 		}
 		return disabled.indexOf(endpoint) > -1;
 	}
+
+}
+
+export enum BiduleCommonEndpoint {
+	MODE = 'Mode',			// value specified in Mode
+	PRESET_NUMBER = 'Preset_Number',
+	OPEN_UI = 'Open_UI',	// no value
+	YIELD_PARAMETERS = 'parameters_osc_update',	// no value
+}
+
+export enum BiduleMode {
+	PROCESSING = 0,
+	MUTE = 0.5,
+	BYPASS = 1
 }

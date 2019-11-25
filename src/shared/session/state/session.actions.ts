@@ -49,7 +49,18 @@ export interface SetParamMappingPageActionDecl {
 	readonly page: ParamMappingPage;
 }
 
+// deprecated - param mapping has its own state
 export class SetParamMappingPageAction implements SetParamMappingPageActionDecl {
 	static readonly type = '[Session] Set param mapping page';
 	public constructor(public readonly page: ParamMappingPage) { }
+}
+
+export interface TakeEffectSnapshotActionDecl {
+	readonly id: string|null;
+	readonly vstPath: string|null;
+}
+
+export class TakeEffectSnapshotAction implements TakeEffectSnapshotActionDecl {
+	static readonly type = '[Session] Take effect snapshot';
+	constructor(public readonly id: string|null, public readonly vstPath: string|null) { }
 }

@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {Observable, Subscription} from 'rxjs';
 import {Layer} from '../../../shared/manual/model/layer';
 import {Select, Store} from '@ngxs/store';
@@ -40,6 +40,15 @@ export class ParamMappingPageComponent implements OnInit, OnDestroy {
 
 	@Select(ParamMappingPageState.isEndpointLearning)
 	isParamLearning$: Observable<boolean>;
+
+	@Input()
+	hasDefaultSelect = false;
+
+	@Input()
+	defaultMappingId: string;
+
+	@Output()
+	defaultChanged = new EventEmitter<string>();
 
 	private _subscriptions: Subscription[] = [];
 
@@ -129,5 +138,9 @@ export class ParamMappingPageComponent implements OnInit, OnDestroy {
 		if (strategy) { // todo transfer common values between linear and linearlist
 			this.store.dispatch(new UpdateParamMappingStrategyAction(0, strategy));
 		}
+	}
+
+	selectDefault(id: string) {
+		this.defaultChanged.emit(id);
 	}
 }

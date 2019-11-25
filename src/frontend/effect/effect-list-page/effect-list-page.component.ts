@@ -10,6 +10,9 @@ import {ManualState} from '../../../shared/manual/state/manual.state';
 import {map} from 'rxjs/operators';
 import {BiduleState} from '../../../shared/bidule/state/bidule.state';
 import {Router} from '@angular/router';
+import {BiduleCommonEndpoint, BiduleOscHelper} from '../../../shared/bidule/osc/bidule-osc-helper';
+import {SendOscMessageAction} from '../../../shared/bidule/state/bidule.actions';
+import {TakeEffectSnapshotAction} from '../../../shared/session/state/session.actions';
 
 @Component({
 	selector: 'app-effect-list',
@@ -21,6 +24,14 @@ export class EffectListPageComponent implements OnInit {
 	@Select(VSTState.getEffects)
 	effects$: Observable<Effect[]>;
 
+	@Select(SessionState.getEffectSnapshot)
+	snapshot$: Observable<{
+		effectId: string,
+		vstPath: string
+	}|null>;
+
+	vstPath: string|null;
+
 	// Ids of VSTs enabled for current layer / global
 	paramMappingEnabled$: Observable<string[]>;
 
@@ -30,16 +41,20 @@ export class EffectListPageComponent implements OnInit {
 			store.select(ManualState.getCurrentLayer),
 			store.select(SessionState.getEffectDisposition),
 			store.select(BiduleState.getAvailableGlobalEffectIds)
-		).pipe(map((([effects, currentLayer, currentEffectDisposition, availableGlobalEffectIds]) => {
+		)
+			.pipe(map((([effects, currentLayer, currentEffectDisposition, availableGlobalEffectIds]) => {
 			return effects.filter(effect => {
 				if (currentEffectDisposition && currentEffectDisposition.scope === EffectScope.Global) {
+					this.vstPath = BiduleOscHelper.getGlobalEffectPrefix();
 					// current session "route" configuration is effects - global
 					return availableGlobalEffectIds.indexOf(effect.id) > -1;
 				} else if (currentLayer) {
 					console.log('IS LOCAL - LAYER ' + currentLayer.name);
+					this.vstPath = BiduleOscHelper.getLocalVstPrefix(currentLayer);
 					// current mode is anything - layer selected
 					return currentLayer.availableVstIds.indexOf(effect.id) > -1;
 				} else {
+					this.vstPath = null;
 					// no layer selected
 					return [];
 				}
@@ -61,5 +76,19 @@ export class EffectListPageComponent implements OnInit {
 
 	openParameterMapping(id: string) {
 		this.router.navigate(['/effects/param-mapping', id]);
+	}
+
+	openUI(id: string) {
+		if (this.vstPath) {
+			this.store.dispatch(new SendOscMessageAction(this.vstPath + id + '/' + BiduleCommonEndpoint.OPEN_UI, [1]));
+		}
+	}
+
+	takeSnapshot(id: string) {
+		if (this.vstPath) {
+			this.store.dispatch(
+				new TakeEffectSnapshotAction(id, this.vstPath + id + '/')
+			);
+		}
 	}
 }

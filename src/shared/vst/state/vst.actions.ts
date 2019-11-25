@@ -1,6 +1,7 @@
-import {AddEntityActionDecl} from '../../ngxs/entity/actions';
+import {AddEntityActionDecl, UpdateEntityActionDecl} from '../../ngxs/entity/actions';
 import {VST} from '../model/vst';
 import {ParamMappingPage} from '../../paramMapping/model/model';
+import {Effect} from '../model/effect';
 
 export class AddVSTAction implements AddEntityActionDecl<VST> {
 	static readonly type = '[VST] Add';
@@ -10,6 +11,11 @@ export class AddVSTAction implements AddEntityActionDecl<VST> {
 export interface SaveEffectParamMappingPageActionDecl {
 	readonly effectId: string;
 	paramMappingPage: ParamMappingPage;
+}
+
+export class PatchVstAction implements UpdateEntityActionDecl<Effect> {
+	static readonly type = '[VST] Patch vst';
+	constructor(public entity: Partial<Effect>) { }
 }
 
 export class SaveEffectParamMappingPageAction implements SaveEffectParamMappingPageActionDecl {

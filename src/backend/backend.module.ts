@@ -28,6 +28,7 @@ import {NgxsResetPluginModule} from 'ngxs-reset-plugin';
 import {ParamMappingPageState} from '../shared/paramMapping/state/paramMappingPage.state';
 import {BiduleOscTransmitter} from './bidule/osc/ngxs/bidule-osc-transmitter.service';
 import {ParamMappingOscService} from './bidule/osc/paramMapping/param-mapping-osc.service';
+import {EffectSnapshotService} from './vst/model/effectSnapshotService';
 
 export function IpcActionReceiverFactory(ipcActionReceiver: IpcActionReceiver) {
 	return () => ipcActionReceiver.init();
@@ -80,7 +81,7 @@ export function NoopAppInitializer() {
 	bootstrap: [DummyComponent]
 })
 export class BackendModule {
-	constructor(ks: KotatkoService, blw: BiduleLayoutOpener, blr: BiduleLayoutReader, kbs: KeyboardService, kbdRouter: KeyboardRouter, pmos: ParamMappingOscService) {
+	constructor(ks: KotatkoService, blw: BiduleLayoutOpener, blr: BiduleLayoutReader, kbs: KeyboardService, kbdRouter: KeyboardRouter, pmos: ParamMappingOscService, ess: EffectSnapshotService) {
 		ks.run();
 	}
 }

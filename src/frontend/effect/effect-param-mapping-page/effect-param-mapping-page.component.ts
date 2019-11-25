@@ -2,11 +2,11 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {Observable, Subscription} from 'rxjs';
 import {Effect} from '../../../shared/vst/model/effect';
-import {distinctUntilChanged, map, tap} from 'rxjs/operators';
+import {distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
 import {Store} from '@ngxs/store';
 import {VSTState} from '../../../shared/vst/state/vst.state';
 import {LoadParamMappingPageFromEffectAction} from '../../../shared/paramMapping/state/paramMappingPage.actions';
-import {SaveEffectParamMappingPageAction} from '../../../shared/vst/state/vst.actions';
+import {PatchVstAction, SaveEffectParamMappingPageAction} from '../../../shared/vst/state/vst.actions';
 import {ParamMappingPageState} from '../../../shared/paramMapping/state/paramMappingPage.state';
 
 @Component({
@@ -21,6 +21,8 @@ export class EffectParamMappingPageComponent implements OnInit, OnDestroy {
 	protected _subscriptions: Subscription[] = [];
 
 	protected _effect: Effect|null;
+
+	defaultMappingId$: Observable<string> = null;
 
 	constructor(private route: ActivatedRoute, private router: Router, private store: Store) {
 
@@ -38,6 +40,13 @@ export class EffectParamMappingPageComponent implements OnInit, OnDestroy {
 				effect => this.store.dispatch(new LoadParamMappingPageFromEffectAction(effect.id))
 			)
 		);
+
+		this.defaultMappingId$ = this.route.paramMap
+			.pipe(map((params: ParamMap) => params.get('effectId')))
+			.pipe(distinctUntilChanged())
+			.pipe(switchMap(effectId => this.store.select(VSTState.getVstById).pipe(map(cb => cb(effectId)))))
+			.pipe(map(e => (<Effect>e).mainParamMappingId))
+			.pipe(distinctUntilChanged());
 	}
 
 	ngOnDestroy(): void {
@@ -58,5 +67,17 @@ export class EffectParamMappingPageComponent implements OnInit, OnDestroy {
 			return;
 		}
 		this.store.dispatch(new SaveEffectParamMappingPageAction(this._effect.id, currentParamMappingPage));
+	}
+
+	changeDefault($event: string) {
+		if (!this._effect) {
+			return;
+		}
+		this.store.dispatch(new PatchVstAction(
+			{
+				id: this._effect.id,
+				mainParamMappingId: $event
+			}
+		));
 	}
 }

@@ -10,6 +10,7 @@ import {AvailabilityComponent} from '../vst/availability/availability.component'
 import {VstModule} from '../vst/vst.module';
 import {EffectParamMappingPageComponent} from './effect-param-mapping-page/effect-param-mapping-page.component';
 import {ParamMappingModule} from '../paramMapping/paramMapping.module';
+import {SharedModule} from '../shared/shared.module';
 
 @NgModule({
 	imports: [
@@ -18,6 +19,7 @@ import {ParamMappingModule} from '../paramMapping/paramMapping.module';
 		EffectRoutingModule,
 		VstModule,
 		ParamMappingModule,
+		SharedModule,
 		NgxsModule.forFeature([VSTState])
 	],
 	declarations: [
