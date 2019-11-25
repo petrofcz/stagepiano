@@ -9,4 +9,6 @@ export interface ParamMappingStrategyHandler {
 	getDisplayValue(mappingStrategy: ParamMappingStrategy, args: any[]): string;
 
 	getKnobValue(mappingStrategy: ParamMappingStrategy, args: any[]): number;
+
+	handleMove(mappingStrategy: ParamMappingStrategy, args: any[], delta: number): number;
 }

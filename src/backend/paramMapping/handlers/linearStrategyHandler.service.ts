@@ -11,6 +11,8 @@ import {KnobMode} from '../../keyboard/hw/display/knobs';
 })
 export class LinearStrategyHandlerService implements ParamMappingStrategyHandler {
 
+	_knobSpeed = 1;
+
 	constructor(protected store: Store) { }
 
 	learnValue(value: string, paramMappingItemId: number) {
@@ -64,6 +66,13 @@ export class LinearStrategyHandlerService implements ParamMappingStrategyHandler
 
 	getKnobValue(mappingStrategy: ParamMappingStrategy, args: any[]): number {
 		return this.getMultiplier(<LinearParamMappingStrategy>mappingStrategy, parseFloat(args[0]));
+	}
+
+	handleMove(mappingStrategy: LinearParamMappingStrategy, args: any[], delta: number): number {
+		return Math.min(Math.max(
+			args[0] + ((mappingStrategy.oscTo - mappingStrategy.oscFrom) * (0.01 * this._knobSpeed * delta) * (mappingStrategy.oscInverse ? -1 : 1)),
+			mappingStrategy.oscFrom
+		), mappingStrategy.oscTo);
 	}
 
 }

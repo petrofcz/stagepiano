@@ -3,7 +3,7 @@ import {OscMessage} from './osc.message';
 import {EventEmitter, Injectable} from '@angular/core';
 import {OscSubscription} from './osc.subscription';
 import {merge, Observable, of} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 
 let OSC;
 
@@ -73,7 +73,7 @@ export class OscService {
 	 * @param path
 	 */
 	public observeValues(path: string): Observable<OscMessage> {
-		const messageObservable = this.observe(path);
+		const messageObservable = this.valuesEmitter.pipe(filter(message => message.path === path));
 		return (path in this.valuesMap) ? merge(
 			of(this.valuesMap[path]).pipe(map((values => { return new OscMessage(path, values); }))),
 			messageObservable
