@@ -106,7 +106,7 @@ export class SessionState {
 		const state = {
 			keyboardRoute: action.route
 		};
-		if (action.route !== KeyboardRoute.PARAM_MAPPING && action.route !== KeyboardRoute.EFFECT_OVERVIEW) {
+		if (action.route !== KeyboardRoute.EFFECT_DETAIL && action.route !== KeyboardRoute.EFFECT_OVERVIEW) {
 			state['effectDisposition'] = null;
 		}
 		ctx.patchState(state);

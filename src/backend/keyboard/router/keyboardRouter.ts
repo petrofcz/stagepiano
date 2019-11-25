@@ -2,13 +2,14 @@ import {LayerController} from '../controller/global/navigation/layerController';
 import {Injectable} from '@angular/core';
 import {PresetController} from '../controller/stageMode/presetController';
 import {MortalInterface} from '../model/mortalInterface';
-import {EffectOverviewController} from '../controller/global/display/effectOverviewController';
+import {EffectSwitchController} from '../controller/global/display/effect-switch-controller.service';
 import {EmptyController} from '../controller/global/display/emptyController';
 import {Store} from '@ngxs/store';
 import {SetKeyboardRouteAction} from '../../../shared/session/state/session.actions';
 import {DisplayModeController} from '../controller/global/navigation/displayModeController';
 import {SessionState} from '../../../shared/session/state/session.state';
 import {KeyboardRoute} from './keyboardRoute';
+import {EffectOverviewController} from '../controller/global/display/effectOverviewController';
 
 @Injectable({
 	providedIn: 'root'
@@ -35,6 +36,7 @@ export class KeyboardRouter {
 	protected navigate(route: string, setupControllerCallback = null) {
 		switch (route) {
 			case KeyboardRoute.EFFECT_OVERVIEW:
+			case KeyboardRoute.EFFECT_DETAIL:   // todo separate
 				this.switchDisplayController(
 					this.effectOverviewController, setupControllerCallback
 				);

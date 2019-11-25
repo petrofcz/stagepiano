@@ -1,8 +1,9 @@
 import {BiduleSettingsLoader} from '../bidule/settings/BiduleSettingsLoader';
 import {OscMessage} from './osc.message';
-import {Injectable} from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 import {OscSubscription} from './osc.subscription';
-import {Observable} from 'rxjs';
+import {merge, Observable, of} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 let OSC;
 
@@ -10,11 +11,23 @@ let OSC;
 	providedIn: 'root'
 })
 export class OscService {
+
 	protected osc;
+
+	// last value for each osc parameter
+	protected valuesMap = { };
+
+	protected valuesEmitter = new EventEmitter<OscMessage>();
 
 	constructor(protected biduleSettingsLoader: BiduleSettingsLoader) {
 		OSC = require('osc-js');
 		this.initOsc();
+		this.observe('*').subscribe((message) => {
+			this.valuesEmitter.emit(message);
+		});
+		this.valuesEmitter.subscribe((message) => {
+			this.valuesMap[message.path] = message.args;
+		});
 	}
 
 	protected initOsc() {
@@ -38,6 +51,7 @@ export class OscService {
 
 	public send(message: OscMessage) {
 		console.log('OSC out', message);
+		this.valuesEmitter.emit(message);
 		this.osc.send(new OSC.Message(message.path, ...message.args));
 	}
 
@@ -52,6 +66,18 @@ export class OscService {
 				this.off(subscription);
 			};
 		});
+	}
+
+	/**
+	 * Returns observable for given path, last message is replayed if available
+	 * @param path
+	 */
+	public observeValues(path: string): Observable<OscMessage> {
+		const messageObservable = this.observe(path);
+		return (path in this.valuesMap) ? merge(
+			of(this.valuesMap[path]).pipe(map((values => { return new OscMessage(path, values); }))),
+			messageObservable
+		) : messageObservable;
 	}
 
 	public on(pathPattern: string, callback): OscSubscription {

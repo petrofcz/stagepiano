@@ -1,6 +1,6 @@
 export enum KeyboardRoute {
 	EFFECT_OVERVIEW = 'effectOverview',
-	PARAM_MAPPING = 'paramMapping',    // todo half?
+	EFFECT_DETAIL = 'effect',    // todo half?
 	PRESET = 'preset',
 	INSTRUMENT = 'instrument',
 	EMPTY = 'empty'

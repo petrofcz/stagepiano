@@ -70,14 +70,25 @@ export class LinearParamMappingStrategyComponent extends AbstractParamMappingCom
 				})
 		);
 		this.subscriptions.push(
-			this.form.valueChanges.subscribe((val: LinearParamMappingStrategy) => {
+			this.form.valueChanges.subscribe((val) => {
 				if (this.noRetransmit) {
 					this.noRetransmit = false;
 					return;
 				}
 				this.noRetransmit = false;
+
+				if (!this.form.valid) {
+					return;
+				}
+
 				const linearMappingStrategy: LinearParamMappingStrategy = {
-					... val,
+					oscInverse: val.oscInverse,
+					oscFrom: parseFloat(val.oscFrom),
+					oscTo: parseFloat(val.oscTo),
+					dispFrom: parseFloat(val.dispFrom),
+					dispTo: parseFloat(val.dispTo),
+					dispDecimals: parseFloat(val.dispDecimals),
+					dispSuffix: val.dispSuffix,
 					type: ParamMappingStrategies.LINEAR
 				};
 				this.store.dispatch(

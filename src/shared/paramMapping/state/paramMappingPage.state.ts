@@ -29,7 +29,11 @@ export interface ParamMappingPageStateModel extends EntityStateModel<ParamMappin
 	learningMappingItemId: number|null;   // not learning if null
 	valueLearningIndex: number|null;    // linear mapping
 
+	// global vst path prefix
 	vstPathPrefix: string|null;     // OSC path's prefix for given instance
+
+	// vst path prefix per mapping
+	vstPathPrefixes: { [key: string]: string };
 }
 
 // this state represents current param page
@@ -40,8 +44,9 @@ export interface ParamMappingPageStateModel extends EntityStateModel<ParamMappin
 			selectedMappingId: null,
 			isEndpointLearning: false,
 			valueLearningIndex: null,
-			vstPathPrefix: null,
+			vstPathPrefix: null,    // global vst path prefix
 			learningMappingItemId: null,
+			vstPathPrefixes: {}     // vst path prefix per mapping
 		}
 	)
 })
@@ -114,6 +119,20 @@ export class ParamMappingPageState {
 		return state.valueLearningIndex;
 	}
 
+	@Selector()
+	public static getGivenVstPathPrefixByIndex(state: ParamMappingPageStateModel) {
+		return (index) => {
+			const mappings = this.getAll(state);
+			if (index >= mappings.length) {
+				return state.vstPathPrefix;
+			}
+			if (mappings[index].id in state.vstPathPrefixes) {
+				return state.vstPathPrefixes[mappings[index].id];
+			}
+			return state.vstPathPrefix;
+		};
+	}
+
 	@Action({type: LoadParamMappingPageFromEffectAction.type})
 	public loadFromEffect(ctx: StateContext<ParamMappingPageStateModel>, action: LoadParamMappingPageFromEffectActionDecl) {
 		const effect = (<Effect> this.store.selectSnapshot(VSTState.getVstById)(action.effectId));
@@ -136,11 +155,12 @@ export class ParamMappingPageState {
 			isEndpointLearning: false,
 			valueLearningIndex: null,
 			vstPathPrefix: vstPathPrefix,
-			learningMappingItemId: null
+			learningMappingItemId: null,
+			vstPathPrefixes: { }
 		});
 
 		// todo maybe add nr flag? (no retransmit - both states on back and front transmits)
-		ctx.dispatch(new SetKeyboardRouteAction(KeyboardRoute.PARAM_MAPPING));
+		ctx.dispatch(new SetKeyboardRouteAction(KeyboardRoute.EFFECT_DETAIL));
 	}
 
 	@Action({type: UpdateParamMappingAction.type})
