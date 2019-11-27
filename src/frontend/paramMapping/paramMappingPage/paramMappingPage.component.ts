@@ -21,6 +21,9 @@ import { v1 as uuid } from 'uuid';
 import {SendOscMessageAction} from '../../../shared/bidule/state/bidule.actions';
 import {BiduleOscHelper} from '../../../shared/bidule/osc/bidule-osc-helper';
 import {ParamMappingStrategies} from '../../../shared/paramMapping/model/paramMappingStrategies';
+import {SetKeyboardRouteAction} from '../../../shared/session/state/session.actions';
+import {KeyboardRoutes} from '../../../backend/keyboard/router/keyboardRoutes';
+import {EffectDetailControllerParams} from '../../../backend/keyboard/controller/global/display/effectDetailController';
 
 @Component({
 	selector: 'app-param-mapping-page',

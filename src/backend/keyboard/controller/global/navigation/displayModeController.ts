@@ -9,7 +9,7 @@ import {KeyboardRouter} from '../../../router/keyboardRouter';
 import {EffectPlacement, EffectScope} from '../../../../../shared/vst/model/effect';
 import {SessionState} from '../../../../../shared/session/state/session.state';
 import {SetEffectDispositionAction, SetKeyboardRouteAction} from '../../../../../shared/session/state/session.actions';
-import {KeyboardRoute} from '../../../router/keyboardRoute';
+import {KeyboardRoutes} from '../../../router/keyboardRoutes';
 
 @Injectable({
 	providedIn: 'root'
@@ -34,7 +34,7 @@ export class DisplayModeController implements MortalInterface {
 			.subscribe((event: MultiClickButtonEvent) => {
 				switch (event.clickCount) {
 					case 1:
-						this.store.dispatch(new SetKeyboardRouteAction(KeyboardRoute.INSTRUMENT));
+						this.store.dispatch(new SetKeyboardRouteAction(KeyboardRoutes.INSTRUMENT));
 						break;
 					case 2:
 						this.store.dispatch(
@@ -45,7 +45,7 @@ export class DisplayModeController implements MortalInterface {
 								}
 							)
 						);
-						this.store.dispatch(new SetKeyboardRouteAction(KeyboardRoute.EFFECT_OVERVIEW));
+						this.store.dispatch(new SetKeyboardRouteAction(KeyboardRoutes.EFFECT_OVERVIEW));
 						break;
 					case 3:
 						this.store.dispatch(
@@ -54,7 +54,7 @@ export class DisplayModeController implements MortalInterface {
 								scope: EffectScope.Global
 							})
 						);
-						this.store.dispatch(new SetKeyboardRouteAction(KeyboardRoute.EFFECT_OVERVIEW));
+						this.store.dispatch(new SetKeyboardRouteAction(KeyboardRoutes.EFFECT_OVERVIEW));
 						break;
 				}
 			});
@@ -64,8 +64,12 @@ export class DisplayModeController implements MortalInterface {
 			this.clearEffectDispositionSubscription();
 			pageButtons.turnOffAllLeds();
 
-			switch (route) {
-				case KeyboardRoute.EFFECT_OVERVIEW:
+			if (!route) {
+				return;
+			}
+
+			switch (route.path) {
+				case KeyboardRoutes.EFFECT_OVERVIEW:
 					this.effectDispositionSubscription = this.store.select(SessionState.getEffectDisposition).subscribe((effectDisposition) => {
 						this.clearBlinkSubscription();
 						pageButtons.turnOffAllLeds();
@@ -78,7 +82,7 @@ export class DisplayModeController implements MortalInterface {
 						}
 					});
 					break;
-				case KeyboardRoute.INSTRUMENT:
+				case KeyboardRoutes.INSTRUMENT:
 					pageButtons.setLed(1, true);
 					pageButtons.setLed(2, true);
 					break;

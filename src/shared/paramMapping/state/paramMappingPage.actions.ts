@@ -1,5 +1,5 @@
 import {AddEntityActionDecl, MoveEntityActionDecl, RemoveEntityActionDecl, UpdateEntityActionDecl} from '../../ngxs/entity/actions';
-import {ParamMapping, ParamMappingStrategy} from '../model/model';
+import {ParamMapping, ParamMappingPage, ParamMappingStrategy} from '../model/model';
 
 export class UpdateParamMappingAction implements UpdateEntityActionDecl<ParamMapping> {
 	static readonly type = '[ParamMappingPage] Update param mapping';
@@ -76,4 +76,15 @@ export interface SetParamMappingValueLearningActionDecl {
 export class SetParamMappingValueLearningAction implements SetParamMappingValueLearningActionDecl {
 	static readonly type = '[ParamMappingPage] Set param mapping value learning';
 	constructor (public paramMappingItemId: number|null, public learningIndex: number|null) { }
+}
+
+export interface LoadParamMappingPageActionDecl {
+	page: ParamMappingPage;
+	// vst path prefix per mapping
+	vstPrefixes: { [key: string]: string };
+}
+
+export class LoadParamMappingPageAction implements LoadParamMappingPageActionDecl {
+	static readonly type = '[ParamMappingPage] Load';
+	constructor(public page: ParamMappingPage, public vstPrefixes: { [key: string]: string }) { }
 }

@@ -74,10 +74,10 @@ export class OscService {
 	 */
 	public observeValues(path: string): Observable<OscMessage> {
 		const messageObservable = this.valuesEmitter.pipe(filter(message => message.path === path));
-		return (path in this.valuesMap) ? merge(
-			of(this.valuesMap[path]).pipe(map((values => { return new OscMessage(path, values); }))),
+		return merge(
+			of((path in this.valuesMap) ? this.valuesMap[path] : []).pipe(map((values => { return new OscMessage(path, values); }))),
 			messageObservable
-		) : messageObservable;
+		);
 	}
 
 	public on(pathPattern: string, callback): OscSubscription {

@@ -28,8 +28,11 @@ export class Display {
 
 	protected content: string;
 
+	private readonly emptyRow: string;
+
 	constructor(protected midiAdapter: MidiAdapter) {
-		this.content = ' '.repeat(Display.rows * Display.cols);
+		this.content = ' '.repeat(Display.rows * Display.cols * Display.realColSize);
+		this.emptyRow = ' '.repeat(Display.cols * Display.realColSize);
 	}
 
 	public flushContent() {
@@ -58,50 +61,65 @@ export class Display {
 		const startPos = ((row - 1) * (Display.cols * Display.realColSize)) + ((column - 1) * Display.realColSize);
 		const finalValue = this.pad(value, align);
 		const endPos = startPos + finalValue.length;
+		if (!bufferOnly) {
+			if (this.content.substr(startPos, finalValue.length) !== finalValue) {
+				this.midiAdapter.sendSysex(new SysexMessage(
+					// 0x02 - text commands
+					// 0x01 - set cursor position
+					// 0x04 - set text
+					// tslint:disable-next-line:max-line-length
+					SlMkII.buildSysex([0x02, 0x01, (column - 1) * Display.realColSize, row === 1 ? 0x01 : 0x03, 0x04].concat(this.strToAscii(finalValue)))
+				));
+			}
+		}
 		this.content = this.content.slice(0, startPos) + finalValue + this.content.slice(endPos);
+	}
+
+	public writeMessage(message: string, bufferOnly: boolean = false) {
+		this.clearDisplay(bufferOnly);
+		console.log('[DISP] WRITE MESSAGE ' + message);
+		const position = Math.floor(Math.max(1, (Display.realColSize * Display.cols) - message.length) / 2) - 1;
 		if (!bufferOnly) {
 			this.midiAdapter.sendSysex(new SysexMessage(
-				// 0x02 - text commands
-				// 0x01 - set cursor position
-				// 0x04 - set text
-				// tslint:disable-next-line:max-line-length
-				SlMkII.buildSysex([0x02, 0x01, (column - 1) * Display.realColSize, row === 1 ? 0x01 : 0x03, 0x04].concat(this.strToAscii(finalValue)))
+				SlMkII.buildSysex(
+					[0x02, 0x01, position, 0x01, 0x04]
+						.concat(this.strToAscii(message))
+				)
 			));
 		}
+		this.content = ' '.repeat(position) + message + (Display.realColSize * Display.cols - message.length - position) + this.emptyRow;
 	}
 
-	public writeMessage(message: string) {
-		this.clearDisplay();
-		console.log('[DISP] WRITE MESSAGE ' + message);
-		this.midiAdapter.sendSysex(new SysexMessage(
-			SlMkII.buildSysex(
-				[0x02, 0x01, Math.floor(Math.max(0, (Display.realColSize * Display.cols) - message.length) / 2), 0x01, 0x04]
-					.concat(this.strToAscii(message))
-			)
-		));
-		// todo update local cache;
-	}
-
-	public clearDisplay() {
-		// todo check, didnt work
-		// this.midiAdapter.sendSysex(new SysexMessage(
-		// 	SlMkII.buildSysex([0x02, 0x02, 0x04])
-		// ));
+	public clearDisplay(bufferOnly: boolean = false) {
 		console.log('[DISP] CLEAR DISPLAY');
-		this.clearRow(1);
-		this.clearRow(2);
-		// todo update local cache?
+		const newContent = this.emptyRow.repeat(Display.rows);
+		if (!bufferOnly) {
+			if (newContent !== this.content) {
+				// todo check, didnt work
+				this.midiAdapter.sendSysex(new SysexMessage(
+					SlMkII.buildSysex([0x02, 0x02, 0x04])
+				));
+				// this.clearRow(1);
+				// this.clearRow(2);
+			}
+		}
+		this.content = newContent;
 	}
 
-	public clearRow(row: number) {
+	public clearRow(row: number, bufferOnly: boolean = false) {
 		console.log('[DISP] CLEAR ROW ' + row);
-		this.midiAdapter.sendSysex(new SysexMessage(
-			// tslint:disable-next-line:max-line-length
-			SlMkII.buildSysex([0x02, 0x01, 0, row === 1 ? 0x01 : 0x03, 0x04].concat(this.strToAscii(
-				' '.repeat(Display.cols * Display.realColSize)
-			)))
-		));
-		// todo update local cache
+		if (!bufferOnly) {
+			if (this.content.substr((row - 1) * Display.cols * Display.realColSize, Display.realColSize * Display.cols) !== this.emptyRow) {
+				this.midiAdapter.sendSysex(new SysexMessage(
+					// tslint:disable-next-line:max-line-length
+					SlMkII.buildSysex([0x02, 0x01, 0, row === 1 ? 0x01 : 0x03, 0x04].concat(this.strToAscii(
+						' '.repeat(Display.cols * Display.realColSize)
+					)))
+				));
+			}
+		}
+		this.content = this.content.slice(0, (row - 1) * Display.cols * Display.realColSize)
+			+ this.emptyRow + this.content.slice((row) * Display.cols * Display.realColSize);
 	}
 
 	protected pad (str, align) {

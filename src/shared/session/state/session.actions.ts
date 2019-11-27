@@ -1,6 +1,6 @@
 import {EffectDisposition} from '../model/effectDisposition';
 import {ParamMappingPage} from '../../paramMapping/model/model';
-import {KeyboardRoute} from '../../../backend/keyboard/router/keyboardRoute';
+import {KeyboardRoutes} from '../../../backend/keyboard/router/keyboardRoutes';
 
 export interface SelectLayerActionDecl {
 	layerId: string;
@@ -28,12 +28,13 @@ export class SelectPresetAction implements SelectPresetActionDecl {
 }
 
 export interface SetKeyboardRouteActionDecl {
-	readonly route: KeyboardRoute;
+	readonly route: KeyboardRoutes;
+	readonly params: object|null;
 }
 
 export class SetKeyboardRouteAction implements SetKeyboardRouteActionDecl {
 	static readonly type = '[Session] Set keyboard route';
-	public constructor(public readonly route: KeyboardRoute) { }
+	public constructor(public readonly route: KeyboardRoutes, public readonly params: object|null = null) { }
 }
 
 export interface SetEffectDispositionActionDecl {
@@ -43,6 +44,7 @@ export interface SetEffectDispositionActionDecl {
 export class SetEffectDispositionAction implements SetEffectDispositionActionDecl {
 	static readonly type = '[Session] Set effect disposition';
 	public constructor(public readonly disposition: EffectDisposition) { }
+	public __nf = true;     // not-forward flag
 }
 
 export interface SetParamMappingPageActionDecl {

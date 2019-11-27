@@ -67,12 +67,10 @@ export class EffectSnapshotService {
 		});
 
 		this.store.select(LayoutState.isLayoutLoaded).subscribe((isLayoutLoaded => {
-			console.log('[ESS] Is layout loaded');
-			if(isLayoutLoaded) {
+			if (isLayoutLoaded) {
 				const layers = this.store.selectSnapshot(ManualState.getLayers);
 				this.store.selectSnapshot(VSTState.getEffects).forEach((effect) => {
 					for (const layer of layers) {
-						console.log('[ESS] layer ' + layer.id, effect)
 						if (effect.snapshot) {
 							for (const endpoint in effect.snapshot) {
 								this.osc.send(new OscMessage(

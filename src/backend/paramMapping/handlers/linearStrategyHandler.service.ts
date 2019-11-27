@@ -50,11 +50,10 @@ export class LinearStrategyHandlerService implements ParamMappingStrategyHandler
 	}
 
 	getDisplayValue(mappingStrategy: LinearParamMappingStrategy, args: any[]): string {
+		if (!args.length) {
+			return '';
+		}
 		const value = parseFloat(args[0]);
-		console.log('[LSH]');
-		console.log(mappingStrategy);
-		console.log((mappingStrategy.dispFrom +
-			((mappingStrategy.dispTo - mappingStrategy.dispFrom) * this.getMultiplier(mappingStrategy, value))));
 		return (mappingStrategy.dispFrom +
 			((mappingStrategy.dispTo - mappingStrategy.dispFrom) * this.getMultiplier(mappingStrategy, value)))
 			.toFixed(mappingStrategy.dispDecimals).toString() + (mappingStrategy.dispSuffix ? mappingStrategy.dispSuffix : '');
@@ -65,6 +64,9 @@ export class LinearStrategyHandlerService implements ParamMappingStrategyHandler
 	}
 
 	getKnobValue(mappingStrategy: ParamMappingStrategy, args: any[]): number {
+		if (!args.length) {
+			return 0;
+		}
 		return this.getMultiplier(<LinearParamMappingStrategy>mappingStrategy, parseFloat(args[0]));
 	}
 

@@ -1,13 +1,17 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {Observable, Subscription} from 'rxjs';
-import {Effect} from '../../../shared/vst/model/effect';
+import {Effect, EffectScope} from '../../../shared/vst/model/effect';
 import {distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
 import {Store} from '@ngxs/store';
 import {VSTState} from '../../../shared/vst/state/vst.state';
 import {LoadParamMappingPageFromEffectAction} from '../../../shared/paramMapping/state/paramMappingPage.actions';
 import {PatchVstAction, SaveEffectParamMappingPageAction} from '../../../shared/vst/state/vst.actions';
 import {ParamMappingPageState} from '../../../shared/paramMapping/state/paramMappingPage.state';
+import {SetEffectDispositionAction, SetKeyboardRouteAction} from '../../../shared/session/state/session.actions';
+import {KeyboardRoutes} from '../../../backend/keyboard/router/keyboardRoutes';
+import {EffectDetailControllerParams} from '../../../backend/keyboard/controller/global/display/effectDetailController';
+import {EffectDisposition} from '../../../shared/session/model/effectDisposition';
 
 @Component({
 	selector: 'app-effect-param-mapping',
@@ -37,9 +41,15 @@ export class EffectParamMappingPageComponent implements OnInit, OnDestroy {
 
 		this._subscriptions.push(
 			this.effect$.subscribe(
-				effect => this.store.dispatch(new LoadParamMappingPageFromEffectAction(effect.id))
+				effect => this.store.dispatch(new SetKeyboardRouteAction(KeyboardRoutes.EFFECT_DETAIL, <EffectDetailControllerParams>{ effectId: effect.id }))
 			)
 		);
+
+		// this._subscriptions.push(
+		// 	this.effect$.subscribe(
+		// 		effect => this.store.dispatch(new LoadParamMappingPageFromEffectAction(effect.id))
+		// 	)
+		// );
 
 		this.defaultMappingId$ = this.route.paramMap
 			.pipe(map((params: ParamMap) => params.get('effectId')))

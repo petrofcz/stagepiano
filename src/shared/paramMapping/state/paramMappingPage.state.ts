@@ -7,19 +7,26 @@ import {
 	AddParamMappingAction,
 	LoadParamMappingPageFromEffectAction,
 	LoadParamMappingPageFromEffectActionDecl,
-	MoveParamMappingAction, PatchParamMappingStrategyAction, PatchParamMappingStrategyActionDecl,
-	RemoveParamMappingAction,
+	MoveParamMappingAction,
+	PatchParamMappingStrategyAction,
+	PatchParamMappingStrategyActionDecl,
+	RemoveParamMappingAction, LoadParamMappingPageAction,
 	SelectParamMappingAction,
-	SetEndpointLearningAction, SetParamMappingValueLearningAction, SetParamMappingValueLearningActionDecl,
-	UpdateParamMappingAction, UpdateParamMappingStrategyAction, UpdateParamMappingStrategyActionDecl
+	SetEndpointLearningAction,
+	SetParamMappingValueLearningAction,
+	SetParamMappingValueLearningActionDecl,
+	UpdateParamMappingAction,
+	UpdateParamMappingStrategyAction,
+	UpdateParamMappingStrategyActionDecl, LoadParamMappingPageActionDecl
 } from './paramMappingPage.actions';
 import {VSTState} from '../../vst/state/vst.state';
 import {Effect, EffectScope} from '../../vst/model/effect';
-import {SetKeyboardRouteAction} from '../../session/state/session.actions';
-import {KeyboardRoute} from '../../../backend/keyboard/router/keyboardRoute';
+import {SetEffectDispositionAction, SetKeyboardRouteAction} from '../../session/state/session.actions';
+import {KeyboardRoutes} from '../../../backend/keyboard/router/keyboardRoutes';
 import {SessionState} from '../../session/state/session.state';
 import {ManualState} from '../../manual/state/manual.state';
 import {BiduleOscHelper} from '../../bidule/osc/bidule-osc-helper';
+import {EffectDisposition} from '../../session/model/effectDisposition';
 
 export interface ParamMappingPageStateModel extends EntityStateModel<ParamMapping> {
 	selectedMappingId: string|null;
@@ -126,8 +133,8 @@ export class ParamMappingPageState {
 			if (index >= mappings.length) {
 				return state.vstPathPrefix;
 			}
-			if (mappings[index].id in state.vstPathPrefixes) {
-				return state.vstPathPrefixes[mappings[index].id];
+			if (mappings[index] && mappings[index].id in state.vstPathPrefixes) {
+				return state.vstPathPrefix + state.vstPathPrefixes[mappings[index].id];
 			}
 			return state.vstPathPrefix;
 		};
@@ -142,9 +149,21 @@ export class ParamMappingPageState {
 
 		if (effectDisposition && effectDisposition.scope === EffectScope.Global) {
 			vstPathPrefix = BiduleOscHelper.getGlobalEffectPrefix();
+			if (!effectDisposition) {
+				this.store.dispatch(new SetEffectDispositionAction(<EffectDisposition>{
+					scope: EffectScope.Global,
+					placement: effect.placement
+				}));
+			}
 		} else {
 			const currentLayer = this.store.selectSnapshot(ManualState.getCurrentLayer);
 			vstPathPrefix = BiduleOscHelper.getLocalVstPrefix(currentLayer);
+			if (!effectDisposition) {
+				this.store.dispatch(new SetEffectDispositionAction(<EffectDisposition>{
+					scope: EffectScope.Local,
+					placement: effect.placement
+				}));
+			}
 		}
 		vstPathPrefix += effect.id + '/';
 
@@ -160,7 +179,7 @@ export class ParamMappingPageState {
 		});
 
 		// todo maybe add nr flag? (no retransmit - both states on back and front transmits)
-		ctx.dispatch(new SetKeyboardRouteAction(KeyboardRoute.EFFECT_DETAIL));
+		// ctx.dispatch(new SetKeyboardRouteAction(KeyboardRoutes.EFFECT_DETAIL));
 	}
 
 	@Action({type: UpdateParamMappingAction.type})
@@ -263,6 +282,30 @@ export class ParamMappingPageState {
 			learningMappingItemId: action.paramMappingItemId,
 			valueLearningIndex: action.learningIndex,
 			isEndpointLearning: false
+		});
+	}
+
+	@Action({type: LoadParamMappingPageAction.type})
+	public loadPage(ctx: StateContext<ParamMappingPageStateModel>, action: LoadParamMappingPageActionDecl) {
+		let vstPathPrefix: string;
+		const effectDisposition = this.store.selectSnapshot(SessionState.getEffectDisposition);
+
+		if (effectDisposition && effectDisposition.scope === EffectScope.Global) {
+			vstPathPrefix = BiduleOscHelper.getGlobalEffectPrefix();
+		} else {
+			const currentLayer = this.store.selectSnapshot(ManualState.getCurrentLayer);
+			vstPathPrefix = BiduleOscHelper.getLocalVstPrefix(currentLayer);
+		}
+
+		ctx.setState({
+			ids: action.page.ids,
+			entities: action.page.mappings,
+			selectedMappingId: null,
+			isEndpointLearning: false,
+			valueLearningIndex: null,
+			vstPathPrefix: vstPathPrefix,
+			learningMappingItemId: null,
+			vstPathPrefixes: action.vstPrefixes
 		});
 	}
 
