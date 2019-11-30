@@ -28,8 +28,16 @@ export class DisplayModeController implements MortalInterface {
 	onInit(): void {
 		const pageButtons = this.navigation.pageNavigation;
 		pageButtons.turnOffAllLeds();
-		pageButtons.enableAllButtons();
 		pageButtons.setGlobalClickHandler(new MultiClickHandler(3));
+
+		this.store.select(SessionState.isEditing).subscribe((isEditing) => {
+			if (isEditing) {
+				pageButtons.disableAllButtons();
+			} else {
+				pageButtons.enableAllButtons();
+			}
+		});
+
 		this.modeSelectClickSubscription = pageButtons.onButtonClick
 			.subscribe((event: MultiClickButtonEvent) => {
 				switch (event.clickCount) {
@@ -42,7 +50,7 @@ export class DisplayModeController implements MortalInterface {
 								{
 									placement: event.buttonId === 1 ? EffectPlacement.Pre : EffectPlacement.Post,
 									scope: EffectScope.Local
-								}
+								}, false
 							)
 						);
 						this.store.dispatch(new SetKeyboardRouteAction(KeyboardRoutes.EFFECT_OVERVIEW));
@@ -52,7 +60,7 @@ export class DisplayModeController implements MortalInterface {
 							new SetEffectDispositionAction({
 								placement: event.buttonId === 1 ? EffectPlacement.Pre : EffectPlacement.Post,
 								scope: EffectScope.Global
-							})
+							}, false)
 						);
 						this.store.dispatch(new SetKeyboardRouteAction(KeyboardRoutes.EFFECT_OVERVIEW));
 						break;
@@ -70,6 +78,7 @@ export class DisplayModeController implements MortalInterface {
 
 			switch (route.path) {
 				case KeyboardRoutes.EFFECT_OVERVIEW:
+				case KeyboardRoutes.EFFECT_DETAIL:
 					this.effectDispositionSubscription = this.store.select(SessionState.getEffectDisposition).subscribe((effectDisposition) => {
 						this.clearBlinkSubscription();
 						pageButtons.turnOffAllLeds();

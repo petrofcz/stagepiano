@@ -59,7 +59,7 @@ export class ButtonGroup {
 			}
 		} else {
 			if (activePosition > -1) {
-				this.activeButtonIds.filter((iId: number) => {
+				this.activeButtonIds = this.activeButtonIds.filter((iId: number) => {
 					return iId !== buttonId;
 				});
 			}

@@ -15,7 +15,7 @@ export class IpcActionTransmitterPlugin implements NgxsPlugin {
 	}
 
 	sendAction(action: any) {
-		if (!action.hasOwnProperty('__nf')) {     // check for not-forward flag
+		if (!action.hasOwnProperty('__nf') || action.__nf === false) {     // check for not-forward flag
 			const actionType = getActionTypeFromInstance(action);
 			if (actionType.substr(0, 2) !== '@@') {     // skip ngxs internal actions
 				// console.log("SND");

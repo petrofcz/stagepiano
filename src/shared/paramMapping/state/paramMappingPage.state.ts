@@ -149,21 +149,21 @@ export class ParamMappingPageState {
 
 		if (effectDisposition && effectDisposition.scope === EffectScope.Global) {
 			vstPathPrefix = BiduleOscHelper.getGlobalEffectPrefix();
-			if (!effectDisposition) {
+			//if (!effectDisposition) {
 				this.store.dispatch(new SetEffectDispositionAction(<EffectDisposition>{
 					scope: EffectScope.Global,
 					placement: effect.placement
-				}));
-			}
+				}, true));
+			//}
 		} else {
 			const currentLayer = this.store.selectSnapshot(ManualState.getCurrentLayer);
 			vstPathPrefix = BiduleOscHelper.getLocalVstPrefix(currentLayer);
-			if (!effectDisposition) {
+			//if (!effectDisposition) {
 				this.store.dispatch(new SetEffectDispositionAction(<EffectDisposition>{
 					scope: EffectScope.Local,
 					placement: effect.placement
-				}));
-			}
+				}, true));
+			//}
 		}
 		vstPathPrefix += effect.id + '/';
 

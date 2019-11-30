@@ -43,8 +43,8 @@ export interface SetEffectDispositionActionDecl {
 
 export class SetEffectDispositionAction implements SetEffectDispositionActionDecl {
 	static readonly type = '[Session] Set effect disposition';
-	public constructor(public readonly disposition: EffectDisposition) { }
-	public __nf = true;     // not-forward flag
+	// __nf = not-forward flag
+	public constructor(public readonly disposition: EffectDisposition, public __nf = false) { }
 }
 
 export interface SetParamMappingPageActionDecl {
@@ -65,4 +65,13 @@ export interface TakeEffectSnapshotActionDecl {
 export class TakeEffectSnapshotAction implements TakeEffectSnapshotActionDecl {
 	static readonly type = '[Session] Take effect snapshot';
 	constructor(public readonly id: string|null, public readonly vstPath: string|null) { }
+}
+
+export interface SetEditingActionDecl {
+	readonly editing: boolean;
+}
+
+export class SetEditingAction implements SetEditingActionDecl {
+	static readonly type = '[Session] Set editing';
+	constructor(public readonly editing: boolean) { }
 }

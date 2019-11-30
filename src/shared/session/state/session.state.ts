@@ -5,7 +5,7 @@ import {
 	SelectPresetAction,
 	SelectPresetActionDecl,
 	SelectPresetCategoryAction,
-	SelectPresetCategoryActionDecl,
+	SelectPresetCategoryActionDecl, SetEditingAction, SetEditingActionDecl,
 	SetEffectDispositionAction,
 	SetEffectDispositionActionDecl,
 	SetKeyboardRouteAction,
@@ -81,6 +81,11 @@ export class SessionState {
 	}
 
 	@Selector()
+	public static isEditing(state: SessionStateModel): boolean {
+		return state.isEditing;
+	}
+
+	@Selector()
 	public static getEffectSnapshot(state: SessionStateModel): {
 		effectId: string,
 		vstPath: string
@@ -140,6 +145,13 @@ export class SessionState {
 				effectId: action.id,
 				vstPath: action.vstPath
 			}
+		});
+	}
+
+	@Action({type: SetEditingAction.type})
+	public setEditing(ctx: StateContext<SessionStateModel>, action: SetEditingActionDecl) {
+		ctx.patchState({
+			isEditing: action.editing
 		});
 	}
 

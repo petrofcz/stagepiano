@@ -13,7 +13,7 @@ export class IpcActionTransmitterPlugin implements NgxsPlugin {
 
 	handle(state: any, event: any, next: NgxsNextPluginFn): any {
 		console.log(event);
-		if (!event.hasOwnProperty('__nf')) {     // check for not-forward flag
+		if (!event.hasOwnProperty('__nf') || event.__nf === false) {     // check for not-forward flag
 			const actionType = getActionTypeFromInstance(event);
 			if (actionType.substr(0, 2) !== '@@' && actionType.substr(0, 8) !== '[Router]') {     // skip ngxs internal actions
 				const obj =  Object.assign({}, event);

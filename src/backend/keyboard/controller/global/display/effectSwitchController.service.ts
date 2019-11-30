@@ -2,7 +2,7 @@ import {MortalInterface} from '../../../model/mortalInterface';
 import {EventEmitter, Injectable} from '@angular/core';
 import {Select, Store} from '@ngxs/store';
 import {ManualState} from '../../../../../shared/manual/state/manual.state';
-import {BehaviorSubject, combineLatest, Observable, Subscription} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of, Subscription} from 'rxjs';
 import {Layer} from '../../../../../shared/manual/model/layer';
 import {BiduleState} from '../../../../../shared/bidule/state/bidule.state';
 import {VST} from '../../../../../shared/vst/model/vst';
@@ -14,6 +14,7 @@ import {SessionState} from '../../../../../shared/session/state/session.state';
 import {SetKeyboardRouteAction} from '../../../../../shared/session/state/session.actions';
 import {KeyboardRouter} from '../../../router/keyboardRouter';
 import {LoadParamMappingPageFromEffectAction} from '../../../../../shared/paramMapping/state/paramMappingPage.actions';
+import {ButtonMatrixEvent} from '../../../hw/common/button/buttonMatrix';
 
 @Injectable({
 	providedIn: 'root'
@@ -153,11 +154,18 @@ export class EffectSwitchController implements MortalInterface {
 
 		// handle click
 		this.subscriptions.push(
-			this.display.buttonMatrix.onButtonClick.pipe(filter(evt => {
-				return evt.row === this._row;
-			})).pipe(withLatestFrom(availableEffects$)).subscribe(([clickEvt, effects]) => {
-				this.onSwitch.emit(effects[clickEvt.col - 1]);
-			})
+			this.store.select(SessionState.isEditing)
+				.pipe(switchMap(isEditing => isEditing ? <Observable<ButtonMatrixEvent>>of() :
+					this.display.buttonMatrix.onButtonClick.pipe(filter(evt => {
+						return evt.row === this._row;
+					}))
+				))
+				.pipe(withLatestFrom(availableEffects$))
+				.subscribe(([clickEvt, effects]) => {
+					if (clickEvt) {
+						this.onSwitch.emit(effects[clickEvt.col - 1]);
+					}
+				})
 		);
 
 		// --- Parameter mapping & values ---

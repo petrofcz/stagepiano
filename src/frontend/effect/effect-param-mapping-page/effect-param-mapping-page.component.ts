@@ -8,7 +8,7 @@ import {VSTState} from '../../../shared/vst/state/vst.state';
 import {LoadParamMappingPageFromEffectAction} from '../../../shared/paramMapping/state/paramMappingPage.actions';
 import {PatchVstAction, SaveEffectParamMappingPageAction} from '../../../shared/vst/state/vst.actions';
 import {ParamMappingPageState} from '../../../shared/paramMapping/state/paramMappingPage.state';
-import {SetEffectDispositionAction, SetKeyboardRouteAction} from '../../../shared/session/state/session.actions';
+import {SetEditingAction, SetEffectDispositionAction, SetKeyboardRouteAction} from '../../../shared/session/state/session.actions';
 import {KeyboardRoutes} from '../../../backend/keyboard/router/keyboardRoutes';
 import {EffectDetailControllerParams} from '../../../backend/keyboard/controller/global/display/effectDetailController';
 import {EffectDisposition} from '../../../shared/session/model/effectDisposition';
@@ -57,11 +57,14 @@ export class EffectParamMappingPageComponent implements OnInit, OnDestroy {
 			.pipe(switchMap(effectId => this.store.select(VSTState.getVstById).pipe(map(cb => cb(effectId)))))
 			.pipe(map(e => (<Effect>e).mainParamMappingId))
 			.pipe(distinctUntilChanged());
+
+		this.store.dispatch(new SetEditingAction(true));
 	}
 
 	ngOnDestroy(): void {
 		this._subscriptions.forEach(sub => sub.unsubscribe());
 		this._subscriptions = [];
+		this.store.dispatch(new SetEditingAction(false));
 	}
 
 	onCancelClick() {
