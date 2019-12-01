@@ -167,8 +167,7 @@ export class EffectSwitchController implements MortalInterface {
 					}
 				})
 		);
-
-		// --- Parameter mapping & values ---
+		
 	}
 
 	get row(): number {

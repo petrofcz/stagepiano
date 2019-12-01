@@ -26,8 +26,50 @@
 			</div>
 			<div class="flex-vertical-separator"></div>
 			<div class="flex">
-				<!-- todo -->
-				test2
+				<div *ngIf="!(currentCategory$ | async)">
+					Please, select a category first.
+				</div>
+				<div *ngIf="currentCategory$ | async">
+					<div class="text-right">
+						<button mat-raised-button color="warn" (click)="openAddPresetDialog()">
+							<mat-icon>add</mat-icon>
+							Add preset
+						</button>
+					</div>
+					<div *ngIf="(presets$ | async).length > 0">
+						<mat-list class="preset-list" cdkDropList (cdkDropListDropped)="handlePresetSorting($event)">
+							<mat-list-item cdkDrag *ngFor="let item of presets$ | async" [className]="(availableVsts$|async).indexOf(item.vstId) === -1 ? 'disabled' : ''">
+								<div class="flex-row flex-content-center" style="width: 100%">
+									<div class="flex">
+										<div>
+											<div>
+												<h4 matLine>{{ item.name }}</h4>
+											</div>
+										</div>
+									</div>
+									<div class="flex">
+										<div>
+											{{ item.vstId }}
+										</div>
+									</div>
+									<div class="flex flex-row flex-content-center horizontal-group">
+										<!--
+										TODO
+										<button mat-raised-button color="primary" (click)="openParameterMapping(item.id)" [disabled]="(availableVsts$|async).indexOf(item.vstId) === -1">
+											<mat-icon>view_week</mat-icon>
+											Edit
+										</button>
+										-->
+									</div>
+								</div>
+								<mat-divider></mat-divider>
+							</mat-list-item>
+						</mat-list>
+					</div>
+					<div *ngIf="(presets$ | async).length === 0">
+						No presets present in selected category.
+					</div>
+				</div>
 			</div>
 		</div>
 	</mat-card-content>

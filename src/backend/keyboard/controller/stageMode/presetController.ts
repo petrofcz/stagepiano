@@ -1,7 +1,7 @@
 import {MortalInterface} from '../../model/MortalInterface';
 import {DisplayRegionDriver} from '../../hw/display/display-region-driver';
 import {combineLatest, Subscription} from 'rxjs';
-import {bufferWhen, distinctUntilChanged, filter, last, map, withLatestFrom} from 'rxjs/operators';
+import {bufferWhen, distinctUntilChanged, filter, last, map, switchMap, withLatestFrom} from 'rxjs/operators';
 import {MultiClickButtonEvent, MultiClickHandler} from '../../hw/common/button/multiClickHandler';
 import {EventEmitter, Injectable} from '@angular/core';
 import {Store} from '@ngxs/store';
@@ -9,6 +9,7 @@ import {PresetCategoryState} from '../../../../shared/preset/state/preset-catego
 import {PresetCategory} from '../../../../shared/preset/model/model';
 import {SessionState} from '../../../../shared/session/state/session.state';
 import {SelectPresetAction, SelectPresetCategoryAction} from '../../../../shared/session/state/session.actions';
+import {PresetState} from '../../../../shared/preset/state/preset.state';
 
 @Injectable({
 	providedIn: 'root'
@@ -125,8 +126,9 @@ export class PresetController implements MortalInterface {
 			}))
 			.pipe(distinctUntilChanged());
 
-		// todo join
-		const presetNames$ = presetIds$;
+		const presetNames$ = presetIds$.pipe(switchMap(presetIds => this.store.select(PresetState.getEntities).pipe(map(
+			entities => presetIds.map(presetId => entities[presetId].name)
+		))));
 
 		// 0-no category
 		const currentCategoryPosition$ = commonChange$

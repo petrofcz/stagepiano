@@ -14,6 +14,9 @@ import {VSTState} from '../../vst/state/vst.state';
 import {ManualState} from '../../manual/state/manual.state';
 import {SessionState} from '../../session/state/session.state';
 import {BiduleState} from '../../bidule/state/bidule.state';
+import {PresetState} from '../../preset/state/preset.state';
+import {PresetCategoryState} from '../../preset/state/preset-category.state';
+import {ParamMappingPageState} from '../../paramMapping/state/paramMappingPage.state';
 
 export interface LayoutStateModel extends EntityStateModel<Layout> {
 	active?: string;
@@ -108,7 +111,7 @@ export class LayoutState {
 	@Action({type: ResetLayoutAction.type})
 	public resetLayoutState(ctx: StateContext<LayoutStateModel>) {
 		ctx.dispatch(new StateReset(
-			BiduleState, VSTState, ManualState, SessionState
+			BiduleState, VSTState, ManualState, SessionState, PresetState, PresetCategoryState, ParamMappingPageState
 		));
 	}
 

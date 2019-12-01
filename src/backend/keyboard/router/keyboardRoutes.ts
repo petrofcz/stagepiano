@@ -1,7 +1,7 @@
 export enum KeyboardRoutes {
 	EFFECT_OVERVIEW = 'effectOverview',
-	EFFECT_DETAIL = 'effect',    // todo half?
+	EFFECT_DETAIL = 'effect',
 	PRESET = 'preset',
-	INSTRUMENT = 'instrument',
+	INSTRUMENT_DETAIL = 'instrumentDetail',
 	EMPTY = 'empty'
 }

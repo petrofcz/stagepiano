@@ -7,11 +7,10 @@ export interface PresetCategory {
 export interface Preset {
 	id: string;
 	name: string;
-	vstId: string;
-	initStrategy: PresetInitStrategy;
-	parameterMappingId: string;
+	vstId: string|null;
+	initStrategy: PresetInitStrategy|null;
+	parameterMappingId: string|null;
 	paramValues: {[key: string]: string};
-	effectParamValues: {[key: string]: {[key: string]: string}};
 }
 
 export interface PresetInitStrategy {

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {MortalInterface} from '../../../model/mortalInterface';
-import {Subscription} from 'rxjs';
+import {combineLatest, Subscription} from 'rxjs';
 import {Store} from '@ngxs/store';
 import {NavigationRegionDriver} from '../../../hw/navigation/navigationRegionDriver';
 import {InterruptionClock} from '../../../model/interruptionClock';
@@ -10,6 +10,7 @@ import {EffectPlacement, EffectScope} from '../../../../../shared/vst/model/effe
 import {SessionState} from '../../../../../shared/session/state/session.state';
 import {SetEffectDispositionAction, SetKeyboardRouteAction} from '../../../../../shared/session/state/session.actions';
 import {KeyboardRoutes} from '../../../router/keyboardRoutes';
+import {LayoutState} from '../../../../../shared/layout/state/layout.state';
 
 @Injectable({
 	providedIn: 'root'
@@ -30,8 +31,11 @@ export class DisplayModeController implements MortalInterface {
 		pageButtons.turnOffAllLeds();
 		pageButtons.setGlobalClickHandler(new MultiClickHandler(3));
 
-		this.store.select(SessionState.isEditing).subscribe((isEditing) => {
-			if (isEditing) {
+		combineLatest(
+			this.store.select(SessionState.isEditing),
+			this.store.select(LayoutState.isLayoutLoaded)
+		).subscribe(([isEditing, isLayoutLoaded]) => {
+			if (!isLayoutLoaded || isEditing) {
 				pageButtons.disableAllButtons();
 			} else {
 				pageButtons.enableAllButtons();
@@ -42,7 +46,9 @@ export class DisplayModeController implements MortalInterface {
 			.subscribe((event: MultiClickButtonEvent) => {
 				switch (event.clickCount) {
 					case 1:
-						this.store.dispatch(new SetKeyboardRouteAction(KeyboardRoutes.INSTRUMENT));
+						this.store.dispatch(new SetKeyboardRouteAction(
+							event.buttonId === 1 ? KeyboardRoutes.PRESET : KeyboardRoutes.INSTRUMENT_DETAIL
+						));
 						break;
 					case 2:
 						this.store.dispatch(
@@ -67,12 +73,15 @@ export class DisplayModeController implements MortalInterface {
 				}
 			});
 
-		this.store.select(SessionState.getKeyboardRoute).subscribe((route) => {
+		combineLatest(
+			this.store.select(SessionState.getKeyboardRoute),
+			this.store.select(LayoutState.isLayoutLoaded)
+		).subscribe(([route, isLayoutLoaded]) => {
 			this.clearBlinkSubscription();
 			this.clearEffectDispositionSubscription();
 			pageButtons.turnOffAllLeds();
 
-			if (!route) {
+			if (!route || !isLayoutLoaded) {
 				return;
 			}
 
@@ -91,10 +100,17 @@ export class DisplayModeController implements MortalInterface {
 						}
 					});
 					break;
-				case KeyboardRoutes.INSTRUMENT:
+				case KeyboardRoutes.PRESET:
 					pageButtons.setLed(1, true);
+					pageButtons.setLed(2, false);
+					break;
+				case KeyboardRoutes.INSTRUMENT_DETAIL:
+					pageButtons.setLed(1, false);
 					pageButtons.setLed(2, true);
 					break;
+				case KeyboardRoutes.EMPTY:
+					pageButtons.setLed(1, false);
+					pageButtons.setLed(2, false);
 			}
 		});
 	}

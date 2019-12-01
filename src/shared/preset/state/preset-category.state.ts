@@ -1,14 +1,16 @@
 import {defaultEntityState, EntityStateModel} from '../../ngxs/entity/state-model';
 import {Action, Selector, State, StateContext, StateOperator} from '@ngxs/store';
-import {PresetCategory} from '../model/model';
+import {Preset, PresetCategory} from '../model/model';
 import {AddEntityActionDecl, MoveEntityActionDecl, SaveEntityActionDecl, UpdateEntityActionDecl} from '../../ngxs/entity/actions';
 import {addEntity, moveEntity, saveEntity, updateEntity} from '../../ngxs/entity/state-operators';
 import {
-	AddPresetCategoryAction,
+	AddPresetCategoryAction, AddPresetToCategoryAction, AddPresetToCategoryActionDecl, MovePresetAction, MovePresetActionDecl,
 	MovePresetCategoryAction,
 	UpdatePresetCategoryAction
 } from './preset-category.actions';
 import {SessionState} from '../../session/state/session.state';
+import {moveItemInArray} from '@angular/cdk/drag-drop';
+import {AddPresetAction} from './preset.actions';
 
 export interface PresetCategoryStateModel extends EntityStateModel<PresetCategory> {
 }
@@ -74,6 +76,42 @@ export class PresetCategoryState {
 				action.oldIndex, action.newIndex
 			)
 		);
+	}
+
+	@Action({type: MovePresetAction.type})
+	public movePreset(ctx: StateContext<PresetCategoryStateModel>, action: MovePresetActionDecl) {
+		const state = ctx.getState();
+		if (state.ids.indexOf(action.categoryId) === -1) {
+			return;
+		}
+		const entities = state.entities;
+		const presetIds = entities[action.categoryId].presetIds;
+		moveItemInArray(presetIds, action.oldIndex, action.newIndex);
+		entities[action.categoryId] = {
+			... entities[action.categoryId],
+			presetIds: presetIds
+		};
+		ctx.patchState({
+			entities: entities
+		});
+	}
+
+	@Action({type: AddPresetToCategoryAction.type})
+	public addPreset(ctx: StateContext<PresetCategoryStateModel>, action: AddPresetToCategoryActionDecl) {
+		const state = ctx.getState();
+		if (state.ids.indexOf(action.categoryId) === -1) {
+			return;
+		}
+		const entities = state.entities;
+		const presetIds = entities[action.categoryId].presetIds;
+		presetIds.push(action.presetId);
+		entities[action.categoryId] = {
+			... entities[action.categoryId],
+			presetIds: presetIds
+		};
+		ctx.patchState({
+			entities: entities
+		});
 	}
 
 }
