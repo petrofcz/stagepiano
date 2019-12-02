@@ -3,7 +3,7 @@ import {ParamMappingStrategies} from './paramMappingStrategies';
 
 export interface ParamMappingGroup {
 	// todo move to preset namespace (and rename) ?
-	id: number;
+	id: string;
 	name: string;
 	paramMappingPage: ParamMappingPage;
 }

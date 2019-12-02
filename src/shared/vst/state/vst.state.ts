@@ -3,10 +3,18 @@ import {VST} from '../model/VST';
 import {addEntity, updateEntity} from '../../ngxs/entity/state-operators';
 import {defaultEntityState, EntityStateModel} from '../../ngxs/entity/state-model';
 import {AddEntityActionDecl, RemoveEntityActionDecl, UpdateEntityActionDecl} from '../../ngxs/entity/actions';
-import {AddVSTAction, PatchVstAction, SaveEffectParamMappingPageAction, SaveEffectParamMappingPageActionDecl} from './vst.actions';
+import {
+	AddVSTAction, PatchMappingGroupAction, PatchMappingGroupActionDecl,
+	PatchVstAction,
+	RemoveMappingGroupAction, RemoveMappingGroupActionDecl,
+	SaveEffectParamMappingPageAction,
+	SaveEffectParamMappingPageActionDecl
+} from './vst.actions';
 import {Effect} from '../model/effect';
 import {Navigate} from '@ngxs/router-plugin';
 import {RemoveParamMappingAction} from '../../paramMapping/state/paramMappingPage.actions';
+import {Instrument} from '../model/instrument';
+import {ParamMappingGroup, ParamMappingPage} from '../../paramMapping/model/model';
 
 export interface VSTStateModel extends EntityStateModel<VST> {
 }
@@ -109,4 +117,56 @@ export class VSTState {
 			});
 		}
 	}
+
+	@Action({type: RemoveMappingGroupAction.type})
+	public removeParamMappingGroup(ctx: StateContext<VSTStateModel>, action: RemoveMappingGroupActionDecl) {
+		const state = ctx.getState();
+		if (action.instrumentId in state.entities && state.entities[action.instrumentId].type === 'instrument') {
+			ctx.patchState({
+				entities: {
+					...state.entities,
+					[action.instrumentId]: <Instrument>{
+						...state.entities[action.instrumentId],
+						paramMappingGroupIds: (<Instrument>state.entities[action.instrumentId]).paramMappingGroupIds.filter(id => id !== action.groupId),
+						defaultParamMappingGroupId: (<Instrument>state.entities[action.instrumentId]).defaultParamMappingGroupId !== action.groupId ? (<Instrument>state.entities[action.instrumentId]).defaultParamMappingGroupId :
+							((<Instrument>state.entities[action.instrumentId]).paramMappingGroupIds.filter(id => id !== action.groupId).pop() || null)
+					}
+				}
+			});
+		}
+	}
+
+	@Action({type: PatchMappingGroupAction.type})
+	public patchParamMappingGroup(ctx: StateContext<VSTStateModel>, action: PatchMappingGroupActionDecl) {
+		const state = ctx.getState();
+		if (!action.paramMappingGroup.id || !action.instrumentId) {
+			return;
+		}
+		const instrument: Instrument = <Instrument>state.entities[action.instrumentId];
+		let entity = action.paramMappingGroup.id in instrument.paramMappingGroups ? instrument.paramMappingGroups[action.paramMappingGroup.id] : <ParamMappingGroup>{
+			name: '',
+			paramMappingPage: <ParamMappingPage> {
+				mappings: {},
+				ids: []
+			}
+		};
+		entity = {
+			... entity,
+			... action.paramMappingGroup
+		};
+		ctx.patchState({
+			entities: {
+				... state.entities,
+				[action.instrumentId]: <Instrument>{
+					... instrument,
+					paramMappingGroups: {
+						... instrument.paramMappingGroups,
+						[entity.id]: entity
+					},
+					paramMappingGroupIds: instrument.paramMappingGroupIds.indexOf(entity.id) > -1 ? instrument.paramMappingGroupIds : instrument.paramMappingGroupIds.concat([entity.id])
+				}
+			}
+		});
+	}
+
 }

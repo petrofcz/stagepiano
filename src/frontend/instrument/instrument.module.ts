@@ -8,6 +8,9 @@ import {VSTState} from '../../shared/vst/state/vst.state';
 import {VstModule} from '../vst/vst.module';
 import {AvailabilityComponent} from '../vst/availability/availability.component';
 import {SharedModule} from '../shared/shared.module';
+import {InstrumentParamMappingPageComponent} from './instrument-param-mapping-page/instrument-param-mapping-page.component';
+import {ParamMappingModule} from '../paramMapping/paramMapping.module';
+import {NamedEntityDialogComponent} from '../shared/dialogs/named/named-entity-dialog.component';
 
 @NgModule({
 	imports: [
@@ -16,13 +19,16 @@ import {SharedModule} from '../shared/shared.module';
 		InstrumentRoutingModule,
 		VstModule,
 		SharedModule,
+		ParamMappingModule,
 		NgxsModule.forFeature([VSTState])
 	],
 	declarations: [
-		InstrumentListPageComponent
+		InstrumentListPageComponent,
+		InstrumentParamMappingPageComponent
 	],
 	entryComponents: [
-		AvailabilityComponent
+		AvailabilityComponent,
+		NamedEntityDialogComponent
 	]
 })
 export class InstrumentModule {}

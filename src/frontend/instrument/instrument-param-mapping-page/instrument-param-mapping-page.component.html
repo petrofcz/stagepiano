@@ -1,0 +1,58 @@
+<mat-card *ngIf="(instrument$|async) as instrument">
+	<mat-card-header>
+		<mat-card-title>
+			Parameter mapping for instrument {{ instrument.name }}
+		</mat-card-title>
+	</mat-card-header>
+	<mat-card-content>
+		<hr>
+		<div class="flex-row">
+			<div class="flex mapping-group-select">
+				<mat-form-field>
+					<mat-label>Parameter mapping</mat-label>
+					<mat-select [value]="currentParamMappingGroupId" (selectionChange)="selectParamMappingGroup($event.value)">
+						<mat-option *ngFor="let paramMappingGroupId of instrument.paramMappingGroupIds" [value]="paramMappingGroupId" [class.default-item]="instrument.defaultParamMappingGroupId === paramMappingGroupId">
+							{{ instrument.paramMappingGroups[paramMappingGroupId].name }}
+						</mat-option>
+					</mat-select>
+				</mat-form-field>
+			</div>
+			<div class="flex">
+				<div class="horizontal-group">
+					<button mat-raised-button color="primary" (click)="setDefaultMappingGroup()" [disabled]="currentParamMappingGroupId === null || instrument.defaultParamMappingGroupId === currentParamMappingGroupId">
+						<mat-icon>check_circle</mat-icon>
+						Set as default
+					</button>
+					<button mat-raised-button color="warn" confirm (confirmed)="removeParamMappingGroup()" [disabled]="currentParamMappingGroupId === null">
+						<mat-icon>remove</mat-icon>
+						Remove
+					</button>
+					<button mat-raised-button color="primary" (click)="renameParamMappingGroup()" [disabled]="currentParamMappingGroupId === null">
+						<mat-icon>edit</mat-icon>
+						Rename
+					</button>
+<!--					<button mat-raised-button color="default" confirm (confirmed)="duplicateParamMappingGroup()" [disabled]="currentParamMappingGroupId === null">-->
+<!--						<mat-icon>dynamic_feed</mat-icon>-->
+<!--						Duplicate-->
+<!--					</button>-->
+					<button mat-raised-button color="primary" (click)="addParamMappingGroup()">
+						<mat-icon>add</mat-icon>
+						Add
+					</button>
+				</div>
+			</div>
+		</div>
+		<div *ngIf="currentParamMappingGroupId !== null">
+			<hr>
+			<app-param-mapping-page [hasDefaultSelect]="false"></app-param-mapping-page>
+		</div>
+	</mat-card-content>
+	<mat-card-footer>
+		<div class="card-buttons">
+			<div class="horizontal-group" *ngIf="currentParamMappingGroupId !== null">
+				<button mat-raised-button (click)="onCancelClick()">Cancel</button>
+				<button mat-raised-button color="primary" (click)="onSaveClick()">Save</button>
+			</div>
+		</div>
+	</mat-card-footer>
+</mat-card>

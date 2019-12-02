@@ -66,7 +66,7 @@ export class InstrumentListPageComponent implements OnInit {
 	}
 
 	openParameterMapping(id: string) {
-		this.router.navigate(['/presets/param-mapping', id]);
+		this.router.navigate(['/instruments/param-mapping', id]);
 	}
 
 	takeSnapshot(id: string) {

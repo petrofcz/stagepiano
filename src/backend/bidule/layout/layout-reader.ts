@@ -35,7 +35,8 @@ export class BiduleLayoutReader {
 								id: vstDefinition.id,
 								name: vstDefinition.name,
 								defaultParamMappingGroupId: null,
-								paramMappingGroups: [],
+								paramMappingGroups: { },
+								paramMappingGroupIds: [],
 								snapshot: null
 							};
 							vst = instrument;
