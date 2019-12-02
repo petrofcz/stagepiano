@@ -2,8 +2,6 @@ import {Action, Selector, State, StateContext, Store} from '@ngxs/store';
 import {
 	SelectLayerAction,
 	SelectLayerActionDecl,
-	SelectPresetAction,
-	SelectPresetActionDecl,
 	SelectPresetCategoryAction,
 	SelectPresetCategoryActionDecl, SetEditingAction, SetEditingActionDecl,
 	SetEffectDispositionAction,
@@ -63,14 +61,6 @@ export class SessionState {
 	}
 
 	@Selector()
-	public static getCurrentPresetId(state: SessionStateModel): string|null {
-		if (state.currentLayerId && state.currentLayerId in state.presets) {
-			return state.presets[state.currentLayerId];
-		}
-		return null;
-	}
-
-	@Selector()
 	public static getKeyboardRoute(state: SessionStateModel): KeyboardRoute|null {
 		return state.keyboardRoute;
 	}
@@ -107,16 +97,6 @@ export class SessionState {
 		items[SessionState.getActiveLayerId(state)] = action.presetCategoryId;
 		ctx.patchState({
 			presetCategories: items
-		});
-	}
-
-	@Action({type: SelectPresetAction.type})
-	public selectPreset(ctx: StateContext<SessionStateModel>, action: SelectPresetActionDecl) {
-		const state = ctx.getState();
-		const items = state.presets;
-		items[SessionState.getActiveLayerId(state)] = action.presetId;
-		ctx.patchState({
-			presets: items
 		});
 	}
 

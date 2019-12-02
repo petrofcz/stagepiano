@@ -7,9 +7,10 @@ import {EventEmitter, Injectable} from '@angular/core';
 import {Store} from '@ngxs/store';
 import {PresetCategoryState} from '../../../../shared/preset/state/preset-category.state';
 import {PresetCategory} from '../../../../shared/preset/model/model';
-import {SessionState} from '../../../../shared/session/state/session.state';
-import {SelectPresetAction, SelectPresetCategoryAction} from '../../../../shared/session/state/session.actions';
 import {PresetState} from '../../../../shared/preset/state/preset.state';
+import {PresetSessionState} from '../../../../shared/preset/state/presetSession.state';
+import {SelectPresetCategoryAction} from '../../../../shared/session/state/session.actions';
+import {SelectPresetAction} from '../../../../shared/preset/state/presetSession.actions';
 
 @Injectable({
 	providedIn: 'root'
@@ -233,7 +234,7 @@ export class PresetController implements MortalInterface {
 		this.subscriptions.push(
 			combineLatest(
 				presetIds$,
-				this.store.select(SessionState.getCurrentPresetId)
+				this.store.select(PresetSessionState.getCurrentPresetId)
 			).subscribe(([presetIds, currentPresetId]) => {
 				this.buttonsByRow[PresetController.ROW_PRESETS].forEach((buttonId) => {
 					this.display.buttonMatrix.buttons.setLed(buttonId, false);

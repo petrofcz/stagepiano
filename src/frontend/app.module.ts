@@ -52,6 +52,7 @@ import {PresetCategoryState} from '../shared/preset/state/preset-category.state'
 import {NgxsResetPluginModule} from 'ngxs-reset-plugin';
 import {ParamMappingPageState} from '../shared/paramMapping/state/paramMappingPage.state';
 import {PresetState} from '../shared/preset/state/preset.state';
+import {PresetSessionState} from '../shared/preset/state/presetSession.state';
 // import {IpcStorageEngine} from './core/services/storage/ipcStorageEngine.service';
 
 // AoT requires an exported function for factories
@@ -80,7 +81,7 @@ export function IpcActionReceiverFactory(ipcActionReceiver: IpcActionReceiver) {
 				deps: [HttpClient]
 			}
 		}),
-		NgxsModule.forRoot([LayoutState, FrontendState, VSTState, ManualState, BiduleState, SessionState, PresetCategoryState, ParamMappingPageState, PresetState], {
+		NgxsModule.forRoot([LayoutState, FrontendState, VSTState, ManualState, BiduleState, SessionState, PresetCategoryState, ParamMappingPageState, PresetState, PresetSessionState], {
 			// selectorOptions: {
 			// 	suppressErrors: false,
 			// 	injectContainerState: false

@@ -30,6 +30,7 @@ import {BiduleOscTransmitter} from './bidule/osc/ngxs/bidule-osc-transmitter.ser
 import {ParamMappingOscService} from './bidule/osc/paramMapping/param-mapping-osc.service';
 import {EffectSnapshotService} from './vst/model/effectSnapshotService';
 import {PresetState} from '../shared/preset/state/preset.state';
+import {PresetSessionState} from '../shared/preset/state/presetSession.state';
 
 export function IpcActionReceiverFactory(ipcActionReceiver: IpcActionReceiver) {
 	return () => ipcActionReceiver.init();
@@ -47,7 +48,7 @@ export function NoopAppInitializer() {
 	],
 	imports: [
 		ServerModule,
-		NgxsModule.forRoot([LayoutState, KeyboardState, VSTState, ManualState, BiduleState, SessionState, PresetCategoryState, ParamMappingPageState, PresetState]),
+		NgxsModule.forRoot([LayoutState, KeyboardState, VSTState, ManualState, BiduleState, SessionState, PresetCategoryState, ParamMappingPageState, PresetState, PresetSessionState]),
 		NgxsResetPluginModule.forRoot()
 	],
 	providers: [

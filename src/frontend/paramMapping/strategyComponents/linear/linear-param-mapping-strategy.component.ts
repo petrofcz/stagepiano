@@ -5,7 +5,7 @@ import {LinearParamMappingStrategy} from '../../../../shared/paramMapping/model/
 import {ParamMappingStrategies} from '../../../../shared/paramMapping/model/paramMappingStrategies';
 import {Select, Store} from '@ngxs/store';
 import {ParamMappingPageState} from '../../../../shared/paramMapping/state/paramMappingPage.state';
-import {distinctUntilChanged, filter, map, tap} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, filter, map, tap} from 'rxjs/operators';
 import {
 	SetParamMappingValueLearningAction,
 	UpdateParamMappingStrategyAction
@@ -70,7 +70,7 @@ export class LinearParamMappingStrategyComponent extends AbstractParamMappingCom
 				})
 		);
 		this.subscriptions.push(
-			this.form.valueChanges.subscribe((val) => {
+			this.form.valueChanges.pipe(debounceTime(500)).subscribe((val) => {
 				if (this.noRetransmit) {
 					this.noRetransmit = false;
 					return;

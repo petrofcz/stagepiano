@@ -8,6 +8,8 @@ import {PresetListPageComponent} from './preset-list-page/preset-list-page.compo
 import {NamedEntityDialogComponent} from '../shared/dialogs/named/named-entity-dialog.component';
 import {SharedModule} from '../shared/shared.module';
 import {SessionState} from '../../shared/session/state/session.state';
+import {PresetDetailPageComponent} from './preset-detail-page/preset-detail-page.component';
+import {ReactiveFormsModule} from '@angular/forms';
 
 @NgModule({
 	imports: [
@@ -15,10 +17,12 @@ import {SessionState} from '../../shared/session/state/session.state';
 		MaterialModule,
 		NgxsModule.forFeature([PresetCategoryState, SessionState]),
 		PresetRoutingModule,
-		SharedModule
+		SharedModule,
+		ReactiveFormsModule
 	],
 	declarations: [
-		PresetListPageComponent
+		PresetListPageComponent,
+		PresetDetailPageComponent
 	],
 	entryComponents: [
 		NamedEntityDialogComponent

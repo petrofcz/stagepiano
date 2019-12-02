@@ -16,6 +16,7 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
 import {A11yModule} from '@angular/cdk/a11y';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import {MatSelectModule} from '@angular/material/select';
 
 @NgModule({
 	imports: [
@@ -47,6 +48,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
 		MatButtonToggleModule,
 		MatDialogModule,
 		DragDropModule,
+		MatSelectModule,
 		A11yModule
 	],
 })

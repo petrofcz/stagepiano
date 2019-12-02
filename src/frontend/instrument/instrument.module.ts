@@ -7,6 +7,7 @@ import { InstrumentListPageComponent } from './instrument-list-page/instrument-l
 import {VSTState} from '../../shared/vst/state/vst.state';
 import {VstModule} from '../vst/vst.module';
 import {AvailabilityComponent} from '../vst/availability/availability.component';
+import {SharedModule} from '../shared/shared.module';
 
 @NgModule({
 	imports: [
@@ -14,6 +15,7 @@ import {AvailabilityComponent} from '../vst/availability/availability.component'
 		MaterialModule,
 		InstrumentRoutingModule,
 		VstModule,
+		SharedModule,
 		NgxsModule.forFeature([VSTState])
 	],
 	declarations: [

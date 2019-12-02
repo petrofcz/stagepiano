@@ -10,3 +10,17 @@ export class AddPresetAction implements AddEntityActionDecl<Preset> {
 	static readonly type = '[Preset] Add';
 	public constructor(public readonly entity: Preset) { }
 }
+
+export class SavePresetAction {
+	static readonly type = '[Preset] Save';
+}
+
+export interface DuplicatePresetActionDecl {
+	newPresetId: string;
+	oldPresetId: string;
+}
+
+export class DuplicatePresetAction implements DuplicatePresetActionDecl {
+	static readonly type = '[Preset] Duplicate';
+	constructor(public readonly newPresetId: string, public readonly oldPresetId: string) { }
+}

@@ -18,6 +18,9 @@ import {PresetState} from '../../../shared/preset/state/preset.state';
 import {AddPresetAction} from '../../../shared/preset/state/preset.actions';
 import {filter, map, switchMap} from 'rxjs/operators';
 import {ManualState} from '../../../shared/manual/state/manual.state';
+import {Router} from '@angular/router';
+import {PresetSessionState} from '../../../shared/preset/state/presetSession.state';
+import {SelectPresetAction} from '../../../shared/preset/state/presetSession.actions';
 
 @Component({
 	selector: 'app-preset-list',
@@ -36,15 +39,22 @@ export class PresetListPageComponent implements OnInit {
 
 	availableVsts$: Observable<string[]>;
 
-	constructor(protected store: Store, public dialog: MatDialog) {
+	currentPresetId$: Observable<string>;
+
+	constructor(protected store: Store, public dialog: MatDialog, protected router: Router) {
 		this.presets$ = this.currentCategory$.pipe(
 			switchMap(currentCategory => this.store.select(PresetState.getEntities).pipe(map(entities => {
+				console.log(' --- ', currentCategory.presetIds);
 				return currentCategory.presetIds.map(presetId => entities[presetId]);
 			})))
 		);
 		this.availableVsts$ = this.store.select(ManualState.getCurrentLayer).pipe(
 			map(layer => layer.availableVstIds)
 		);
+		this.currentPresetId$ = this.store.select(PresetSessionState.getCurrentPreset).pipe(map(p => p ? p.id : null));
+
+		// todo remove
+		this.currentCategory$.subscribe(() => { console.log('--- !!!! CURRENT CATEGORY CHANGED !!!'); })
 	}
 
 	ngOnInit() {
@@ -121,5 +131,13 @@ export class PresetListPageComponent implements OnInit {
 		this.store.dispatch(
 			new MovePresetAction($event.previousIndex, $event.currentIndex, this.store.selectSnapshot(PresetCategoryState.getCurrent).id)
 		);
+	}
+
+	openPresetDetail() {
+		this.router.navigate(['/presets/detail']);
+	}
+
+	selectPreset(id: string) {
+		this.store.dispatch(new SelectPresetAction(id));
 	}
 }

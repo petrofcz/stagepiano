@@ -14,7 +14,7 @@ export interface ParamMappingPage {
 }
 
 export interface ParamMapping {
-	id: string; // 0 .. 8
+	id: string;
 	name: string;
 	items: ParamMappingItem[];
 	mainItemId: number|null;	 // This mapping will be displayed if multiple mapping items are available

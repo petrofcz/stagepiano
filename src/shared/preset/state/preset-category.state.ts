@@ -1,5 +1,5 @@
 import {defaultEntityState, EntityStateModel} from '../../ngxs/entity/state-model';
-import {Action, Selector, State, StateContext, StateOperator} from '@ngxs/store';
+import {Action, Selector, State, StateContext, StateOperator, Store} from '@ngxs/store';
 import {Preset, PresetCategory} from '../model/model';
 import {AddEntityActionDecl, MoveEntityActionDecl, SaveEntityActionDecl, UpdateEntityActionDecl} from '../../ngxs/entity/actions';
 import {addEntity, moveEntity, saveEntity, updateEntity} from '../../ngxs/entity/state-operators';
@@ -10,7 +10,8 @@ import {
 } from './preset-category.actions';
 import {SessionState} from '../../session/state/session.state';
 import {moveItemInArray} from '@angular/cdk/drag-drop';
-import {AddPresetAction} from './preset.actions';
+import {AddPresetAction, DuplicatePresetAction, DuplicatePresetActionDecl} from './preset.actions';
+import {PresetSessionState} from './presetSession.state';
 
 export interface PresetCategoryStateModel extends EntityStateModel<PresetCategory> {
 }
@@ -20,6 +21,8 @@ export interface PresetCategoryStateModel extends EntityStateModel<PresetCategor
 	defaults: defaultEntityState<PresetCategory>()
 })
 export class PresetCategoryState {
+
+	constructor(private store: Store) { }
 
 	@Selector()
 	public static getById(state: PresetCategoryStateModel): (id: string) => PresetCategory|null {
@@ -48,7 +51,7 @@ export class PresetCategoryState {
 		if (!id) {
 			return null;
 		}
-		return this.getById(state)(id);
+		return state.entities[id];
 	}
 
 	@Action({type: UpdatePresetCategoryAction.type})
@@ -111,6 +114,32 @@ export class PresetCategoryState {
 		};
 		ctx.patchState({
 			entities: entities
+		});
+	}
+
+	@Action({type: DuplicatePresetAction.type})
+	public duplicatePreset(ctx: StateContext<PresetCategoryStateModel>, action: DuplicatePresetActionDecl) {
+		const currentPreset = this.store.selectSnapshot(PresetSessionState.getCurrentPreset);
+		const currentCategoryId = this.store.selectSnapshot(SessionState.getCurrentPresetCategoryId);
+		console.log('[PresetCategoryState] dup', action, currentPreset);
+		if (!currentPreset || !currentPreset.id || !currentCategoryId) {
+			return;
+		}
+		const state = ctx.getState();
+		const presetIds = state.entities[currentCategoryId].presetIds;
+		const index = presetIds.indexOf(action.oldPresetId);
+		console.log('Index search', currentCategoryId, action.oldPresetId, presetIds, index);
+		if (index === -1) {
+			return;
+		}
+		ctx.patchState({
+			entities: {
+				...state.entities,
+				[currentCategoryId]: {
+					...state.entities[currentCategoryId],
+					presetIds: presetIds.slice(0, index + 1).concat([action.newPresetId]).concat(presetIds.slice(index + 1))
+				}
+			}
 		});
 	}
 

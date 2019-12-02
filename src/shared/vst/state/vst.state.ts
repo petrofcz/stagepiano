@@ -28,6 +28,11 @@ export class VSTState {
 	}
 
 	@Selector()
+	public static getEntities(state: VSTStateModel) {
+		return state.entities;
+	}
+
+	@Selector()
 	public static getInstruments(state: VSTStateModel) {
 		return state.ids.map(id => state.entities[id]).filter((vst) => {
 			return vst.type === 'instrument';

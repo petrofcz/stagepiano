@@ -19,14 +19,6 @@ export class SelectPresetCategoryAction implements SelectPresetCategoryActionDec
 	public constructor(public readonly presetCategoryId?: string) { }
 }
 
-export interface SelectPresetActionDecl {
-	readonly presetId?: string;
-}
-export class SelectPresetAction implements SelectPresetActionDecl {
-	static readonly type = '[Session] Select preset';
-	public constructor(public readonly presetId?: string) { }
-}
-
 export interface SetKeyboardRouteActionDecl {
 	readonly route: KeyboardRoutes;
 	readonly params: object|null;

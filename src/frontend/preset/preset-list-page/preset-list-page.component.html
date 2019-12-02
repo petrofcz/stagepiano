@@ -1,7 +1,23 @@
 <mat-card>
 	<mat-card-header>
 		<mat-card-title>
-			<!-- todo buttons, etc -->
+			<div class="flex-row">
+				<div class="flex">
+					Presets
+				</div>
+				<div style="margin-left: auto;" class="horizontal-group flex">
+					<div class="text-right">
+						<div *ngIf="currentCategory$ | async">
+							<div class="text-right">
+								<button mat-raised-button color="primary" (click)="openAddPresetDialog()">
+									<mat-icon>add</mat-icon>
+									Add preset
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 		</mat-card-title>
 	</mat-card-header>
 	<mat-card-content>
@@ -30,15 +46,9 @@
 					Please, select a category first.
 				</div>
 				<div *ngIf="currentCategory$ | async">
-					<div class="text-right">
-						<button mat-raised-button color="warn" (click)="openAddPresetDialog()">
-							<mat-icon>add</mat-icon>
-							Add preset
-						</button>
-					</div>
 					<div *ngIf="(presets$ | async).length > 0">
 						<mat-list class="preset-list" cdkDropList (cdkDropListDropped)="handlePresetSorting($event)">
-							<mat-list-item cdkDrag *ngFor="let item of presets$ | async" [className]="(availableVsts$|async).indexOf(item.vstId) === -1 ? 'disabled' : ''">
+							<mat-list-item cdkDrag *ngFor="let item of presets$ | async" (click)="selectPreset(item.id)" [class.disabled-item]="(availableVsts$|async).indexOf(item.vstId) === -1" [class.selected-item]="(currentPresetId$|async) === item.vstId">
 								<div class="flex-row flex-content-center" style="width: 100%">
 									<div class="flex">
 										<div>
@@ -53,16 +63,13 @@
 										</div>
 									</div>
 									<div class="flex flex-row flex-content-center horizontal-group">
-										<!--
-										TODO
-										<button mat-raised-button color="primary" (click)="openParameterMapping(item.id)" [disabled]="(availableVsts$|async).indexOf(item.vstId) === -1">
-											<mat-icon>view_week</mat-icon>
+										<button mat-raised-button color="primary" (click)="openPresetDetail()" [disabled]="(currentPresetId$ | async) !== item.id">
+										<!-- [disabled]="!item.vstId || (availableVsts$|async).indexOf(item.vstId) === -1" -->
+											<mat-icon>edit</mat-icon>
 											Edit
 										</button>
-										-->
 									</div>
 								</div>
-								<mat-divider></mat-divider>
 							</mat-list-item>
 						</mat-list>
 					</div>
