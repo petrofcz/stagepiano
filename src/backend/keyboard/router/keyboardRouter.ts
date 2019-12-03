@@ -11,6 +11,7 @@ import {KeyboardRoutes} from './keyboardRoutes';
 import {EffectOverviewController} from '../controller/global/display/effectOverviewController';
 import {EffectDetailController} from '../controller/global/display/effectDetailController';
 import {distinctUntilChanged, map} from 'rxjs/operators';
+import {InstrumentDetailController} from '../controller/stageMode/instrumentDetailController';
 
 @Injectable({
 	providedIn: 'root'
@@ -22,7 +23,7 @@ export class KeyboardRouter {
 	// tslint:disable-next-line:max-line-length
 	constructor(protected store: Store,
 				protected layerController: LayerController, protected displayModeController: DisplayModeController,
-				protected presetController: PresetController,
+				protected presetController: PresetController, protected instrumentDetailController: InstrumentDetailController,
 				protected effectOverviewController: EffectOverviewController, protected effectDetailController: EffectDetailController,
 				protected emptyController: EmptyController) {
 		this.layerController.onInit();
@@ -53,6 +54,11 @@ export class KeyboardRouter {
 			case KeyboardRoutes.PRESET:
 				this.switchDisplayController(
 					this.presetController
+				);
+				break;
+			case KeyboardRoutes.INSTRUMENT_DETAIL:
+				this.switchDisplayController(
+					this.instrumentDetailController
 				);
 				break;
 			case KeyboardRoutes.EMPTY:

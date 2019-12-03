@@ -89,7 +89,6 @@ export class LoadParamMappingPageAction implements LoadParamMappingPageActionDec
 	constructor(public page: ParamMappingPage, public vstPrefixes: { [key: string]: string }) { }
 }
 
-
 export interface LoadParamMappingPageFromInstrumentActionDecl {
 	instrumentId: string;
 	paramMappingGroupId: string;
@@ -98,4 +97,8 @@ export interface LoadParamMappingPageFromInstrumentActionDecl {
 export class LoadParamMappingPageFromInstrumentAction implements LoadParamMappingPageFromInstrumentActionDecl {
 	static readonly type = '[ParamMappingPage] Load from instrument';
 	constructor(public readonly instrumentId: string, public readonly paramMappingGroupId: string) { }
+}
+
+export class ResetParamMappingPageAction {
+	static readonly type = '[ParamMappingPage] Reset';
 }

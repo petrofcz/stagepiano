@@ -11,7 +11,6 @@ import {
 	UpdatePresetCategoryAction
 } from '../../../shared/preset/state/preset-category.actions';
 import {NamedEntityDialogComponent, NamedEntityDialogData} from '../../shared/dialogs/named/named-entity-dialog.component';
-import {SessionState} from '../../../shared/session/state/session.state';
 import {SelectPresetCategoryAction} from '../../../shared/session/state/session.actions';
 import {CdkDragDrop} from '@angular/cdk/drag-drop';
 import {PresetState} from '../../../shared/preset/state/preset.state';
@@ -116,7 +115,7 @@ export class PresetListPageComponent implements OnInit {
 				name: result.name,
 				vstId: null,
 				initStrategy: null,
-				parameterMappingId: null,
+				parameterMappingGroupId: null,
 				paramValues: { }
 			}));
 			this.store.dispatch(new AddPresetToCategoryAction(id, this.store.selectSnapshot(PresetCategoryState.getCurrent).id));

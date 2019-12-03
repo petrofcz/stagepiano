@@ -10,14 +10,18 @@ import {
 	MoveParamMappingAction,
 	PatchParamMappingStrategyAction,
 	PatchParamMappingStrategyActionDecl,
-	RemoveParamMappingAction, LoadParamMappingPageAction,
+	RemoveParamMappingAction,
+	LoadParamMappingPageAction,
 	SelectParamMappingAction,
 	SetEndpointLearningAction,
 	SetParamMappingValueLearningAction,
 	SetParamMappingValueLearningActionDecl,
 	UpdateParamMappingAction,
 	UpdateParamMappingStrategyAction,
-	UpdateParamMappingStrategyActionDecl, LoadParamMappingPageActionDecl
+	UpdateParamMappingStrategyActionDecl,
+	LoadParamMappingPageActionDecl,
+	LoadParamMappingPageFromInstrumentAction,
+	LoadParamMappingPageFromInstrumentActionDecl, ResetParamMappingPageAction
 } from './paramMappingPage.actions';
 import {VSTState} from '../../vst/state/vst.state';
 import {Effect, EffectScope} from '../../vst/model/effect';
@@ -27,6 +31,7 @@ import {SessionState} from '../../session/state/session.state';
 import {ManualState} from '../../manual/state/manual.state';
 import {BiduleOscHelper} from '../../bidule/osc/bidule-osc-helper';
 import {EffectDisposition} from '../../session/model/effectDisposition';
+import {Instrument} from '../../vst/model/instrument';
 
 export interface ParamMappingPageStateModel extends EntityStateModel<ParamMapping> {
 	selectedMappingId: string|null;
@@ -180,6 +185,52 @@ export class ParamMappingPageState {
 
 		// todo maybe add nr flag? (no retransmit - both states on back and front transmits)
 		// ctx.dispatch(new SetKeyboardRouteAction(KeyboardRoutes.EFFECT_DETAIL));
+	}
+
+	@Action({type: LoadParamMappingPageFromInstrumentAction.type})
+	public loadFromInstrument(ctx: StateContext<ParamMappingPageStateModel>, action: LoadParamMappingPageFromInstrumentActionDecl) {
+		const instrument = (<Instrument> this.store.selectSnapshot(VSTState.getVstById)(action.instrumentId));
+		const page = action.paramMappingGroupId in instrument.paramMappingGroups ? instrument.paramMappingGroups[action.paramMappingGroupId].paramMappingPage :
+			(instrument.defaultParamMappingGroupId && instrument.defaultParamMappingGroupId in instrument.paramMappingGroups ? instrument.paramMappingGroups[instrument.defaultParamMappingGroupId].paramMappingPage : {
+				ids: [],
+				mappings: { }
+			})
+
+
+		let vstPathPrefix: string;
+
+		const currentLayer = this.store.selectSnapshot(ManualState.getCurrentLayer);
+		vstPathPrefix = BiduleOscHelper.getLocalVstPrefix(currentLayer);
+
+		vstPathPrefix += instrument.id + '/';
+
+		ctx.setState({
+			ids: page.ids,
+			entities: page.mappings,
+			selectedMappingId: null,
+			isEndpointLearning: false,
+			valueLearningIndex: null,
+			vstPathPrefix: vstPathPrefix,
+			learningMappingItemId: null,
+			vstPathPrefixes: { }
+		});
+
+		// todo maybe add nr flag? (no retransmit - both states on back and front transmits)
+		// ctx.dispatch(new SetKeyboardRouteAction(KeyboardRoutes.EFFECT_DETAIL));
+	}
+
+	@Action({type: ResetParamMappingPageAction.type})
+	public resetPage(ctx: StateContext<ParamMappingPageStateModel>, action) {
+		ctx.setState({
+			ids: [],
+			entities: { },
+			selectedMappingId: null,
+			isEndpointLearning: false,
+			valueLearningIndex: null,
+			vstPathPrefix: null,
+			learningMappingItemId: null,
+			vstPathPrefixes: { }
+		});
 	}
 
 	@Action({type: UpdateParamMappingAction.type})

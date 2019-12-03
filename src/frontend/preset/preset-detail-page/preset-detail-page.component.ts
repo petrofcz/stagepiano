@@ -4,7 +4,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {debounceTime, filter, map, switchMap} from 'rxjs/operators';
 import {SetEditingAction, SetKeyboardRouteAction} from '../../../shared/session/state/session.actions';
 import {Preset} from '../../../shared/preset/model/model';
-import {Observable, Subscription} from 'rxjs';
+import {Observable, of, Subscription} from 'rxjs';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {VST} from '../../../shared/vst/model/vst';
 import {ManualState} from '../../../shared/manual/state/manual.state';
@@ -14,6 +14,8 @@ import {KeyboardRoutes} from '../../../backend/keyboard/router/keyboardRoutes';
 import { v1 as uuid } from 'uuid';
 import {DuplicatePresetAction, SavePresetAction} from '../../../shared/preset/state/preset.actions';
 import {PatchCurrentPresetAction} from '../../../shared/preset/state/presetSession.actions';
+import {Instrument} from '../../../shared/vst/model/instrument';
+import {ParamMappingGroup} from '../../../shared/paramMapping/model/model';
 
 @Component({
 	selector: 'app-preset-detail',
@@ -32,12 +34,14 @@ export class PresetDetailPageComponent implements OnInit, OnDestroy {
 		id: null,
 		name: null,
 		vstId: null,
-		parameterMappingId: null,
+		parameterMappingGroupId: null,
 		initStrategy: null,
 		paramValues: { }
 	};
 
 	availableVsts$: Observable<VST[]>;
+
+	availableParamMappingGroups$: Observable<ParamMappingGroup[]>;
 
 	constructor(private fb: FormBuilder, private router: Router, private store: Store) {
 		this.availableVsts$ = this.store.select(ManualState.getCurrentLayer).pipe(
@@ -45,6 +49,12 @@ export class PresetDetailPageComponent implements OnInit, OnDestroy {
 		).pipe(switchMap(vstIds => this.store.select(VSTState.getEntities).pipe(map(entities => {
 			return vstIds.filter(vstId => entities[vstId].type === 'instrument').map(vstId => entities[vstId]);
 		}))));
+
+		this._form = this.fb.group({
+			'name': [null, [Validators.required]],
+			'vstId': [null, []],
+			'parameterMappingGroupId': [null, []],
+		});
 	}
 
 	protected updateFormValuesFromModel() {
@@ -52,18 +62,13 @@ export class PresetDetailPageComponent implements OnInit, OnDestroy {
 			this._form.setValue({
 				'name': this._model.name,
 				'vstId': this._model.vstId,
-				'paramMappingId': this._model.parameterMappingId
+				'parameterMappingGroupId': this._model.parameterMappingGroupId
 			});
 		}
 	}
 
 
 	ngOnInit(): void {
-		this._form = this.fb.group({
-			'name': [null, [Validators.required]],
-			'vstId': [null],
-			'paramMappingId': [null],
-		});
 		this.store.dispatch(new SetEditingAction(true));
 		this.store.dispatch(new SetKeyboardRouteAction(KeyboardRoutes.INSTRUMENT_DETAIL));
 
@@ -79,6 +84,15 @@ export class PresetDetailPageComponent implements OnInit, OnDestroy {
 			)
 		);
 
+		this.availableParamMappingGroups$ = $currentPreset.pipe(switchMap(
+			preset => preset && preset.vstId
+				? this.store.select(VSTState.getVstById).pipe(map(cb => {
+					const instr = <Instrument>cb(preset.vstId);
+					return instr.paramMappingGroupIds.map(gid => instr.paramMappingGroups[gid]);
+				}))
+				: <Observable<ParamMappingGroup[]>>of()
+		));
+
 		this._subscriptions.push(
 			this._form.valueChanges.pipe(debounceTime(500)).subscribe((val) => {
 				console.log('FORM VALUES CHANGED', val, this._noRetransmit, this._form.valid);
@@ -91,6 +105,15 @@ export class PresetDetailPageComponent implements OnInit, OnDestroy {
 
 				if (!this._form.valid) {
 					return;
+				}
+
+				if (!val.vstId) {
+					val.parameterMappingGroupId = null;
+				} else {
+					const instrument: Instrument = <Instrument>this.store.selectSnapshot(VSTState.getVstById)(val.vstId);
+					if (val.parameterMappingGroupId !== null && !(val.parameterMappingGroupId in instrument.paramMappingGroups)) {
+						val.parameterMappingGroupId = null;
+					}
 				}
 
 				this.store.dispatch(

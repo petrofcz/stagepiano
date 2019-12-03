@@ -9,7 +9,7 @@ export interface Preset {
 	name: string;
 	vstId: string|null;
 	initStrategy: PresetInitStrategy|null;
-	parameterMappingId: string|null;
+	parameterMappingGroupId: string|null;
 	paramValues: {[key: string]: string};
 }
 

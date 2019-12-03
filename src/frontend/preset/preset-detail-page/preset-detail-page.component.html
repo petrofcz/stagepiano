@@ -9,17 +9,26 @@
 			<div class="form-content">
 				<mat-form-field>
 					<mat-label>Name:</mat-label>
-					<input matInput placeholder="" formControlName="name">
+					<input matInput placeholder="" formControlName="name" required>
 					<mat-error *ngIf="_form.controls['name'].invalid">This field is required.</mat-error>
 				</mat-form-field>
 				<mat-form-field>
 					<mat-label>Instrument</mat-label>
-					<mat-select formControlName="vstId" required>
+					<mat-select formControlName="vstId">
 						<mat-option *ngFor="let iVst of availableVsts$ | async" [value]="iVst.id">
 							{{ iVst.name }}
 						</mat-option>
 					</mat-select>
 					<mat-error *ngIf="_form.controls['vstId'].hasError('required')">Please choose VST (only VSTs available for current layer are shown)</mat-error>
+				</mat-form-field>
+				<mat-form-field>
+					<mat-label>Parameter mapping</mat-label>
+					<mat-select formControlName="parameterMappingGroupId">
+						<mat-option *ngFor="let paramMappingGroup of availableParamMappingGroups$ | async" [value]="paramMappingGroup.id">
+							{{ paramMappingGroup.name }}
+						</mat-option>
+					</mat-select>
+					<mat-error *ngIf="_form.controls['parameterMappingGroupId'].hasError('required')">Please choose param mapping item for selected effect.</mat-error>
 				</mat-form-field>
 		<!--		<div class="flex-row">-->
 		<!--			<div class="flex">-->

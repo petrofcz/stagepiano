@@ -31,6 +31,8 @@ import {ParamMappingOscService} from './bidule/osc/paramMapping/param-mapping-os
 import {EffectSnapshotService} from './vst/model/effectSnapshotService';
 import {PresetState} from '../shared/preset/state/preset.state';
 import {PresetSessionState} from '../shared/preset/state/presetSession.state';
+import {LayoutRedirectService} from '../frontend/model/navigation/layout-redirect.service';
+import {ParamMappingLoaderService} from '../shared/preset/model/paramMappingLoader.service';
 
 export function IpcActionReceiverFactory(ipcActionReceiver: IpcActionReceiver) {
 	return () => ipcActionReceiver.init();
@@ -83,7 +85,7 @@ export function NoopAppInitializer() {
 	bootstrap: [DummyComponent]
 })
 export class BackendModule {
-	constructor(ks: KotatkoService, blw: BiduleLayoutOpener, blr: BiduleLayoutReader, kbs: KeyboardService, kbdRouter: KeyboardRouter, pmos: ParamMappingOscService, ess: EffectSnapshotService) {
+	constructor(ks: KotatkoService, blw: BiduleLayoutOpener, blr: BiduleLayoutReader, kbs: KeyboardService, kbdRouter: KeyboardRouter, pmos: ParamMappingOscService, ess: EffectSnapshotService, pml: ParamMappingLoaderService) {
 		ks.run();
 	}
 }

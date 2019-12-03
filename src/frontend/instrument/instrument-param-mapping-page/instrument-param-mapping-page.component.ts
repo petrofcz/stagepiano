@@ -5,7 +5,10 @@ import {Effect, EffectScope} from '../../../shared/vst/model/effect';
 import {distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
 import {Store} from '@ngxs/store';
 import {VSTState} from '../../../shared/vst/state/vst.state';
-import {LoadParamMappingPageFromEffectAction} from '../../../shared/paramMapping/state/paramMappingPage.actions';
+import {
+	LoadParamMappingPageFromEffectAction,
+	LoadParamMappingPageFromInstrumentAction, ResetParamMappingPageAction
+} from '../../../shared/paramMapping/state/paramMappingPage.actions';
 import {
 	PatchMappingGroupAction,
 	PatchVstAction,
@@ -81,19 +84,23 @@ export class InstrumentParamMappingPageComponent implements OnInit, OnDestroy {
 	}
 
 	onSaveClick() {
-		// if (!this._effect) {
-		// 	return;
-		// }
-		// const currentParamMappingPage = this.store.selectSnapshot(ParamMappingPageState.getPage);
-		// if (!currentParamMappingPage) {
-		// 	return;
-		// }
-		// this.store.dispatch(new SaveEffectParamMappingPageAction(this._effect.id, currentParamMappingPage));
+		if (!this._instrument || !this.currentParamMappingGroupId) {
+			return;
+		}
+		const currentParamMappingPage = this.store.selectSnapshot(ParamMappingPageState.getPage);
+		if (!currentParamMappingPage) {
+			return;
+		}
+		this.store.dispatch(new PatchMappingGroupAction(this._instrument.id, {
+			id: this.currentParamMappingGroupId,
+			paramMappingPage: currentParamMappingPage
+		}));
 	}
 
 	removeParamMappingGroup() {
 		this.store.dispatch(new RemoveMappingGroupAction(this._instrument.id, this.currentParamMappingGroupId));
 		this.currentParamMappingGroupId = null;
+		this.updateParamMappingPage();
 	}
 
 	renameParamMappingGroup() {
@@ -110,7 +117,7 @@ export class InstrumentParamMappingPageComponent implements OnInit, OnDestroy {
 
 	selectParamMappingGroup(value: string) {
 		this.currentParamMappingGroupId = value;
-		// todo load param mapping page from state
+		this.updateParamMappingPage();
 	}
 
 	openParamMappingGroupNameDialog(paramMappingGroupId: string|null) {
@@ -134,6 +141,7 @@ export class InstrumentParamMappingPageComponent implements OnInit, OnDestroy {
 
 			this.store.dispatch(new PatchMappingGroupAction(this._instrument.id, groupPatch));
 			this.currentParamMappingGroupId = groupPatch.id;
+			this.updateParamMappingPage();
 		});
 	}
 
@@ -145,5 +153,16 @@ export class InstrumentParamMappingPageComponent implements OnInit, OnDestroy {
 			id: this._instrument.id,
 			defaultParamMappingGroupId: this.currentParamMappingGroupId
 		}));
+	}
+
+	private updateParamMappingPage() {
+		if (this.currentParamMappingGroupId) {
+			this.store.dispatch(new LoadParamMappingPageFromInstrumentAction(
+				this._instrument.id,
+				this.currentParamMappingGroupId
+			));
+		} else {
+			this.store.dispatch(new ResetParamMappingPageAction());
+		}
 	}
 }

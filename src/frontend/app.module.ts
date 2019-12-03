@@ -53,6 +53,7 @@ import {NgxsResetPluginModule} from 'ngxs-reset-plugin';
 import {ParamMappingPageState} from '../shared/paramMapping/state/paramMappingPage.state';
 import {PresetState} from '../shared/preset/state/preset.state';
 import {PresetSessionState} from '../shared/preset/state/presetSession.state';
+import {ParamMappingLoaderService} from '../shared/preset/model/paramMappingLoader.service';
 // import {IpcStorageEngine} from './core/services/storage/ipcStorageEngine.service';
 
 // AoT requires an exported function for factories
@@ -120,5 +121,5 @@ export function IpcActionReceiverFactory(ipcActionReceiver: IpcActionReceiver) {
 	bootstrap: [AppComponent]
 })
 export class AppModule {
-	constructor(lrs: LayoutRedirectService) { }
+	constructor(lrs: LayoutRedirectService, pml: ParamMappingLoaderService) { }
 }

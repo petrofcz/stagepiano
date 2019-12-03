@@ -107,6 +107,7 @@ export class PresetSessionState {
 		let history = PresetSessionState.getCurrentHistory(ctx.getState(), this.getCurrentLayerId());
 		const currentPreset = PresetSessionState.getCurrentPreset(ctx.getState(), this.getCurrentLayerId());
 		if (currentPreset) {
+			history = history.filter(historyPreset => historyPreset.id !== currentPreset.id);
 			history.unshift(currentPreset);
 		}
 		const maxHistoryLength = 6;
@@ -122,7 +123,7 @@ export class PresetSessionState {
 				}
 			);
 		} else {
-			const preset = this.store.selectSnapshot(PresetState.getById)(action.presetId);
+			const preset = action.forcePresetData ? action.forcePresetData : this.store.selectSnapshot(PresetState.getById)(action.presetId);
 			this.patchPresetSession(
 				ctx,
 				{
