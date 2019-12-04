@@ -1,0 +1,13 @@
+<form [formGroup]="form" mat-form>
+	<div class="form-content">
+		<div class="flex-row">
+			<div class="flex">
+				<mat-form-field>
+					<mat-label>Program number</mat-label>
+					<input matInput placeholder="Program number (0 - 127)" formControlName="programNumber">
+					<mat-error *ngIf="form.controls['programNumber'].invalid">This field is required.</mat-error>
+				</mat-form-field>
+			</div>
+		</div>
+	</div>
+</form>

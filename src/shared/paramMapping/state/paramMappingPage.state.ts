@@ -190,19 +190,24 @@ export class ParamMappingPageState {
 	@Action({type: LoadParamMappingPageFromInstrumentAction.type})
 	public loadFromInstrument(ctx: StateContext<ParamMappingPageStateModel>, action: LoadParamMappingPageFromInstrumentActionDecl) {
 		const instrument = (<Instrument> this.store.selectSnapshot(VSTState.getVstById)(action.instrumentId));
-		const page = action.paramMappingGroupId in instrument.paramMappingGroups ? instrument.paramMappingGroups[action.paramMappingGroupId].paramMappingPage :
-			(instrument.defaultParamMappingGroupId && instrument.defaultParamMappingGroupId in instrument.paramMappingGroups ? instrument.paramMappingGroups[instrument.defaultParamMappingGroupId].paramMappingPage : {
-				ids: [],
-				mappings: { }
-			})
-
-
 		let vstPathPrefix: string;
-
-		const currentLayer = this.store.selectSnapshot(ManualState.getCurrentLayer);
-		vstPathPrefix = BiduleOscHelper.getLocalVstPrefix(currentLayer);
-
-		vstPathPrefix += instrument.id + '/';
+		let page: ParamMappingPage;
+		if (!instrument) {
+			page = {
+				ids: [],
+				mappings: {}
+			};
+			vstPathPrefix = null;
+		} else {
+			page = (action.paramMappingGroupId in instrument.paramMappingGroups) ? instrument.paramMappingGroups[action.paramMappingGroupId].paramMappingPage :
+				(instrument.defaultParamMappingGroupId && instrument.defaultParamMappingGroupId in instrument.paramMappingGroups ? instrument.paramMappingGroups[instrument.defaultParamMappingGroupId].paramMappingPage : {
+					ids: [],
+					mappings: {}
+				});
+			const currentLayer = this.store.selectSnapshot(ManualState.getCurrentLayer);
+			vstPathPrefix = BiduleOscHelper.getLocalVstPrefix(currentLayer);
+			vstPathPrefix += instrument.id + '/';
+		}
 
 		ctx.setState({
 			ids: page.ids,

@@ -176,26 +176,28 @@ export class ParamMappingController implements MortalInterface {
 					)
 				)).pipe(distinctUntilChanged());
 
-			const final$ =
-				mapping$.pipe(switchMap(
-					mapping => !mapping ? of() : combineLatest(values$, this._alwaysShowValues ? of(true) : touch$)
-				))
-				.pipe(tap((val) => console.log('[PMC] REAL FINAL ' + i, val)))
-				.subscribe(([value, touched]) => {
-				const handler = this.handlerByColumn[i];
-				if (touched) {
-					this.display.display.setCellContent(
-						this._row, i + 1,
-						handler.getDisplayValue(value.paramMappingItem.mappingStrategy, value.oscMessage.args)
-					);
-				} else {
-					this.display.display.setCellContent(this._row, i + 1, value.paramMappingItem.paramMapping.name);
-				}
-				this.display.knobs.setKnobValue(
-					i + 1,
-					handler.getKnobValue(value.paramMappingItem.mappingStrategy, value.oscMessage.args)
-				);
-			});
+			this.subscriptions.push(
+				mapping$
+					.pipe(switchMap(
+						mapping => !mapping ? of() : combineLatest(values$, this._alwaysShowValues ? of(true) : touch$)
+					))
+					.pipe(tap((val) => console.log('[PMC] REAL FINAL ' + i, val)))
+					.subscribe(([value, touched]) => {
+						const handler = this.handlerByColumn[i];
+						if (touched) {
+							this.display.display.setCellContent(
+								this._row, i + 1,
+								handler.getDisplayValue(value.paramMappingItem.mappingStrategy, value.oscMessage.args)
+							);
+						} else {
+							this.display.display.setCellContent(this._row, i + 1, value.paramMappingItem.paramMapping.name);
+						}
+						this.display.knobs.setKnobValue(
+							i + 1,
+							handler.getKnobValue(value.paramMappingItem.mappingStrategy, value.oscMessage.args)
+						);
+				})
+			);
 
 			// handle moves
 			this.subscriptions.push(

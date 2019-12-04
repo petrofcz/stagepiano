@@ -3,7 +3,13 @@ import {Store} from '@ngxs/store';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {debounceTime, filter, map, switchMap} from 'rxjs/operators';
 import {SetEditingAction, SetKeyboardRouteAction} from '../../../shared/session/state/session.actions';
-import {Preset} from '../../../shared/preset/model/model';
+import {
+	PCPresetInitStrategy,
+	Preset,
+	PresetInitStrategy,
+	SnapshotPresetInitStrategy,
+	VstPresetInitStrategy
+} from '../../../shared/preset/model/model';
 import {Observable, of, Subscription} from 'rxjs';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {VST} from '../../../shared/vst/model/vst';
@@ -15,7 +21,10 @@ import { v1 as uuid } from 'uuid';
 import {DuplicatePresetAction, SavePresetAction} from '../../../shared/preset/state/preset.actions';
 import {PatchCurrentPresetAction} from '../../../shared/preset/state/presetSession.actions';
 import {Instrument} from '../../../shared/vst/model/instrument';
-import {ParamMappingGroup} from '../../../shared/paramMapping/model/model';
+import {LinearParamMappingStrategy, ParamMappingGroup, ParamMappingStrategy} from '../../../shared/paramMapping/model/model';
+import {ParamMappingStrategies} from '../../../shared/paramMapping/model/paramMappingStrategies';
+import {UpdateParamMappingStrategyAction} from '../../../shared/paramMapping/state/paramMappingPage.actions';
+import {PresetInitStrategies} from '../../../shared/preset/model/PresetInitStrategies';
 
 @Component({
 	selector: 'app-preset-detail',
@@ -66,7 +75,6 @@ export class PresetDetailPageComponent implements OnInit, OnDestroy {
 			});
 		}
 	}
-
 
 	ngOnInit(): void {
 		this.store.dispatch(new SetEditingAction(true));
@@ -129,6 +137,37 @@ export class PresetDetailPageComponent implements OnInit, OnDestroy {
 		this._subscriptions.forEach(sub => sub.unsubscribe());
 		this._subscriptions = [];
 		this.store.dispatch(new SetEditingAction(false));
+	}
+
+	onStrategySelected(value: any) {
+		let strategy: PresetInitStrategy = null;
+		switch (value) {
+			case PresetInitStrategies.PROGRAM_CHANGE:
+				strategy = <PCPresetInitStrategy>{
+					type: PresetInitStrategies.PROGRAM_CHANGE,
+					program: null
+				};
+				break;
+			case PresetInitStrategies.SNAPSHOT:
+				strategy = <SnapshotPresetInitStrategy>{
+					type: PresetInitStrategies.SNAPSHOT,
+					paramValues: null
+				};
+				break;
+			case PresetInitStrategies.VST_PRESET:
+				strategy = <VstPresetInitStrategy>{
+					type: PresetInitStrategies.VST_PRESET,
+					preset: null
+				};
+				break;
+			default:
+				strategy = null;
+		}
+		if (strategy) {
+			this.store.dispatch(new PatchCurrentPresetAction({
+				initStrategy: strategy
+			}));
+		}
 	}
 
 	onCancelClick() {

@@ -1,0 +1,24 @@
+<div class="key-value">
+	<div class="key">
+		VST preset
+	</div>
+	<div class="value">
+			<span *ngIf="!((currentStrategy$|async)?.paramValues)" class="empty">
+				no preset selected
+			</span>
+		<span *ngIf="((currentStrategy$|async)?.paramValues)" class="snapshot-values">
+			<span class="preset-number">
+				Snapshot parameter count: {{ Object.keys((currentStrategy$|async).paramValues).length }}
+			</span>
+		</span>
+		<br><br>
+		<span *ngIf="!(isLearning$|async)">
+				<button mat-raised-button color="primary" (click)="setLearn(true)">
+					Capture snapshot
+				</button>
+			</span>
+		<span *ngIf="isLearning$|async" class="learning">
+			Capturing snapshot...
+		</span>
+	</div>
+</div>

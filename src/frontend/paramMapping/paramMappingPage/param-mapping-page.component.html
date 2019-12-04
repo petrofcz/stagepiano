@@ -61,7 +61,7 @@
 			Strategy:
 		</div>
 		<div class="value">
-			<mat-button-toggle-group name="strategy" aria-label="Font Style" [value]="selectedMapping.items[selectedMapping.mainItemId]?.mappingStrategy?.type">
+			<mat-button-toggle-group name="strategy" [value]="selectedMapping.items[selectedMapping.mainItemId]?.mappingStrategy?.type">
 				<mat-button-toggle value="linear" (change)="onStrategySelected($event.value)">Linear</mat-button-toggle>
 				<mat-button-toggle value="linearList" (change)="onStrategySelected($event.value)">Linear steps</mat-button-toggle>
 				<mat-button-toggle value="list" (change)="onStrategySelected($event.value)">List</mat-button-toggle>

@@ -10,6 +10,9 @@ import {SharedModule} from '../shared/shared.module';
 import {SessionState} from '../../shared/session/state/session.state';
 import {PresetDetailPageComponent} from './preset-detail-page/preset-detail-page.component';
 import {ReactiveFormsModule} from '@angular/forms';
+import {ProgramChangeInitStrategyComponent} from './initStrategyComponents/ProgramChange/program-change-init-strategy.component';
+import {VstPresetInitStrategyComponent} from './initStrategyComponents/Preset/vst-preset-init-strategy.component';
+import {SnapshotInitStrategyComponent} from './initStrategyComponents/Snapshot/snapshot-init-strategy.component';
 
 @NgModule({
 	imports: [
@@ -22,7 +25,10 @@ import {ReactiveFormsModule} from '@angular/forms';
 	],
 	declarations: [
 		PresetListPageComponent,
-		PresetDetailPageComponent
+		PresetDetailPageComponent,
+		ProgramChangeInitStrategyComponent,
+		VstPresetInitStrategyComponent,
+		SnapshotInitStrategyComponent
 	],
 	entryComponents: [
 		NamedEntityDialogComponent

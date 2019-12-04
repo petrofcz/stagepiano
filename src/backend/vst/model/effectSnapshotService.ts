@@ -17,7 +17,7 @@ import {TakeEffectSnapshotAction} from '../../../shared/session/state/session.ac
 	providedIn: 'root'
 })
 export class EffectSnapshotService {
-	constructor(private osc: OscService, private actions$: Actions, private store: Store) {
+	constructor(private osc: OscService, private store: Store) {
 		const effectSnapshot$ = this.store.select(SessionState.getEffectSnapshot)
 			.pipe(distinctUntilChanged());
 

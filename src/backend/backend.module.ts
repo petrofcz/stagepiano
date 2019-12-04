@@ -33,6 +33,9 @@ import {PresetState} from '../shared/preset/state/preset.state';
 import {PresetSessionState} from '../shared/preset/state/presetSession.state';
 import {LayoutRedirectService} from '../frontend/model/navigation/layout-redirect.service';
 import {ParamMappingLoaderService} from '../shared/preset/model/paramMappingLoader.service';
+import {VstPresetInitStrategyLearnService} from './preset/VstPresetInitStrategy/vst-preset-init-strategy-learn.service';
+import {SnapshotInitStrategyLearnService} from './preset/SnapshotInitStrategy/snapshot-init-strategy-learn.service';
+import {PresetCategorySwitcherService} from '../shared/session/model/preset-category-switcher.service';
 
 export function IpcActionReceiverFactory(ipcActionReceiver: IpcActionReceiver) {
 	return () => ipcActionReceiver.init();
@@ -85,7 +88,7 @@ export function NoopAppInitializer() {
 	bootstrap: [DummyComponent]
 })
 export class BackendModule {
-	constructor(ks: KotatkoService, blw: BiduleLayoutOpener, blr: BiduleLayoutReader, kbs: KeyboardService, kbdRouter: KeyboardRouter, pmos: ParamMappingOscService, ess: EffectSnapshotService, pml: ParamMappingLoaderService) {
+	constructor(ks: KotatkoService, blw: BiduleLayoutOpener, blr: BiduleLayoutReader, kbs: KeyboardService, kbdRouter: KeyboardRouter, pmos: ParamMappingOscService, ess: EffectSnapshotService, pml: ParamMappingLoaderService, vpisls: VstPresetInitStrategyLearnService, sisls: SnapshotInitStrategyLearnService, pcss: PresetCategorySwitcherService) {
 		ks.run();
 	}
 }

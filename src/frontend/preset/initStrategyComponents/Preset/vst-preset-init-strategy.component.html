@@ -1,0 +1,30 @@
+<div class="key-value">
+	<div class="key">
+		VST preset
+	</div>
+	<div class="value">
+			<span *ngIf="!((currentStrategy$|async)?.preset)" class="empty">
+				no preset selected
+			</span>
+		<span *ngIf="((currentStrategy$|async)?.preset)" class="vst-preset-value">
+			<span class="preset-number">
+				{{ (currentStrategy$|async).preset }}
+			</span>
+			<span class="preset-name">
+				{{ (currentStrategy$|async).presetName }}
+			</span>
+		</span>
+		<br><br>
+		<span *ngIf="!(isLearning$|async)">
+				<button mat-raised-button color="primary" (click)="setLearn(true)">
+					Learn
+				</button>
+			</span>
+		<span *ngIf="isLearning$|async" class="learning">
+				Learning...
+				<button mat-raised-button color="primary" (click)="setLearn(false)">
+					Stop
+				</button>
+			</span>
+	</div>
+</div>

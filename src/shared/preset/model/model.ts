@@ -18,16 +18,17 @@ export interface PresetInitStrategy {
 }
 
 export interface PCPresetInitStrategy extends PresetInitStrategy {
-	type: 'PC';
+	type: 'pc';
 	program: number;
 }
 
 export interface VstPresetInitStrategy extends PresetInitStrategy {
-	type: 'PRESET';
+	type: 'preset';
 	preset: number;
+	presetName: string;
 }
 
 export interface SnapshotPresetInitStrategy extends PresetInitStrategy {
-	type: 'SNAPSHOT';
+	type: 'snapshot';
 	paramValues: {[key: string]: string};
 }

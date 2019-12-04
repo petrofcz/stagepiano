@@ -1,7 +1,7 @@
 import {MortalInterface} from '../../model/MortalInterface';
 import {DisplayRegionDriver} from '../../hw/display/display-region-driver';
 import {combineLatest, Subscription} from 'rxjs';
-import {bufferWhen, distinctUntilChanged, filter, last, map, switchMap, withLatestFrom} from 'rxjs/operators';
+import {auditTime, bufferWhen, distinctUntilChanged, filter, last, map, switchMap, throttleTime, withLatestFrom} from 'rxjs/operators';
 import {MultiClickButtonEvent, MultiClickHandler} from '../../hw/common/button/multiClickHandler';
 import {EventEmitter, Injectable} from '@angular/core';
 import {Store} from '@ngxs/store';
@@ -116,7 +116,7 @@ export class PresetController implements MortalInterface {
 				// console.log('-----');
 
 				return [page, categoryPosition, category, presetIds, gotoEvent.transmit];
-			}));
+			})).pipe(distinctUntilChanged());
 
 		const presetIds$ = commonChange$
 			.pipe(map((args) => {
@@ -234,18 +234,48 @@ export class PresetController implements MortalInterface {
 		this.subscriptions.push(
 			combineLatest(
 				presetIds$,
-				this.store.select(PresetSessionState.getCurrentPresetId)
-			).subscribe(([presetIds, currentPresetId]) => {
-				this.buttonsByRow[PresetController.ROW_PRESETS].forEach((buttonId) => {
-					this.display.buttonMatrix.buttons.setLed(buttonId, false);
-				});
-				const activeButtonIndex = presetIds.indexOf(currentPresetId);
-				if (activeButtonIndex > -1) {
-					this.display.buttonMatrix.buttons.setLed(
-						this.buttonsByRow[PresetController.ROW_PRESETS][activeButtonIndex], true
-					);
-				}
+				this.store.select(PresetSessionState.getCurrentPresetId),
+			)
+				.pipe(auditTime(20))
+				.subscribe(([presetIds, currentPresetId]) => {
+					this.buttonsByRow[PresetController.ROW_PRESETS].forEach((buttonId) => {
+						this.display.buttonMatrix.buttons.setLed(buttonId, false);
+					});
+					if (!currentPresetId || !presetIds.length) {
+						return;
+					}
+					const activeButtonIndex = presetIds.indexOf(currentPresetId);
+					if (activeButtonIndex > -1) {
+						this.display.buttonMatrix.buttons.setLed(
+							this.buttonsByRow[PresetController.ROW_PRESETS][activeButtonIndex], true
+						);
+					}
 			})
+		);
+
+		// page watchdog
+		this.subscriptions.push(
+			this.store.select(PresetSessionState.getCurrentPresetId)
+				.pipe(auditTime(20))
+				.pipe(withLatestFrom(
+					presetIds$,
+					commonChange$
+				))
+				.subscribe(([currentPresetId, presetIds, commonChange]) => {
+					if (!currentPresetId || !presetIds.length) {
+						return;
+					}
+					const activeButtonIndex = presetIds.indexOf(currentPresetId);
+					if (activeButtonIndex === -1 && commonChange[2].presetIds.indexOf(currentPresetId) > -1) {
+						console.log('[PC] Preset out of range');
+						if (commonChange[1] && commonChange[2].presetIds && commonChange[2].presetIds.length) {
+							console.log('[PC] Emitting', new GotoEvent(commonChange[1], Math.floor(commonChange[2].presetIds.indexOf(currentPresetId) / PresetController.NUM_COLS) + 1, false, false));
+							this.onGoto.emit(
+								new GotoEvent(commonChange[1], Math.floor(commonChange[2].presetIds.indexOf(currentPresetId) / PresetController.NUM_COLS) + 1, false, false)
+							);
+						}
+					}
+				})
 		);
 
 		// preset selection
@@ -260,6 +290,7 @@ export class PresetController implements MortalInterface {
 				})
 		);
 
+		this.onGoto.emit(new GotoEvent(1, 1, false, false));
 	}
 
 }

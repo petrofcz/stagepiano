@@ -30,6 +30,36 @@
 					</mat-select>
 					<mat-error *ngIf="_form.controls['parameterMappingGroupId'].hasError('required')">Please choose param mapping item for selected effect.</mat-error>
 				</mat-form-field>
+				<div *ngIf="_model.vstId">
+					<div class="strategy-select key-value">
+						<div class="key">
+							Instrument init strategy:
+						</div>
+						<div class="value">
+							<mat-button-toggle-group name="strategy" [value]="_model.initStrategy?.type">
+								<mat-button-toggle value="pc" (change)="onStrategySelected($event.value)">Program Change</mat-button-toggle>
+								<mat-button-toggle value="preset" (change)="onStrategySelected($event.value)">VST preset</mat-button-toggle>
+								<mat-button-toggle value="snapshot" (change)="onStrategySelected($event.value)">Snapshot</mat-button-toggle>
+							</mat-button-toggle-group>
+						</div>
+					</div>
+					<div class="key-value" *ngIf="_model.initStrategy?.type">
+						<div class="key">
+							Instrument init strategy configuration:
+						</div>
+						<div class="value">
+							<div *ngIf="_model.initStrategy.type === 'pc'" class="mapping-strategy">
+								<app-init-strategy-program-change></app-init-strategy-program-change>
+							</div>
+							<div *ngIf="_model.initStrategy.type === 'preset'" class="mapping-strategy">
+								<app-init-strategy-preset></app-init-strategy-preset>
+							</div>
+							<div *ngIf="_model.initStrategy.type === 'snapshot'" class="mapping-strategy">
+								<app-init-strategy-snapshot></app-init-strategy-snapshot>
+							</div>
+						</div>
+					</div>
+				</div>
 		<!--		<div class="flex-row">-->
 		<!--			<div class="flex">-->
 		<!--				<mat-form-field>-->
@@ -113,9 +143,9 @@
 	<mat-card-footer>
 		<div class="card-buttons">
 			<div class="horizontal-group">
-				<button mat-raised-button (click)="onCancelClick()">Cancel</button>
 				<button mat-raised-button color="primary" (click)="onDuplicateClick()" [disabled]="_form.invalid">Duplicate</button>
 				<button mat-raised-button color="primary" confirm (confirmed)="onSaveClick()" [disabled]="_form.invalid">Save</button>
+				<button mat-raised-button (click)="onCancelClick()">Cancel</button>
 			</div>
 		</div>
 	</mat-card-footer>

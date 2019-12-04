@@ -21,6 +21,12 @@ export class BiduleOscHelper {
 			'Mutate',
 			'Randomize',
 			'Mode',
+			'Send_Notes_Off_On_Processing_Changes',
+			'Use_fades',
+			'Sync_Source',
+			'Num_Columns',
+			'Preset_Number_str',
+			'Mode_str',
 			'monitor',
 			'name_set',
 			'parameter_min_set',
@@ -42,6 +48,7 @@ export class BiduleOscHelper {
 export enum BiduleCommonEndpoint {
 	MODE = 'Mode',			// value specified in Mode
 	PRESET_NUMBER = 'Preset_Number',
+	PRESET_NAME = 'Preset_Number_str',
 	OPEN_UI = 'Open_UI',	// no value
 	YIELD_PARAMETERS = 'parameters_osc_update',	// no value
 }
