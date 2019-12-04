@@ -55,6 +55,11 @@ export class VSTState {
 	}
 
 	@Selector()
+	static getVsts(state: VSTStateModel): VST[] {
+		return state.ids.map(id => state.entities[id]);
+	}
+
+	@Selector()
 	public static getVstById(state: VSTStateModel) {
 		return (id: string) => {
 			return id in state.entities ? state.entities[id] : null;

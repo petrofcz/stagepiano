@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {OscService} from '../../osc/osc.service';
-import {Actions, Store} from '@ngxs/store';
-import {ActionTester} from '../../../shared/ngxs/helper';
+import {Store} from '@ngxs/store';
 import {OscMessage} from '../../osc/osc.message';
 import {PatchVstAction} from '../../../shared/vst/state/vst.actions';
 import {BiduleCommonEndpoint, BiduleOscHelper} from '../../../shared/bidule/osc/bidule-osc-helper';
@@ -13,6 +12,7 @@ import {SessionState} from '../../../shared/session/state/session.state';
 import {merge, of} from 'rxjs';
 import {TakeEffectSnapshotAction} from '../../../shared/session/state/session.actions';
 
+// todo rename to vst snapshot service
 @Injectable({
 	providedIn: 'root'
 })
@@ -69,22 +69,22 @@ export class EffectSnapshotService {
 		this.store.select(LayoutState.isLayoutLoaded).subscribe((isLayoutLoaded => {
 			if (isLayoutLoaded) {
 				const layers = this.store.selectSnapshot(ManualState.getLayers);
-				this.store.selectSnapshot(VSTState.getEffects).forEach((effect) => {
+				this.store.selectSnapshot(VSTState.getVsts).forEach((vst) => {
 					for (const layer of layers) {
-						if (effect.snapshot) {
-							for (const endpoint in effect.snapshot) {
+						if (vst.snapshot) {
+							for (const endpoint in vst.snapshot) {
 								this.osc.send(new OscMessage(
-									'/Manual' + (parseInt(layer.manualId, 10) + 1) + '/Layer' + layer.position + '/' + effect.id + '/' + endpoint,
-									effect.snapshot[endpoint]
+									'/Manual' + (parseInt(layer.manualId, 10) + 1) + '/Layer' + layer.position + '/' + vst.id + '/' + endpoint,
+									vst.snapshot[endpoint]
 								));
 							}
 						}
 					}
-					if (effect.snapshot) {
-						for (const endpoint in effect.snapshot) {
+					if (vst.snapshot) {
+						for (const endpoint in vst.snapshot) {
 							this.osc.send(new OscMessage(
-								'/' + effect.id + '/' + endpoint,
-								effect.snapshot[endpoint]
+								'/' + vst.id + '/' + endpoint,
+								vst.snapshot[endpoint]
 							));
 						}
 					}
