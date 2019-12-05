@@ -32,7 +32,7 @@ import {PresetInitStrategies} from '../../../shared/preset/model/PresetInitStrat
 	styleUrls: ['./preset-detail-page.component.scss'],
 })
 export class PresetDetailPageComponent implements OnInit, OnDestroy {
-
+	Object = Object;
 
 	protected _subscriptions: Subscription[] = [];
 
@@ -184,4 +184,10 @@ export class PresetDetailPageComponent implements OnInit, OnDestroy {
 		this.router.navigate(['/presets']);
 	}
 
+	clearParamValues() {
+		this.store.dispatch(new PatchCurrentPresetAction({
+			paramValues: { }
+		}));
+		// todo call init strategy
+	}
 }

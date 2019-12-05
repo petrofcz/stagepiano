@@ -36,7 +36,7 @@ export class ParamMappingOscService {
 			.pipe(tap(val => console.log('IS EP LEARNING ' + val)))
 			.pipe(filter((pathPrefix: string) => pathPrefix.length > 0))
 			.pipe(switchMap(
-				(pathPrefix: string) => this.osc.observe(pathPrefix + '*')
+				(pathPrefix: string) => this.osc.observeIncoming(pathPrefix + '*')
 				// filter only effect's own params
 					.pipe(filter(message => !BiduleOscHelper.isNativeBiduleEndpoint(message.path.split('/').pop(), false)))
 					// when UI is fresh (recently opened), when any value is changed, bidule emits all param values. Need to take all changes for some time
@@ -84,7 +84,7 @@ export class ParamMappingOscService {
 			.pipe(tap((val) => console.log('PP PPI', val)))
 			.pipe(tap((val) => console.log('PP PPI', val)))
 			.pipe(switchMap(
-				(args) => (args === null || args.path === null) ? of(null) : this.osc.observe(args.path)
+				(args) => (args === null || args.path === null) ? of(null) : this.osc.observeIncoming(args.path)
 					.pipe(tap(message => console.log('PVL OSC MESSAGE', message)))
 					.pipe(map(( message ) => { return { oscMessage: message, paramMappingItem: args.paramMappingItem };}))
 					// filter only effect's own params

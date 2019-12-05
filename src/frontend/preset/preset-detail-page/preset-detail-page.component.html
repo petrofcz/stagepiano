@@ -42,12 +42,7 @@
 								<mat-button-toggle value="snapshot" (change)="onStrategySelected($event.value)">Snapshot</mat-button-toggle>
 							</mat-button-toggle-group>
 						</div>
-					</div>
-					<div class="key-value" *ngIf="_model.initStrategy?.type">
-						<div class="key">
-							Instrument init strategy configuration:
-						</div>
-						<div class="value">
+						<div *ngIf="_model.initStrategy?.type">
 							<div *ngIf="_model.initStrategy.type === 'pc'" class="mapping-strategy">
 								<app-init-strategy-program-change></app-init-strategy-program-change>
 							</div>
@@ -57,6 +52,19 @@
 							<div *ngIf="_model.initStrategy.type === 'snapshot'" class="mapping-strategy">
 								<app-init-strategy-snapshot></app-init-strategy-snapshot>
 							</div>
+						</div>
+					</div>
+					<div class="key-value" *ngIf="_model.initStrategy?.type">
+						<div class="key">
+							Custom parameter values:
+						</div>
+						<ul>
+							<li *ngFor="let key of Object.keys(_model.paramValues)">
+								{{key}}: {{_model.paramValues[key]}}
+							</li>
+						</ul>
+						<div *ngIf="Object.keys(_model.paramValues).length > 0">
+							<button mat-raised-button color="warn" (click)="clearParamValues()">Clear values</button>
 						</div>
 					</div>
 				</div>

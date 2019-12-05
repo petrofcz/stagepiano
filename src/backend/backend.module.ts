@@ -36,6 +36,7 @@ import {ParamMappingLoaderService} from '../shared/preset/model/paramMappingLoad
 import {VstPresetInitStrategyLearnService} from './preset/VstPresetInitStrategy/vst-preset-init-strategy-learn.service';
 import {SnapshotInitStrategyLearnService} from './preset/SnapshotInitStrategy/snapshot-init-strategy-learn.service';
 import {PresetCategorySwitcherService} from '../shared/session/model/preset-category-switcher.service';
+import {PresetValueListenerService} from './preset/model/preset-value-listener.service';
 
 export function IpcActionReceiverFactory(ipcActionReceiver: IpcActionReceiver) {
 	return () => ipcActionReceiver.init();
@@ -88,7 +89,7 @@ export function NoopAppInitializer() {
 	bootstrap: [DummyComponent]
 })
 export class BackendModule {
-	constructor(ks: KotatkoService, blw: BiduleLayoutOpener, blr: BiduleLayoutReader, kbs: KeyboardService, kbdRouter: KeyboardRouter, pmos: ParamMappingOscService, ess: EffectSnapshotService, pml: ParamMappingLoaderService, vpisls: VstPresetInitStrategyLearnService, sisls: SnapshotInitStrategyLearnService, pcss: PresetCategorySwitcherService) {
+	constructor(ks: KotatkoService, blw: BiduleLayoutOpener, blr: BiduleLayoutReader, kbs: KeyboardService, kbdRouter: KeyboardRouter, pmos: ParamMappingOscService, ess: EffectSnapshotService, pml: ParamMappingLoaderService, vpisls: VstPresetInitStrategyLearnService, sisls: SnapshotInitStrategyLearnService, pcss: PresetCategorySwitcherService, pvls: PresetValueListenerService) {
 		ks.run();
 	}
 }

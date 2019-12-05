@@ -52,7 +52,7 @@ export class ParamMappingController implements MortalInterface {
 	}
 
 	onInit(): void {
-		console.log('[PMC] Init');
+		//console.log('[PMC] Init');
 		this.display.display.clearRow(this._row);
 
 		for (let i = 0; i < 8; i++) {
@@ -89,7 +89,7 @@ export class ParamMappingController implements MortalInterface {
 			const mappingItem$ = mapping$
 				.pipe(filter(paramMapping => paramMapping !== null))
 				.pipe(filter(paramMapping => paramMappingIsDisplayable(paramMapping)))
-				.pipe(tap((val) => console.log('[PMC] Mapping IS displayable ' + i)))
+				//.pipe(tap((val) => console.log('[PMC] Mapping IS displayable ' + i)))
 				.pipe(map(paramMapping => { return {...(paramMapping.items[paramMapping.mainItemId]), paramMapping: paramMapping }; }))
 				.pipe(distinctUntilChanged())
 				//.pipe(tap((val) => console.log('[PMC] PMI', val)))
@@ -97,7 +97,7 @@ export class ParamMappingController implements MortalInterface {
 
 			this.subscriptions.push(
 				mappingItem$.subscribe(paramMappingItem => {
-					console.log('[PMC] PMI', paramMappingItem);
+					//console.log('[PMC] PMI', paramMappingItem);
 					const handler = this.pmStrategyHandlerProvider.get(paramMappingItem.mappingStrategy.type);
 					this.display.knobs.setKnobMode(
 						i + 1, handler.getKnobMode(paramMappingItem.mappingStrategy)
@@ -119,16 +119,16 @@ export class ParamMappingController implements MortalInterface {
 								vstPathPrefix: values
 							}; }));
 				}))
-				.pipe(tap((val) => console.log('[PMC] With prefix', val)))
+				//.pipe(tap((val) => console.log('[PMC] With prefix', val)))
 				.pipe(switchMap(
-					args => this.osc.observeValues(args.vstPathPrefix + args.paramMappingItem.endpoint)
+					args => this.osc.observeEndpointValue(args.vstPathPrefix + args.paramMappingItem.endpoint)
 						.pipe(map(oscMessage => { return { oscMessage: oscMessage, paramMappingItem: args.paramMappingItem }; }))
 
 				));
 
 			// todo remove
 			values$.subscribe((vals) => {
-				console.log('[PMC] VALUES ' + i, vals);
+				//console.log('[PMC] VALUES ' + i, vals);
 			});
 
 			// subscribe for active mappings
@@ -140,14 +140,14 @@ export class ParamMappingController implements MortalInterface {
 			const mappingRecentlyChanged$ = <Observable<boolean>>merge(
 				mappingChanged$.pipe(map(() => true)),
 				mappingChanged$.pipe(debounceTime(200)).pipe(map(() => false))
-			).pipe(distinctUntilChanged()).pipe(tap(val => console.log('[PMC] Mapping Recently Changed', val)));
+			).pipe(distinctUntilChanged());
 
 			const touched$ = merge(
 				this.display.knobs.onKnobTouched.pipe(filter((knobEvent: KnobEvent) => { return knobEvent.knobId === i + 1; })),
 				values$.pipe(
 					distinctUntilKeyChanged('oscMessage', (a: OscMessage, b: OscMessage) => a.args[0] === b.args[0] ))
 					.pipe(debounceTime(50))
-					.pipe(tap(val => console.log('[PMC] Touched', val)))
+					//.pipe(tap(val => console.log('[PMC] Touched', val)))
 			).pipe(mapTo(true));
 
 			// const touched$ = merge(
@@ -181,7 +181,7 @@ export class ParamMappingController implements MortalInterface {
 					.pipe(switchMap(
 						mapping => !mapping ? of() : combineLatest(values$, this._alwaysShowValues ? of(true) : touch$)
 					))
-					.pipe(tap((val) => console.log('[PMC] REAL FINAL ' + i, val)))
+					//.pipe(tap((val) => console.log('[PMC] REAL FINAL ' + i, val)))
 					.subscribe(([value, touched]) => {
 						const handler = this.handlerByColumn[i];
 						if (touched) {
@@ -228,7 +228,7 @@ export class ParamMappingController implements MortalInterface {
 	}
 
 	onDestroy(): void {
-		console.log('[PMC] Destroy');
+		//console.log('[PMC] Destroy');
 		this.display.display.clearRow(this._row);
 
 		// turn off all knobs

@@ -1,9 +1,16 @@
 import {Action, Selector, State, StateContext, Store} from '@ngxs/store';
 import {PresetSession} from '../model/presetSession';
 import {
-	PatchCurrentPresetAction, PatchCurrentPresetActionDecl, PatchCurrentPresetInitStrategyAction, PatchCurrentPresetInitStrategyActionDecl,
+	PatchCurrentPresetAction,
+	PatchCurrentPresetActionDecl,
+	PatchCurrentPresetInitStrategyAction,
+	PatchCurrentPresetInitStrategyActionDecl,
+	PatchPresetForLayerAction, PatchPresetForLayerActionDecl,
 	SelectPresetAction,
-	SelectPresetActionDecl, SetInitSnapshotLearningAction, SetInitVstPresetLearningAction, SetLearningActionDecl
+	SelectPresetActionDecl, SetIgnoreParamsForSessionAction, SetIgnoreParamsForSessionActionDecl,
+	SetInitSnapshotLearningAction,
+	SetInitVstPresetLearningAction,
+	SetLearningActionDecl, SetPresetParameterValueForLayerAction, SetPresetParameterValueForLayerActionDecl
 } from './presetSession.actions';
 import {SessionState, SessionStateModel} from '../../session/state/session.state';
 import {Preset} from '../model/model';
@@ -22,6 +29,11 @@ export interface PresetSessionStateModel {
 export class PresetSessionState {
 
 	constructor (private store: Store) {
+	}
+
+	@Selector()
+	public static getSessionsByLayerId(state: PresetSessionStateModel) {
+		return state.sessionByLayerId;
 	}
 
 	@Selector([SessionState.getActiveLayerId])
@@ -96,8 +108,10 @@ export class PresetSessionState {
 				ignoreParams: true
 			};
 		}
-		const sessionsByLayerId = state.sessionByLayerId;
-		sessionsByLayerId[currentLayerId] = entity;
+		const sessionsByLayerId = {
+			... state.sessionByLayerId,
+			[currentLayerId]: entity
+		};
 		ctx.patchState({
 			sessionByLayerId: sessionsByLayerId
 		});
@@ -124,14 +138,16 @@ export class PresetSessionState {
 				}
 			}
 		};
-		const sessionsByLayerId = state.sessionByLayerId;
-		sessionsByLayerId[currentLayerId] = entity;
+		const sessionsByLayerId = {
+			... state.sessionByLayerId,
+			[currentLayerId]: entity
+		};
 		ctx.patchState({
 			sessionByLayerId: sessionsByLayerId
 		});
 	}
 
-	protected patchPresetSession(ctx: StateContext<PresetSessionStateModel>, patch: Partial<PresetSession>) {
+	protected patchCurrentPresetSession(ctx: StateContext<PresetSessionStateModel>, patch: Partial<PresetSession>) {
 		const state = ctx.getState();
 		const currentLayerId = this.getCurrentLayerId();
 		if (!currentLayerId) {
@@ -146,8 +162,10 @@ export class PresetSessionState {
 		} else {
 			entity = patch;
 		}
-		const sessionsByLayerId = state.sessionByLayerId;
-		sessionsByLayerId[currentLayerId] = entity;
+		const sessionsByLayerId = {
+			... state.sessionByLayerId,
+			[currentLayerId]: entity
+		};
 		ctx.patchState({
 			sessionByLayerId: sessionsByLayerId
 		});
@@ -166,7 +184,7 @@ export class PresetSessionState {
 			history = history.slice(0, maxHistoryLength);
 		}
 		if (!action.presetId) {
-			this.patchPresetSession(
+			this.patchCurrentPresetSession(
 				ctx,
 				{
 					preset: null,
@@ -175,7 +193,7 @@ export class PresetSessionState {
 			);
 		} else {
 			const preset = action.forcePresetData ? action.forcePresetData : this.store.selectSnapshot(PresetState.getById)(action.presetId);
-			this.patchPresetSession(
+			this.patchCurrentPresetSession(
 				ctx,
 				{
 					preset: Object.assign({}, preset),
@@ -188,15 +206,75 @@ export class PresetSessionState {
 
 	@Action({type: SetInitSnapshotLearningAction.type})
 	public setInitSnapshotLearning(ctx: StateContext<PresetSessionStateModel>, action: SetLearningActionDecl) {
-		this.patchPresetSession(ctx, {
+		this.patchCurrentPresetSession(ctx, {
 			isInitSnapshotLearning: action.isLearning
 		});
 	}
 
 	@Action({type: SetInitVstPresetLearningAction.type})
 	public setInitVstPresetLearning(ctx: StateContext<PresetSessionStateModel>, action: SetLearningActionDecl) {
-		this.patchPresetSession(ctx, {
+		this.patchCurrentPresetSession(ctx, {
 			isInitVstPresetLearning: action.isLearning
+		});
+	}
+
+	@Action({type: PatchPresetForLayerAction.type})
+	public patchPresetForLayerAction(ctx: StateContext<PresetSessionStateModel>, action: PatchPresetForLayerActionDecl) {
+		const state = ctx.getState();
+		if (!(action.layerId in state.sessionByLayerId) || !state.sessionByLayerId[action.layerId].preset) {
+			return;
+		}
+		ctx.patchState({
+			sessionByLayerId: {
+				... state.sessionByLayerId,
+				[action.layerId]: {
+					... state.sessionByLayerId[action.layerId],
+					preset: {
+						... state.sessionByLayerId[action.layerId].preset,
+						... action.preset
+					}
+				}
+			}
+		});
+	}
+
+	@Action({type: SetIgnoreParamsForSessionAction.type})
+	public setIgnoreParamsForSessionAction(ctx: StateContext<PresetSessionStateModel>, action: SetIgnoreParamsForSessionActionDecl) {
+		const state = ctx.getState();
+		if (!(action.layerId in state.sessionByLayerId)) {
+			return;
+		}
+		ctx.patchState({
+			sessionByLayerId: {
+				... state.sessionByLayerId,
+				[action.layerId]: {
+					... state.sessionByLayerId[action.layerId],
+					ignoreParams: action.ignoreParams
+				}
+			}
+		});
+	}
+
+	@Action({type: SetPresetParameterValueForLayerAction.type})
+	public setPresetParameterValueForLayerAction(ctx: StateContext<PresetSessionStateModel>, action: SetPresetParameterValueForLayerActionDecl) {
+		const state = ctx.getState();
+		if (!(action.layerId in state.sessionByLayerId) || !state.sessionByLayerId[action.layerId].preset) {
+			return;
+		}
+		ctx.patchState({
+			sessionByLayerId: {
+				... state.sessionByLayerId,
+				[action.layerId]: {
+					... state.sessionByLayerId[action.layerId],
+					preset: {
+						... state.sessionByLayerId[action.layerId].preset,
+						paramValues: {
+							... state.sessionByLayerId[action.layerId].preset.paramValues,
+							[action.endpoint]: action.value
+						}
+					}
+				}
+			}
 		});
 	}
 

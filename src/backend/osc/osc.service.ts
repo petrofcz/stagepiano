@@ -22,7 +22,7 @@ export class OscService {
 	constructor(protected biduleSettingsLoader: BiduleSettingsLoader) {
 		OSC = require('osc-js');
 		this.initOsc();
-		this.observe('*').subscribe((message) => {
+		this.observeIncoming('*').subscribe((message) => {
 			this.valuesEmitter.emit(message);
 		});
 		this.valuesEmitter.subscribe((message) => {
@@ -55,27 +55,40 @@ export class OscService {
 		this.osc.send(new OSC.Message(message.path, ...message.args));
 	}
 
-	public observe(pathPattern: string): Observable<OscMessage> {
-		console.log("[OSC] OBSERVING " + pathPattern);
+	/**
+	 * Observe only incoming values
+	 * @param pathPattern
+	 */
+	public observeIncoming(pathPattern: string): Observable<OscMessage> {
+		console.log("[OSC] OBSERVING INCOMING " + pathPattern);
 		return new Observable((subscriber) => {
 			const subscription = this.on(pathPattern, (oscMessage) => {
 				subscriber.next(oscMessage);
 			});
 			return () => {
-				console.log("[OSC] NOT OBSERVING " + subscription.path);
+				console.log("[OSC] NOT OBSERVING INCOMING " + subscription.path);
 				this.off(subscription);
 			};
 		});
 	}
 
 	/**
+	 * Observes both incoming and outcoming messages
+	 * @param pathPattern
+	 */
+	public observeAny(pathPattern: string): Observable<OscMessage> {
+		console.log("[OSC] OBSERVING ANY " + pathPattern);
+		return this.valuesEmitter.pipe(filter(message => message.path.match(pathPattern.replace('*', '*.')) !== null));
+	}
+
+	/**
 	 * Returns observable for given path, last message is replayed if available
 	 * @param path
 	 */
-	public observeValues(path: string): Observable<OscMessage> {
+	public observeEndpointValue(path: string): Observable<OscMessage> {
 		const messageObservable = this.valuesEmitter.pipe(filter(message => message.path === path));
 		return merge(
-			of((path in this.valuesMap) ? this.valuesMap[path] : []).pipe(map((values => { return new OscMessage(path, values); }))),
+			((path in this.valuesMap) ? of(this.valuesMap[path]) : of()).pipe(map((values => { return new OscMessage(path, values); }))),
 			messageObservable
 		);
 	}

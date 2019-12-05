@@ -22,7 +22,7 @@ export class EffectSnapshotService {
 			.pipe(distinctUntilChanged());
 
 		effectSnapshot$.pipe(switchMap(
-				(es) => es === null ? of() : merge(of(null), osc.observe(es.vstPath + '*'))
+				(es) => es === null ? of() : merge(of(null), osc.observeIncoming(es.vstPath + '*'))
 					.pipe(bufferTime(BiduleOscHelper.TIMEOUT_YIELD_PARAMS_LEARN))
 					.pipe(take(1))
 		)).subscribe((messages: OscMessage[]) => {

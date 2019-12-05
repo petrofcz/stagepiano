@@ -24,7 +24,7 @@ export class SnapshotInitStrategyLearnService {
 			).pipe(map((data): {isLearning: boolean, preset: Preset|null, layer: Layer|null} => { return { isLearning: data[0], preset: data[1], layer: data[2]}; }));
 
 		data$.pipe(switchMap(data => (!data.isLearning || !data.preset || !data.preset.vstId || !data.layer) ? of() :
-			osc.observe(BiduleOscHelper.getLocalVstPrefix(data.layer) + data.preset.vstId + '/*')
+			osc.observeIncoming(BiduleOscHelper.getLocalVstPrefix(data.layer) + data.preset.vstId + '/*')
 				.pipe(startWith(null))
 				.pipe(bufferTime(BiduleOscHelper.TIMEOUT_YIELD_PARAMS_LEARN))
 				.pipe(take(1))

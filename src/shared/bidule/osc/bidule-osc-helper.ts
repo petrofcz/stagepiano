@@ -6,6 +6,7 @@ export class BiduleOscHelper {
 	public static readonly TIMEOUT_OPEN_UI = 500;
 	public static readonly TIMEOUT_OSC_VALUE_LEARN = 30;
 	public static readonly TIMEOUT_YIELD_PARAMS_LEARN = 500;
+	public static readonly TIMEOUT_IGNORE_PARAMS_AFTER_PRESET_INIT = 500;
 
 	public static getGlobalEffectPrefix() {
 		return '/';
