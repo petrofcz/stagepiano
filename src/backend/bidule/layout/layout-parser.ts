@@ -73,7 +73,7 @@ export class BiduleLayoutParser {
 
 							this.walkThroughGroups(firstLevelGroup, (secondLevelGroup) => {
 								const groupName2: string = secondLevelGroup.$.displayName;
-								if (groupName2.startsWith('Layer')) {
+								if (groupName2.match(/Layer\d+/)) {
 									const layerId: number = parseInt(groupName2.substr('Layer'.length), null) - 1;
 
 									const vstIds: string[] = [];

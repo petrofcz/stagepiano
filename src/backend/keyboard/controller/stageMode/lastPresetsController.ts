@@ -68,6 +68,9 @@ export class LastPresetsController implements MortalInterface {
 				if (!this._history) {
 					return;
 				}
+				if (buttonEvent.row !== this._row) {
+					return;
+				}
 				this.store.dispatch(
 					new SelectPresetAction(this._history[buttonEvent.col - 1].id, this._history[buttonEvent.col - 1])
 				);
