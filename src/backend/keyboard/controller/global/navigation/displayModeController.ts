@@ -4,7 +4,7 @@ import {combineLatest, Subscription} from 'rxjs';
 import {Store} from '@ngxs/store';
 import {NavigationRegionDriver} from '../../../hw/navigation/navigationRegionDriver';
 import {InterruptionClock} from '../../../model/interruptionClock';
-import {MultiClickButtonEvent, MultiClickHandler} from '../../../hw/common/button/multiClickHandler';
+import {ButtonMultiClickEvent, MultiClickHandler} from '../../../hw/common/button/multiClickHandler';
 import {KeyboardRouter} from '../../../router/keyboardRouter';
 import {EffectPlacement, EffectScope} from '../../../../../shared/vst/model/effect';
 import {SessionState} from '../../../../../shared/session/state/session.state';
@@ -43,7 +43,7 @@ export class DisplayModeController implements MortalInterface {
 		});
 
 		this.modeSelectClickSubscription = pageButtons.onButtonClick
-			.subscribe((event: MultiClickButtonEvent) => {
+			.subscribe((event: ButtonMultiClickEvent) => {
 				switch (event.clickCount) {
 					case 1:
 						this.store.dispatch(new SetKeyboardRouteAction(

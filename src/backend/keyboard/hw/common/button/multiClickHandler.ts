@@ -21,7 +21,7 @@ export class MultiClickHandler implements ClickHandlerInterface {
 			).subscribe((events: ButtonPressEvent[]) => {
 				if (events.length > 0) {
 					this.emitter.emit(
-						new MultiClickButtonEvent(events[0].buttonId, this.maxClicks ? Math.min(events.length, this.maxClicks) : events.length)
+						new ButtonMultiClickEvent(events[0].buttonId, this.maxClicks ? Math.min(events.length, this.maxClicks) : events.length)
 					);
 				}
 			});
@@ -33,7 +33,7 @@ export class MultiClickHandler implements ClickHandlerInterface {
 	}
 }
 
-export class MultiClickButtonEvent extends ButtonClickEvent {
+export class ButtonMultiClickEvent extends ButtonClickEvent {
 
 	constructor(buttonId: number, protected _clickCount: number) {
 		super(buttonId);

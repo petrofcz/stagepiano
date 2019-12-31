@@ -32,7 +32,7 @@ export class PresetSessionState {
 	}
 
 	@Selector()
-	public static getSessionsByLayerId(state: PresetSessionStateModel) {
+	public static getSessionsByLayerId(state: PresetSessionStateModel): {[key: string]: PresetSession} {
 		return state.sessionByLayerId;
 	}
 

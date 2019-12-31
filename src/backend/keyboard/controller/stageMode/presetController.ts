@@ -2,7 +2,7 @@ import {MortalInterface} from '../../model/MortalInterface';
 import {DisplayRegionDriver} from '../../hw/display/display-region-driver';
 import {combineLatest, Subscription} from 'rxjs';
 import {auditTime, bufferWhen, distinctUntilChanged, filter, last, map, switchMap, throttleTime, withLatestFrom} from 'rxjs/operators';
-import {MultiClickButtonEvent, MultiClickHandler} from '../../hw/common/button/multiClickHandler';
+import {ButtonMultiClickEvent, MultiClickHandler} from '../../hw/common/button/multiClickHandler';
 import {EventEmitter, Injectable} from '@angular/core';
 import {Store} from '@ngxs/store';
 import {PresetCategoryState} from '../../../../shared/preset/state/preset-category.state';
@@ -60,7 +60,7 @@ export class PresetController implements MortalInterface {
 		this.subscriptions.push(this.display.buttonMatrix.onButtonClick.pipe(filter(evt => {
 			return evt.row === PresetController.ROW_CATEGORIES;
 		})).subscribe((evt) => {
-			this.onGoto.emit(new GotoEvent(evt.col, (<MultiClickButtonEvent>evt.originalEvent).clickCount, false, true));
+			this.onGoto.emit(new GotoEvent(evt.col, (<ButtonMultiClickEvent>evt.originalEvent).clickCount, false, true));
 		}));
 		this.subscriptions.push(this.display.buttonMatrix.onButtonClick.pipe(filter(evt => {
 			return evt.row === PresetController.ROW_PRESETS;

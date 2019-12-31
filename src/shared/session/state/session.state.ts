@@ -30,8 +30,8 @@ export interface SessionStateModel {
 	name: 'session',
 	defaults: {
 		currentLayerId: null,
-		presetCategories: {},
-		presets: {},
+		presetCategories: {},   // todo deprecated?
+		presets: {},    // todo deprecated
 		keyboardRoute: null,
 		effectDisposition: null,
 		isEditing: false,

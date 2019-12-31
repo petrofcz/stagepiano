@@ -1,7 +1,7 @@
 import {MortalInterface} from '../../../model/mortalInterface';
 import {Store} from '@ngxs/store';
 import {NavigationRegionDriver} from '../../../hw/navigation/navigationRegionDriver';
-import {MultiClickButtonEvent, MultiClickHandler} from '../../../hw/common/button/multiClickHandler';
+import {ButtonMultiClickEvent, MultiClickHandler} from '../../../hw/common/button/multiClickHandler';
 import {combineLatest, of, Subscription} from 'rxjs';
 import {ManualState} from '../../../../../shared/manual/state/manual.state';
 import {InterruptionClock} from '../../../model/interruptionClock';
@@ -48,7 +48,7 @@ export class LayerController implements MortalInterface {
 					this.store.dispatch(
 						new SelectLayerAction(
 							manual.layerIds[
-								Math.min((<MultiClickButtonEvent>event).clickCount, manual.layerIds.length) - 1
+								Math.min((<ButtonMultiClickEvent>event).clickCount, manual.layerIds.length) - 1
 							]
 						)
 					);
