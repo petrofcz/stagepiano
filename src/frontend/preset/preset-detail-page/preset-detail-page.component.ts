@@ -71,7 +71,7 @@ export class PresetDetailPageComponent implements OnInit, OnDestroy {
 			this._form.setValue({
 				'name': this._model.name,
 				'vstId': this._model.vstId,
-				'parameterMappingGroupId': this._model.parameterMappingGroupId
+				'parameterMappingGroupId': this._model.parameterMappingGroupId || null
 			});
 		}
 	}
