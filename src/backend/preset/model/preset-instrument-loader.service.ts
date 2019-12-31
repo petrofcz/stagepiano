@@ -8,15 +8,18 @@ import {BiduleCommonEndpoint, BiduleMode, BiduleOscHelper} from '../../../shared
 import {ManualState} from '../../../shared/manual/state/manual.state';
 import {OscMessage} from '../../osc/osc.message';
 import {Injectable} from '@angular/core';
+import {VSTState} from '../../../shared/vst/state/vst.state';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class PresetInstrumentLoaderService {
 
-	private muteModeTimeout = 10000;
+	private muteModeTimeout = 3000;
 
-	private processingModeTimeout = 5000;
+	private processingModeTimeout = 200;
+
+	private applyInitStrategyTimeout = 20;
 
 	constructor(private store: Store, private osc: OscService) {
 		this.init();
@@ -39,6 +42,7 @@ export class PresetInstrumentLoaderService {
 
 		preparedData$.pipe(tap(d => console.log('[PILS] Prepared data', d)));
 
+		// Instrument mode handling && init strategy processing
 		preparedData$.pipe(
 			groupBy(data => data.layerId),
 			mergeMap(layerGroup => layerGroup.pipe(
@@ -64,9 +68,10 @@ export class PresetInstrumentLoaderService {
 								// instrument is not active any more
 								const layer = this.store.selectSnapshot(ManualState.getLayerById)(layerGroup.key);
 								this.osc.send(
-									new OscMessage(
-										BiduleOscHelper.getLocalVstPrefix(layer) + BiduleCommonEndpoint.MODE,
-										[BiduleMode.MUTE]
+									BiduleOscHelper.buildLayerVstModeMessage(
+										layer,
+										instrumentGroup.key,
+										BiduleMode.MUTE
 									)
 								);
 							})) : this.store.select(PresetSessionState.getSessionsByLayerId).pipe(
@@ -82,21 +87,26 @@ export class PresetInstrumentLoaderService {
 											console.log('[PILS] BYPASS Instrument ' + instrumentGroup.key + ' for layer ' + layerGroup.key)
 											const layer = this.store.selectSnapshot(ManualState.getLayerById)(layerGroup.key);
 											this.osc.send(
-												new OscMessage(
-													BiduleOscHelper.getLocalVstPrefix(layer) + BiduleCommonEndpoint.MODE,
-													[BiduleMode.BYPASS]
+												BiduleOscHelper.buildLayerVstModeMessage(
+													layer,
+													instrumentGroup.key,
+													BiduleMode.BYPASS
 												)
 											);
-											// todo call strategy
 										}),
-										delay(this.processingModeTimeout),
+										delay(this.applyInitStrategyTimeout),
+										tap(() => {
+											console.log('[PILS] INIT STRATEGY ' + instrumentGroup.key + ' for layer ' + layerGroup.key)
+										}),
+										delay(this.processingModeTimeout - this.applyInitStrategyTimeout),
 										tap(() => {
 											console.log('[PILS] PROCESSING Instrument ' + instrumentGroup.key + ' for layer ' + layerGroup.key)
 											const layer = this.store.selectSnapshot(ManualState.getLayerById)(layerGroup.key);
 											this.osc.send(
-												new OscMessage(
-													BiduleOscHelper.getLocalVstPrefix(layer) + BiduleCommonEndpoint.MODE,
-													[BiduleMode.PROCESSING]
+												BiduleOscHelper.buildLayerVstModeMessage(
+													layer,
+													instrumentGroup.key,
+													BiduleMode.PROCESSING
 												)
 											);
 										})
@@ -106,6 +116,27 @@ export class PresetInstrumentLoaderService {
 						)
 					)
 				)
+			))
+		).subscribe(() => {});
+
+		// MidiMatrix handling
+		preparedData$.pipe(
+			groupBy(data => data.layerId),
+			mergeMap(layerGroup => layerGroup.pipe(
+				map(data => data.activeInstrumentId),
+				distinctUntilChanged(),
+				tap(activeInstrumentId => {
+					console.log('[PILS] For layer ' + layerGroup.key + ' and instrument ' + activeInstrumentId + ' set midi output');
+					if (!activeInstrumentId) {
+						return;
+					}
+					const layer = this.store.selectSnapshot(ManualState.getLayerById)(layerGroup.key);
+					const message = BiduleOscHelper.buildLayerMidiSwitcherItemMessage(layer, activeInstrumentId);
+					console.log('THE MESSAGE', message);
+					if (message) {
+						this.osc.send(message);
+					}
+				})
 			))
 		).subscribe(() => {});
 	}

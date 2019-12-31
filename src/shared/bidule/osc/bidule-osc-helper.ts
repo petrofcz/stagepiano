@@ -1,4 +1,5 @@
 import {Layer} from '../../manual/model/layer';
+import {OscMessage} from '../../../backend/osc/osc.message';
 
 export class BiduleOscHelper {
 
@@ -14,6 +15,22 @@ export class BiduleOscHelper {
 
 	public static getLocalVstPrefix(layer: Layer) {
 		return '/Manual' + (parseInt(layer.manualId, 10) + 1) + '/Layer' + layer.position + '/';
+	}
+
+	public static buildLayerMidiSwitcherItemMessage(layer: Layer, instrumentId: string) {
+		const instrumentIndex = layer.availableVstIds.filter(vstId => vstId.startsWith('I')).indexOf(instrumentId);
+		if (instrumentIndex === -1) {
+			// todo throw/log error
+			return null;
+		}
+		return new OscMessage(this.getLocalVstPrefix(layer) + 'MidiSwitcher/Active_Output', [instrumentIndex / 15]);
+	}
+
+	public static buildLayerVstModeMessage(layer: Layer, vstId: string, mode: BiduleMode) {
+		return new OscMessage(
+			this.getLocalVstPrefix(layer) + vstId + '/' + BiduleCommonEndpoint.MODE,
+			[mode]
+		);
 	}
 
 	public static isNativeBiduleEndpoint(endpoint: string, considerPresetChange: boolean) {
