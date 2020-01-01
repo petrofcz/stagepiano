@@ -31,13 +31,12 @@ import {ParamMappingOscService} from './bidule/osc/paramMapping/param-mapping-os
 import {EffectSnapshotService} from './vst/model/effectSnapshotService';
 import {PresetState} from '../shared/preset/state/preset.state';
 import {PresetSessionState} from '../shared/preset/state/presetSession.state';
-import {LayoutRedirectService} from '../frontend/model/navigation/layout-redirect.service';
-import {ParamMappingLoaderService} from '../shared/preset/model/paramMappingLoader.service';
 import {VstPresetInitStrategyLearnService} from './preset/VstPresetInitStrategy/vst-preset-init-strategy-learn.service';
 import {SnapshotInitStrategyLearnService} from './preset/SnapshotInitStrategy/snapshot-init-strategy-learn.service';
 import {PresetCategorySwitcherService} from '../shared/session/model/preset-category-switcher.service';
 import {PresetValueListenerService} from './preset/model/preset-value-listener.service';
 import {PresetInstrumentLoaderService} from './preset/model/preset-instrument-loader.service';
+import {InitialScreenTransmitterService} from './keyboard/model/initial-screen-transmitter.service';
 
 export function IpcActionReceiverFactory(ipcActionReceiver: IpcActionReceiver) {
 	return () => ipcActionReceiver.init();
@@ -90,7 +89,7 @@ export function NoopAppInitializer() {
 	bootstrap: [DummyComponent]
 })
 export class BackendModule {
-	constructor(ks: KotatkoService, blw: BiduleLayoutOpener, blr: BiduleLayoutReader, kbs: KeyboardService, kbdRouter: KeyboardRouter, pmos: ParamMappingOscService, ess: EffectSnapshotService, pml: ParamMappingLoaderService, vpisls: VstPresetInitStrategyLearnService, sisls: SnapshotInitStrategyLearnService, pcss: PresetCategorySwitcherService, pvls: PresetValueListenerService, pils: PresetInstrumentLoaderService) {
+	constructor(ks: KotatkoService, blw: BiduleLayoutOpener, blr: BiduleLayoutReader, kbs: KeyboardService, kbdRouter: KeyboardRouter, pmos: ParamMappingOscService, ess: EffectSnapshotService, vpisls: VstPresetInitStrategyLearnService, sisls: SnapshotInitStrategyLearnService, pcss: PresetCategorySwitcherService, pvls: PresetValueListenerService, pils: PresetInstrumentLoaderService, ists: InitialScreenTransmitterService) {
 		ks.run();
 	}
 }

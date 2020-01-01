@@ -69,7 +69,9 @@ export class ParamMappingController implements MortalInterface {
 				return paramMappnig && paramMappnig.mainItemId !== null && paramMappnig.items[paramMappnig.mainItemId].mappingStrategy !== null;
 			};
 
-			mapping$.subscribe((val) => console.log('[PMC] Mapping', val));
+			this.subscriptions.push(
+				mapping$.subscribe((val) => console.log('[PMC] Mapping', val))
+			);
 
 			// reset columns for not active mappings
 			this.subscriptions.push(
@@ -125,11 +127,6 @@ export class ParamMappingController implements MortalInterface {
 						.pipe(map(oscMessage => { return { oscMessage: oscMessage, paramMappingItem: args.paramMappingItem }; }))
 
 				));
-
-			// todo remove
-			values$.subscribe((vals) => {
-				//console.log('[PMC] VALUES ' + i, vals);
-			});
 
 			// subscribe for active mappings
 

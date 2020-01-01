@@ -69,10 +69,11 @@ export class KeyboardRouter {
 		}
 	}
 
-	private switchDisplayController(controller: MortalInterface) {
+	private switchDisplayController(controller: MortalInterface, prepareCallback: () => void = () => {}) {
 		if (this.currentDisplayController) {
 			this.currentDisplayController.onDestroy();
 		}
+		prepareCallback();
 		this.currentDisplayController = controller;
 		this.currentDisplayController.onInit();
 	}
