@@ -45,19 +45,26 @@ export class USBDriver {
 						this.inEndpoint = inEndpoint;
 						this.outEndpoint = iface.endpoints[1];
 
-						inEndpoint.on('data', (data) => {
-							// console.log('AUTOMAP IN');
-							// console.log(data);
-							this._onMessage.emit(data);
-						});
+						try {
+							inEndpoint.on('data', (data) => {
+								// console.log('AUTOMAP IN');
+								// console.log(data);
+								this._onMessage.emit(data);
+							});
 
-						inEndpoint.on('end', () => {
-							this.interface.release();
-							device.close();
-							this._onDisconnect.emit();
+							inEndpoint.on('end', () => {
+								this._onDisconnect.emit();
+								this.interface = null;
+								this.outEndpoint = null;
+							});
+
+							this.inEndpoint.on('error', message => console.log(message));
+							this.outEndpoint.on('error', message => console.log(message));
+						} catch (e) {
 							this.interface = null;
 							this.outEndpoint = null;
-						});
+							this.inEndpoint = null;
+						}
 
 						inEndpoint.startPoll(8, 4);
 
@@ -66,7 +73,7 @@ export class USBDriver {
 						}, 300);
 					}
 				}
-				if (!this.interface) {
+				if (!this.interface && device.op) {
 					device.close();
 				}
 			}
