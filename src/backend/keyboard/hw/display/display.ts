@@ -1,6 +1,10 @@
 import {MidiAdapter, SysexMessage} from '../../../automap/midi-adapter';
 import {SlMkII} from '../../common';
+import {Injectable} from '@angular/core';
 
+@Injectable({
+	providedIn: 'root'
+})
 export class Display {
 
 	static readonly ALIGN_LEFT = 0;
@@ -87,7 +91,7 @@ export class Display {
 				)
 			));
 		}
-		this.content = ' '.repeat(position) + message + (Display.realColSize * Display.cols - message.length - position) + this.emptyRow;
+		this.content = ' '.repeat(position) + message + ' '.repeat(Display.realColSize * Display.cols - message.length - position) + this.emptyRow;
 	}
 
 	public clearDisplay(bufferOnly: boolean = false) {

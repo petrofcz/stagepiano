@@ -13,14 +13,14 @@ export class DisplayRegionDriver {
 	private _knobs: Knobs;
 	private _display: Display;
 
-	constructor(midiAdapter: MidiAdapter) {
+	constructor(midiAdapter: MidiAdapter, display: Display) {
 		this._buttonMatrix = new ButtonMatrix(8, 2, 24, midiAdapter);
 		this._buttonMatrix.buttons.turnOffAllLeds();
 		this._buttonMatrix.buttons.disableAllButtons();
 
 		this._knobs = new Knobs(midiAdapter);
 
-		this._display = new Display(midiAdapter);
+		this._display = display;
 		this._display.clearDisplay();
 	}
 
