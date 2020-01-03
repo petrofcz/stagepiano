@@ -1,10 +1,10 @@
 <div class="key-value">
 	<div class="key">
-		VST preset
+		Instrument parameter snapshot
 	</div>
 	<div class="value">
 			<span *ngIf="!((currentStrategy$|async)?.paramValues)" class="empty">
-				no preset selected
+				no items captured
 			</span>
 		<span *ngIf="((currentStrategy$|async)?.paramValues)" class="snapshot-values">
 			<span class="preset-number">

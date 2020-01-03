@@ -14,6 +14,7 @@ import {BiduleCommonEndpoint, BiduleOscHelper} from '../../../shared/bidule/osc/
 import {SendOscMessageAction} from '../../../shared/bidule/state/bidule.actions';
 import {TakeEffectSnapshotAction} from '../../../shared/session/state/session.actions';
 import {Router} from '@angular/router';
+import {SetIgnoreParamsForSessionAction} from '../../../shared/preset/state/presetSession.actions';
 
 @Component({
 	selector: 'app-instrument-list',
@@ -73,8 +74,13 @@ export class InstrumentListPageComponent implements OnInit {
 		const currentLayer = this.store.selectSnapshot(ManualState.getCurrentLayer);
 		if (currentLayer) {
 			this.store.dispatch(
-				new TakeEffectSnapshotAction(id, BiduleOscHelper.getLocalVstPrefix(currentLayer) + id + '/')
+				new SetIgnoreParamsForSessionAction(currentLayer.id, true)
 			);
+			setTimeout(() =>
+				this.store.dispatch(
+					new TakeEffectSnapshotAction(id, BiduleOscHelper.getLocalVstPrefix(currentLayer) + id + '/')
+				),
+			10);
 		}
 	}
 }

@@ -18,7 +18,7 @@ export class BiduleOscHelper {
 	}
 
 	public static buildLayerMidiSwitcherItemMessage(layer: Layer, instrumentId: string) {
-		const instrumentIndex = layer.availableVstIds.filter(vstId => vstId.startsWith('I')).indexOf(instrumentId);
+		const instrumentIndex = this.getInstrumentIndex(instrumentId, layer);
 		if (instrumentIndex === -1) {
 			// todo throw/log error
 			return null;
@@ -31,6 +31,31 @@ export class BiduleOscHelper {
 			this.getLocalVstPrefix(layer) + vstId + '/' + BiduleCommonEndpoint.MODE,
 			[mode]
 		);
+	}
+
+	public static buildInstrumentMixerMuteMessage(layer: Layer, vstId: string, mute: boolean) {
+		const instrumentIndex = this.getInstrumentIndex(vstId, layer);
+		if (instrumentIndex === -1) {
+			// todo throw/log error
+			return null;
+		}
+		return new OscMessage(
+			this.getLocalVstPrefix(layer) + 'InstrumentMixer/Mute_Channel_' + (instrumentIndex + 1),
+			[mute ? 1.0 : 0.0]
+		);
+	}
+
+	public static buildSendMidiMessages(byte1: number, byte2: number, byte3: number) {
+		return [
+			new OscMessage('/MidiCreator/Byte0/Value', [byte1 / 255]),
+			new OscMessage('/MidiCreator/Byte1/Value', [byte2 / 255]),
+			new OscMessage('/MidiCreator/Byte2/Value', [byte3 / 255]),
+			new OscMessage('/MidiCreator/Trigger/Send_Trigger', [1.0]),
+		];
+	}
+
+	public static isLocalEffect(path: string) {
+		return path.match(/\/Manual\d\/Layer\d\/EI.+/) || path.match(/\/Manual\d\/Layer\d\/EO.+/);
 	}
 
 	public static isNativeBiduleEndpoint(endpoint: string, considerPresetChange: boolean) {
@@ -61,6 +86,9 @@ export class BiduleOscHelper {
 		return disabled.indexOf(endpoint) > -1;
 	}
 
+	private static getInstrumentIndex(instrumentId: string, layer: Layer) {
+		return layer.availableVstIds.filter(vstId => vstId.startsWith('I')).indexOf(instrumentId);
+	}
 }
 
 export enum BiduleCommonEndpoint {

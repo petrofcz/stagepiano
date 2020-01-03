@@ -4,11 +4,14 @@ import {PresetSessionState} from '../../../shared/preset/state/presetSession.sta
 import {debounceTime, delay, distinctUntilChanged, filter, groupBy, map, mergeMap, switchMap, tap} from 'rxjs/operators';
 import {from, merge, Observable, of} from 'rxjs';
 import {Preset} from '../../../shared/preset/model/model';
-import {BiduleCommonEndpoint, BiduleMode, BiduleOscHelper} from '../../../shared/bidule/osc/bidule-osc-helper';
+import {BiduleMode, BiduleOscHelper} from '../../../shared/bidule/osc/bidule-osc-helper';
 import {ManualState} from '../../../shared/manual/state/manual.state';
-import {OscMessage} from '../../osc/osc.message';
 import {Injectable} from '@angular/core';
 import {VSTState} from '../../../shared/vst/state/vst.state';
+import {LayoutState} from '../../../shared/layout/state/layout.state';
+import {PresetInitStrategyHandlerService} from './preset-init-strategy-handler.service';
+import {SetIgnoreParamsForSessionAction} from '../../../shared/preset/state/presetSession.actions';
+import {OscMessage} from '../../osc/osc.message';
 
 @Injectable({
 	providedIn: 'root'
@@ -21,12 +24,28 @@ export class PresetInstrumentLoaderService {
 
 	private applyInitStrategyTimeout = 20;
 
-	constructor(private store: Store, private osc: OscService) {
+	constructor(private store: Store, private osc: OscService, protected initStrategyHandler: PresetInitStrategyHandlerService) {
 		this.init();
 	}
 
 	protected init() {
-		// todo set mode for all instruments to mute
+		// mute all instruments
+		this.store.select(LayoutState.isLayoutLoaded)
+			.pipe(debounceTime(100))
+			.pipe(distinctUntilChanged())
+			.subscribe(layoutLoaded => {
+				if (layoutLoaded) {
+					const layers = this.store.selectSnapshot(ManualState.getLayers);
+					const instruments = this.store.selectSnapshot(VSTState.getInstruments);
+					for (const layer of layers) {
+						for (const instrument of instruments) {
+							this.osc.send(
+								BiduleOscHelper.buildLayerVstModeMessage(layer, instrument.id, BiduleMode.MUTE)
+							);
+						}
+					}
+				}
+			});
 
 		const preparedData$: Observable<{layerId: string, activePreset: Preset|null, activeInstrumentId: string|null}> = this.store.select(PresetSessionState.getSessionsByLayerId).pipe(switchMap(sessionsByLayerId => {
 			const output = [];
@@ -75,43 +94,87 @@ export class PresetInstrumentLoaderService {
 									)
 								);
 							})) : this.store.select(PresetSessionState.getSessionsByLayerId).pipe(
-								map(sessions => sessions[layerGroup.key].preset.initStrategy),
-								distinctUntilChanged(),
-								switchMap(
-									initStrategy => of(1).pipe(
-										filter(() => {
-											const preset = this.store.selectSnapshot(PresetSessionState.getSessionsByLayerId)[layerGroup.key].preset;
-											return preset && preset.vstId === instrumentGroup.key;
-										}),
-										tap(() => {
-											console.log('[PILS] BYPASS Instrument ' + instrumentGroup.key + ' for layer ' + layerGroup.key)
-											const layer = this.store.selectSnapshot(ManualState.getLayerById)(layerGroup.key);
-											this.osc.send(
-												BiduleOscHelper.buildLayerVstModeMessage(
-													layer,
-													instrumentGroup.key,
-													BiduleMode.BYPASS
-												)
-											);
-										}),
-										delay(this.applyInitStrategyTimeout),
-										tap(() => {
-											console.log('[PILS] INIT STRATEGY ' + instrumentGroup.key + ' for layer ' + layerGroup.key)
-										}),
-										delay(this.processingModeTimeout - this.applyInitStrategyTimeout),
-										tap(() => {
-											console.log('[PILS] PROCESSING Instrument ' + instrumentGroup.key + ' for layer ' + layerGroup.key)
-											const layer = this.store.selectSnapshot(ManualState.getLayerById)(layerGroup.key);
-											this.osc.send(
-												BiduleOscHelper.buildLayerVstModeMessage(
-													layer,
-													instrumentGroup.key,
-													BiduleMode.PROCESSING
-												)
-											);
-										})
-									)
-								)
+								map(sessions => {
+									return layerGroup.key in sessions ? sessions[layerGroup.key] : null;
+									// return {
+									// 	initStrategy: sessions[layerGroup.key].preset.initStrategy,
+									// 	presetChangeTimestamp: sessions[layerGroup.key].presetChangeTimestamp,
+									// 	paramValues:
+									// };
+								}),
+								filter(arg => arg !== null && arg.preset !== null && arg.preset.vstId === instrumentGroup.key && arg.preset.vstId !== null),
+								distinctUntilChanged((a, b) =>
+									JSON.stringify(a.preset.initStrategy) === JSON.stringify(b.preset.initStrategy)
+									&& a.presetChangeTimestamp === b.presetChangeTimestamp
+								),
+								tap((args) => {
+
+									console.log('[PILS] PROCESS & MUTE Instrument ' + instrumentGroup.key + ' for layer ' + layerGroup.key)
+									const layer = this.store.selectSnapshot(ManualState.getLayerById)(layerGroup.key);
+									this.osc.send(
+										BiduleOscHelper.buildInstrumentMixerMuteMessage(
+											layer,
+											instrumentGroup.key,
+											true
+										)
+									);
+									this.osc.send(
+										BiduleOscHelper.buildLayerVstModeMessage(
+											layer,
+											instrumentGroup.key,
+											BiduleMode.PROCESSING   // BiduleMode.BYPASS
+										)
+									);
+									this.store.dispatch(new SetIgnoreParamsForSessionAction(layer.id, true));
+								}),
+								delay(this.applyInitStrategyTimeout),
+								tap((args) => {
+									console.log('[PILS] INIT STRATEGY ' + instrumentGroup.key + ' for layer ' + layerGroup.key);
+
+									// apply init strategy
+									const layer = this.store.selectSnapshot(ManualState.getLayerById)(layerGroup.key);
+									this.initStrategyHandler.handle(args.preset.initStrategy, layer, instrumentGroup.key);
+
+									// set effect params
+									const effects = this.store.selectSnapshot(VSTState.getEffects);
+									const layerPathPrefix = BiduleOscHelper.getLocalVstPrefix(layer);
+
+									for (const effect of effects) {
+										const values = {
+											...(effect.snapshot || {}),
+											...(Object.keys(args.preset.effectParamValues).indexOf(effect.id) > -1 ? args.preset.effectParamValues[effect.id] : {})
+										};
+										// send extra instrument params
+										for (const endpoint of Object.keys(values)) {
+											this.osc.send(new OscMessage(
+												layerPathPrefix + effect.id + '/' + endpoint,
+												values[endpoint]
+											));
+										}
+									}
+								}),
+								delay(this.processingModeTimeout - this.applyInitStrategyTimeout),
+								tap(args => {
+									console.log('[PILS] UNMUTE Instrument ' + instrumentGroup.key + ' for layer ' + layerGroup.key)
+									const layer = this.store.selectSnapshot(ManualState.getLayerById)(layerGroup.key);
+									const layerPathPrefix = BiduleOscHelper.getLocalVstPrefix(layer);
+
+									// send extra instrument params
+									for (const endpoint of Object.keys(args.preset.paramValues)) {
+										this.osc.send(new OscMessage(
+											layerPathPrefix + instrumentGroup.key + '/' + endpoint,
+											args.preset.paramValues[endpoint]
+										));
+									}
+
+									this.osc.send(
+										BiduleOscHelper.buildInstrumentMixerMuteMessage(
+											layer,
+											instrumentGroup.key,
+											false
+										)
+									);
+								})
 							)
 						)
 					)

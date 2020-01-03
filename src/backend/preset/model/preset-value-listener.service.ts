@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Store} from '@ngxs/store';
 import {OscService} from '../../osc/osc.service';
 import {PresetSessionState} from '../../../shared/preset/state/presetSession.state';
-import {delay, distinctUntilChanged, filter, groupBy, map, mergeMap, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {debounceTime, delay, distinctUntilChanged, filter, groupBy, map, mergeMap, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {from, Observable, of} from 'rxjs';
 import {PresetSession} from '../../../shared/preset/model/presetSession';
 import {BiduleOscHelper} from '../../../shared/bidule/osc/bidule-osc-helper';
@@ -11,7 +11,7 @@ import {ManualState} from '../../../shared/manual/state/manual.state';
 import {OscMessage} from '../../osc/osc.message';
 import {
 	PatchPresetForLayerAction,
-	SetIgnoreParamsForSessionAction,
+	SetIgnoreParamsForSessionAction, SetPresetEffectParameterValueForLayerAction,
 	SetPresetParameterValueForLayerAction
 } from '../../../shared/preset/state/presetSession.actions';
 
@@ -22,7 +22,7 @@ export class PresetValueListenerService {
 	constructor(store: Store, osc: OscService) {
 		const data1$ = store.select(
 			PresetSessionState.getSessionsByLayerId
-		).pipe(distinctUntilChanged()).pipe(
+		).pipe(
 			mergeMap((sessionsByLayerId): Observable<{layerId: string, vstId: string, layer: Layer, isDisabled: boolean}> => {
 				const arr = [];
 				//console.log('[PVL] Sessions', sessionsByLayerId);
@@ -44,10 +44,11 @@ export class PresetValueListenerService {
 			data => data.layerId
 		));
 
-		// OSC observe
+		// instrument OSC observe
 		const data$ = groupedData1$.pipe(mergeMap(
 			group2 => group2
-				.pipe(distinctUntilChanged())
+				.pipe(distinctUntilChanged((prev, curr) => prev.vstId === curr.vstId && prev.isDisabled === curr.isDisabled))
+				.pipe(tap(dta => console.log('[PVL] Setting session for layer', dta)))
 				.pipe(switchMap(
 					(group): Observable<{ oscMessage: OscMessage, layerId: string}> =>
 						group.isDisabled ? of() : osc.observeAny(BiduleOscHelper.getLocalVstPrefix(group.layer) + group.vstId + '/*')
@@ -64,6 +65,32 @@ export class PresetValueListenerService {
 			store.dispatch(
 				new SetPresetParameterValueForLayerAction(item.layerId, endpoint, item.oscMessage.args)
 			);
+		});
+
+		// effects OSC observe
+		groupedData1$.pipe(mergeMap(
+			group2 => group2
+				.pipe(distinctUntilChanged((prev, curr) => prev.vstId === curr.vstId && prev.isDisabled === curr.isDisabled))
+				.pipe(tap(dta => console.log('[PVL3] Setting session for layer', dta)))
+				.pipe(switchMap(
+					(group): Observable<{ oscMessage: OscMessage, layerId: string}> =>
+						group.isDisabled ? of() : osc.observeAny(BiduleOscHelper.getLocalVstPrefix(group.layer) + '*')
+					.pipe(map((oscMessage): { oscMessage: OscMessage, layerId: string} => {
+						return { oscMessage: oscMessage, layerId: group.layerId };
+					}))
+				))
+		)).subscribe(item => {
+			if (BiduleOscHelper.isLocalEffect(item.oscMessage.path)) {
+				const pathParts = item.oscMessage.path.split('/');
+				const endpoint = pathParts.pop();
+				const effectId = pathParts.pop();
+				if (BiduleOscHelper.isNativeBiduleEndpoint(endpoint, false)) {
+					return;
+				}
+				store.dispatch(
+					new SetPresetEffectParameterValueForLayerAction(item.layerId, effectId, endpoint, item.oscMessage.args)
+				);
+			}
 		});
 
 		// Auto-return ignore params flag
@@ -92,7 +119,7 @@ export class PresetValueListenerService {
 				.pipe(switchMap((gg): Observable<string> => of(gg.layerId).pipe(delay(BiduleOscHelper.TIMEOUT_IGNORE_PARAMS_AFTER_PRESET_INIT))))
 			)
 		).subscribe(layerIdToCancelIgnore => {
-			//console.log('[PVL2] Layer to ignore', layerIdToCancelIgnore);
+			console.log('[PVL2] Layer to ignore', layerIdToCancelIgnore);
 			store.dispatch(
 				new SetIgnoreParamsForSessionAction(layerIdToCancelIgnore, false)
 			);

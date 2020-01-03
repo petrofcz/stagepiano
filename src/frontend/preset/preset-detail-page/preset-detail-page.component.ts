@@ -19,7 +19,7 @@ import {PresetSessionState} from '../../../shared/preset/state/presetSession.sta
 import {KeyboardRoutes} from '../../../backend/keyboard/router/keyboardRoutes';
 import { v1 as uuid } from 'uuid';
 import {DuplicatePresetAction, SavePresetAction} from '../../../shared/preset/state/preset.actions';
-import {PatchCurrentPresetAction} from '../../../shared/preset/state/presetSession.actions';
+import {PatchCurrentPresetAction, ReinitPresetAction, SelectPresetAction} from '../../../shared/preset/state/presetSession.actions';
 import {Instrument} from '../../../shared/vst/model/instrument';
 import {LinearParamMappingStrategy, ParamMappingGroup, ParamMappingStrategy} from '../../../shared/paramMapping/model/model';
 import {ParamMappingStrategies} from '../../../shared/paramMapping/model/paramMappingStrategies';
@@ -45,7 +45,8 @@ export class PresetDetailPageComponent implements OnInit, OnDestroy {
 		vstId: null,
 		parameterMappingGroupId: null,
 		initStrategy: null,
-		paramValues: { }
+		paramValues: { },
+		effectParamValues: { }
 	};
 
 	availableVsts$: Observable<VST[]>;
@@ -188,6 +189,14 @@ export class PresetDetailPageComponent implements OnInit, OnDestroy {
 		this.store.dispatch(new PatchCurrentPresetAction({
 			paramValues: { }
 		}));
-		// todo call init strategy
+		setTimeout(() => this.store.dispatch(new ReinitPresetAction()), 10);
 	}
+
+	clearEffectParamValues() {
+		this.store.dispatch(new PatchCurrentPresetAction({
+			effectParamValues: { }
+		}));
+		setTimeout(() => this.store.dispatch(new ReinitPresetAction()), 10);
+	}
+
 }

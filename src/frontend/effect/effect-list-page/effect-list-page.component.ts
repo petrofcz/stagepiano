@@ -13,6 +13,7 @@ import {Router} from '@angular/router';
 import {BiduleCommonEndpoint, BiduleOscHelper} from '../../../shared/bidule/osc/bidule-osc-helper';
 import {SendOscMessageAction} from '../../../shared/bidule/state/bidule.actions';
 import {TakeEffectSnapshotAction} from '../../../shared/session/state/session.actions';
+import {SetIgnoreParamsForSessionAction} from '../../../shared/preset/state/presetSession.actions';
 
 @Component({
 	selector: 'app-effect-list',
@@ -87,7 +88,13 @@ export class EffectListPageComponent implements OnInit {
 	takeSnapshot(id: string) {
 		if (this.vstPath) {
 			this.store.dispatch(
-				new TakeEffectSnapshotAction(id, this.vstPath + id + '/')
+				new SetIgnoreParamsForSessionAction(this.store.selectSnapshot(SessionState.getActiveLayerId), true)
+			);
+			setTimeout(() =>
+				this.store.dispatch(
+					new TakeEffectSnapshotAction(id, this.vstPath + id + '/')
+				),
+				10
 			);
 		}
 	}

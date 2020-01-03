@@ -64,6 +64,18 @@ export class SetPresetParameterValueForLayerAction implements SetPresetParameter
 	constructor(public readonly layerId: string, public readonly endpoint: string, public readonly value: any) { }
 }
 
+export interface SetPresetEffectParameterValueForLayerActionDecl {
+	layerId: string;
+	effectId: string;
+	endpoint: string;
+	value: any;
+}
+
+export class SetPresetEffectParameterValueForLayerAction implements SetPresetEffectParameterValueForLayerActionDecl {
+	static type = '[PresetSession] Patch preset effect parameter value for layer';
+	constructor(public readonly layerId: string, public readonly effectId: string, public readonly endpoint: string, public readonly value: any) { }
+}
+
 export interface SetIgnoreParamsForSessionActionDecl {
 	layerId: string;
 	ignoreParams: boolean;
@@ -72,4 +84,8 @@ export interface SetIgnoreParamsForSessionActionDecl {
 export class SetIgnoreParamsForSessionAction implements SetIgnoreParamsForSessionActionDecl {
 	static type = '[PresetSession] Set ignore params for session';
 	constructor(public readonly layerId: string, public readonly ignoreParams: boolean) { }
+}
+
+export class ReinitPresetAction {
+	static type = '[PresetSession] Reinit preset';
 }

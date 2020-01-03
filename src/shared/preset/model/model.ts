@@ -10,7 +10,12 @@ export interface Preset {
 	vstId: string|null;
 	initStrategy: PresetInitStrategy|null;
 	parameterMappingGroupId: string|null;
-	paramValues: {[key: string]: string};
+	paramValues: {[key: string]: any[]};
+	effectParamValues: {
+		[key: string]: {
+			[key: string]: any[]
+		}
+	};
 }
 
 export interface PresetInitStrategy {

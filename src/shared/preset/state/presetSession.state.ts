@@ -5,12 +5,18 @@ import {
 	PatchCurrentPresetActionDecl,
 	PatchCurrentPresetInitStrategyAction,
 	PatchCurrentPresetInitStrategyActionDecl,
-	PatchPresetForLayerAction, PatchPresetForLayerActionDecl,
+	PatchPresetForLayerAction,
+	PatchPresetForLayerActionDecl, ReinitPresetAction,
 	SelectPresetAction,
-	SelectPresetActionDecl, SetIgnoreParamsForSessionAction, SetIgnoreParamsForSessionActionDecl,
+	SelectPresetActionDecl,
+	SetIgnoreParamsForSessionAction,
+	SetIgnoreParamsForSessionActionDecl,
 	SetInitSnapshotLearningAction,
 	SetInitVstPresetLearningAction,
-	SetLearningActionDecl, SetPresetParameterValueForLayerAction, SetPresetParameterValueForLayerActionDecl
+	SetLearningActionDecl, SetPresetEffectParameterValueForLayerAction,
+	SetPresetEffectParameterValueForLayerActionDecl,
+	SetPresetParameterValueForLayerAction,
+	SetPresetParameterValueForLayerActionDecl
 } from './presetSession.actions';
 import {SessionState, SessionStateModel} from '../../session/state/session.state';
 import {Preset} from '../model/model';
@@ -175,7 +181,7 @@ export class PresetSessionState {
 	public selectPreset(ctx: StateContext<PresetSessionStateModel>, action: SelectPresetActionDecl) {
 		let history = PresetSessionState.getCurrentHistory(ctx.getState(), this.getCurrentLayerId());
 		const currentPreset = PresetSessionState.getCurrentPreset(ctx.getState(), this.getCurrentLayerId());
-		if (currentPreset) {
+		if (currentPreset && currentPreset.id !== action.presetId) {
 			history = history.filter(historyPreset => historyPreset.id !== action.presetId);
 			history.unshift(currentPreset);
 		}
@@ -188,6 +194,7 @@ export class PresetSessionState {
 				ctx,
 				{
 					preset: null,
+					presetChangeTimestamp: Date.now(),
 					lastPresets: history
 				}
 			);
@@ -197,11 +204,19 @@ export class PresetSessionState {
 				ctx,
 				{
 					preset: Object.assign({}, preset),
-					ignoreParams: true,     // todo: register debouncer service which automatically reverts to false after 300ms
+					ignoreParams: true,
+					presetChangeTimestamp: Date.now(),
 					lastPresets: history
 				}
 			);
 		}
+	}
+
+	@Action({type: ReinitPresetAction.type})
+	public reinitPreset(ctx: StateContext<PresetSessionStateModel>, action) {
+		this.patchCurrentPresetSession(ctx, {
+			presetChangeTimestamp: Date.now()
+		});
 	}
 
 	@Action({type: SetInitSnapshotLearningAction.type})
@@ -271,6 +286,32 @@ export class PresetSessionState {
 						paramValues: {
 							... state.sessionByLayerId[action.layerId].preset.paramValues,
 							[action.endpoint]: action.value
+						}
+					}
+				}
+			}
+		});
+	}
+
+	@Action({type: SetPresetEffectParameterValueForLayerAction.type})
+	public setPresetEffectParameterValueForLayerAction(ctx: StateContext<PresetSessionStateModel>, action: SetPresetEffectParameterValueForLayerActionDecl) {
+		const state = ctx.getState();
+		if (!(action.layerId in state.sessionByLayerId) || !state.sessionByLayerId[action.layerId].preset) {
+			return;
+		}
+		ctx.patchState({
+			sessionByLayerId: {
+				... state.sessionByLayerId,
+				[action.layerId]: {
+					... state.sessionByLayerId[action.layerId],
+					preset: {
+						... state.sessionByLayerId[action.layerId].preset,
+						effectParamValues: {
+							... state.sessionByLayerId[action.layerId].preset.effectParamValues,
+							[action.effectId]: {
+								... (action.effectId in state.sessionByLayerId[action.layerId].preset.effectParamValues ? state.sessionByLayerId[action.layerId].preset.effectParamValues[action.effectId] : {}),
+								[action.endpoint]: action.value
+							}
 						}
 					}
 				}
