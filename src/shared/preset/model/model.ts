@@ -30,5 +30,5 @@ export interface VstPresetInitStrategy extends PresetInitStrategy {
 
 export interface SnapshotPresetInitStrategy extends PresetInitStrategy {
 	type: 'snapshot';
-	paramValues: {[key: string]: string};
+	paramValues: {[key: string]: any[]};
 }
