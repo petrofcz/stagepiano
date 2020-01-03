@@ -33,6 +33,7 @@ export class InstrumentDetailController implements MortalInterface {
 	}
 
 	onInit(): void {
+		this.subscriptions.push(
 		combineLatest(
 			this.store.select(SessionState.getActiveLayerId),
 			this.store.select(PresetSessionState.getCurrentPreset)
@@ -48,7 +49,8 @@ export class InstrumentDetailController implements MortalInterface {
 						currentPresetData.vstId, currentPresetData.mappingGroupId
 					));
 				}
-			});
+			})
+		);
 
 		this.subscriptions.push(this.store.select(SessionState.isEditing).subscribe(isEditing => {
 			if (isEditing && this.lastPresetLive) {
