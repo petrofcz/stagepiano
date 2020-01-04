@@ -12,10 +12,12 @@ export class SnapshotInitStrategyHandlerService {
 	constructor(protected osc: OscService) { }
 
 	public handle(strategy: SnapshotPresetInitStrategy, layer: Layer, instrumentId: string) {
-		for (const key in strategy.paramValues) {
-			this.osc.send(new OscMessage(
-				BiduleOscHelper.getLocalVstPrefix(layer) + instrumentId + '/' + key, strategy.paramValues[key]
-			));
+		if (strategy.paramValues) {
+			for (const key in strategy.paramValues) {
+				this.osc.send(new OscMessage(
+					BiduleOscHelper.getLocalVstPrefix(layer) + instrumentId + '/' + key, strategy.paramValues[key]
+				));
+			}
 		}
 	}
 }

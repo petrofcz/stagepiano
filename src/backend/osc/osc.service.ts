@@ -50,10 +50,13 @@ export class OscService {
 	}
 
 	public send(message: OscMessage) {
-		console.log('OSC out', message);
+		//console.log('OSC out', message);
 		this.valuesEmitter.emit(message);
 		// dirty hack - OSC library cant resolve float types properly (1.0 is considered to be int)
-		const argsToSend = message.args.map(arg => arg === 0 ? 0.0001 : (arg === 1 ? 0.9999 : arg));
+		let argsToSend = message.args;
+		if (!message.dontHack) {
+			argsToSend = argsToSend.map(arg => arg === 0 ? 0.0001 : (arg === 1 ? 0.9999 : arg));
+		}
 		this.osc.send(new OSC.Message(message.path, ...argsToSend));
 	}
 

@@ -61,7 +61,7 @@ export class InstrumentListPageComponent implements OnInit {
 		const currentLayer = this.store.selectSnapshot(ManualState.getCurrentLayer);
 		if (currentLayer) {
 			this.store.dispatch(
-				new SendOscMessageAction(BiduleOscHelper.getLocalVstPrefix(currentLayer) + id + '/' + BiduleCommonEndpoint.OPEN_UI, [1])
+				new SendOscMessageAction(BiduleOscHelper.getLocalVstPrefix(currentLayer) + id + '/' + BiduleCommonEndpoint.OPEN_UI, [1], true)
 			);
 		}
 	}

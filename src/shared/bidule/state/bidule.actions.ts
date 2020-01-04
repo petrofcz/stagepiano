@@ -10,8 +10,9 @@ export class SetAvailableGlobalEffectsAction implements SetAvailableGlobalEffect
 export interface SendOscMessageActionDecl {
 	address: string;
 	args: any[];
+	dontHack: boolean;
 }
 export class SendOscMessageAction implements SendOscMessageActionDecl {
 	static readonly type = '[Bidule] Send OSC';
-	constructor (public address: string, public args: any[]) { }
+	constructor (public address: string, public args: any[], public dontHack: boolean = false) { }
 }

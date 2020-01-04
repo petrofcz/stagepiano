@@ -40,7 +40,8 @@ export class VstPresetInitStrategyComponent implements OnInit, OnDestroy {
 					new SendOscMessageAction(
 						BiduleOscHelper.getLocalVstPrefix(this.store.selectSnapshot(ManualState.getCurrentLayer))
 						+ this.store.selectSnapshot(PresetSessionState.getCurrentPreset).vstId + '/' + BiduleCommonEndpoint.OPEN_UI,
-						[1]
+						[1],
+						true
 					)
 				);
 			});

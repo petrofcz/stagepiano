@@ -92,31 +92,34 @@ export class PresetSessionState {
 
 	@Action({type: PatchCurrentPresetAction.type})
 	public patchCurrentPreset(ctx: StateContext<PresetSessionStateModel>, action: PatchCurrentPresetActionDecl) {
+		this.patchPreset(ctx, action.preset, this.getCurrentLayerId());
+	}
+
+	protected patchPreset(ctx: StateContext<PresetSessionStateModel>, preset: Partial<Preset>|null, layerId: string) {
 		const state = ctx.getState();
-		const currentLayerId = this.getCurrentLayerId();
-		if (!currentLayerId) {
+		if (!layerId) {
 			return;
 		}
 		let entity;
-		if (currentLayerId in state.sessionByLayerId) {
+		if (layerId in state.sessionByLayerId) {
 			entity = {
-				... state.sessionByLayerId[currentLayerId],
+				... state.sessionByLayerId[layerId],
 				preset: {
-					... state.sessionByLayerId[currentLayerId].preset,
-					... action.preset,
+					... state.sessionByLayerId[layerId].preset,
+					... preset,
 				},
 				ignoreParams: true
 			};
 		} else {
 			entity = <PresetSession>{
-				preset: action.preset,
+				preset: preset,
 				lastPresets: [],
 				ignoreParams: true
 			};
 		}
 		const sessionsByLayerId = {
 			... state.sessionByLayerId,
-			[currentLayerId]: entity
+			[layerId]: entity
 		};
 		ctx.patchState({
 			sessionByLayerId: sessionsByLayerId
@@ -154,15 +157,18 @@ export class PresetSessionState {
 	}
 
 	protected patchCurrentPresetSession(ctx: StateContext<PresetSessionStateModel>, patch: Partial<PresetSession>) {
+		return this.patchPresetSession(ctx, patch, this.getCurrentLayerId());
+	}
+
+	protected patchPresetSession(ctx: StateContext<PresetSessionStateModel>, patch: Partial<PresetSession>, layerId: string) {
 		const state = ctx.getState();
-		const currentLayerId = this.getCurrentLayerId();
-		if (!currentLayerId) {
+		if (!layerId) {
 			return;
 		}
 		let entity;
-		if (currentLayerId in state.sessionByLayerId) {
+		if (layerId in state.sessionByLayerId) {
 			entity = {
-				... state.sessionByLayerId[currentLayerId],
+				... state.sessionByLayerId[layerId],
 				... patch
 			};
 		} else {
@@ -170,7 +176,7 @@ export class PresetSessionState {
 		}
 		const sessionsByLayerId = {
 			... state.sessionByLayerId,
-			[currentLayerId]: entity
+			[layerId]: entity
 		};
 		ctx.patchState({
 			sessionByLayerId: sessionsByLayerId
@@ -178,18 +184,22 @@ export class PresetSessionState {
 	}
 
 	@Action({type: SelectPresetAction.type})
-	public selectPreset(ctx: StateContext<PresetSessionStateModel>, action: SelectPresetActionDecl) {
-		let history = PresetSessionState.getCurrentHistory(ctx.getState(), this.getCurrentLayerId());
-		const currentPreset = PresetSessionState.getCurrentPreset(ctx.getState(), this.getCurrentLayerId());
-		if (currentPreset && currentPreset.id !== action.presetId) {
-			history = history.filter(historyPreset => historyPreset.id !== action.presetId);
+	public selectPresetForCurrentLayer(ctx: StateContext<PresetSessionStateModel>, action: SelectPresetActionDecl) {
+		this.selectPreset(ctx, action.presetId, action.forcePresetData, action.layerId ? action.layerId : this.getCurrentLayerId());
+	}
+
+	protected selectPreset(ctx: StateContext<PresetSessionStateModel>, presetId: string|null, forcePresetData: Preset|null, layerId: string) {
+		let history = PresetSessionState.getCurrentHistory(ctx.getState(), layerId);
+		const currentPreset = PresetSessionState.getCurrentPreset(ctx.getState(), layerId);
+		if (currentPreset && currentPreset.id !== presetId) {
+			history = history.filter(historyPreset => historyPreset.id !== presetId);
 			history.unshift(currentPreset);
 		}
 		const maxHistoryLength = 6;
 		if (history.length > maxHistoryLength) {
 			history = history.slice(0, maxHistoryLength);
 		}
-		if (!action.presetId) {
+		if (!presetId) {
 			this.patchCurrentPresetSession(
 				ctx,
 				{
@@ -199,7 +209,7 @@ export class PresetSessionState {
 				}
 			);
 		} else {
-			const preset = action.forcePresetData ? action.forcePresetData : this.store.selectSnapshot(PresetState.getById)(action.presetId);
+			const preset = forcePresetData ? forcePresetData : this.store.selectSnapshot(PresetState.getById)(presetId);
 			this.patchCurrentPresetSession(
 				ctx,
 				{
@@ -233,6 +243,7 @@ export class PresetSessionState {
 		});
 	}
 
+	// Deprecated?
 	@Action({type: PatchPresetForLayerAction.type})
 	public patchPresetForLayerAction(ctx: StateContext<PresetSessionStateModel>, action: PatchPresetForLayerActionDecl) {
 		const state = ctx.getState();

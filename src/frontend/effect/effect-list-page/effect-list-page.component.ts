@@ -81,7 +81,7 @@ export class EffectListPageComponent implements OnInit {
 
 	openUI(id: string) {
 		if (this.vstPath) {
-			this.store.dispatch(new SendOscMessageAction(this.vstPath + id + '/' + BiduleCommonEndpoint.OPEN_UI, [1]));
+			this.store.dispatch(new SendOscMessageAction(this.vstPath + id + '/' + BiduleCommonEndpoint.OPEN_UI, [1], true));
 		}
 	}
 

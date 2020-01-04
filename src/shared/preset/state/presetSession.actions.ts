@@ -23,10 +23,11 @@ export interface SelectPresetActionDecl {
 	readonly presetId: string|null;
 	// readonly forcePresetData?: Preset|null;
 	readonly forcePresetData: Preset|null;
+	readonly layerId: string|null;
 }
 export class SelectPresetAction implements SelectPresetActionDecl {
 	static readonly type = '[PresetSession] Select preset';
-	public constructor(public readonly presetId: string|null, public readonly forcePresetData: Preset|null = null) { }
+	public constructor(public readonly presetId: string|null, public readonly forcePresetData: Preset|null = null, public readonly layerId: string|null = null) { }
 }
 
 export interface SetLearningActionDecl {
@@ -45,12 +46,12 @@ export class SetInitSnapshotLearningAction implements SetLearningActionDecl {
 
 export interface PatchPresetForLayerActionDecl {
 	layerId: string;
-	preset: Partial<Preset>;
+	preset: Partial<Preset>|null;
 }
 
 export class PatchPresetForLayerAction implements PatchPresetForLayerActionDecl {
 	static type = '[PresetSession] Patch preset for layer';
-	constructor(public readonly preset: Partial<Preset>, public readonly layerId: string) { }
+	constructor(public readonly preset: Partial<Preset>|null, public readonly layerId: string) { }
 }
 
 export interface SetPresetParameterValueForLayerActionDecl {

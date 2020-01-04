@@ -16,7 +16,7 @@ export class BiduleOscTransmitter {
 				if (actionTester.matches(SendOscMessageAction)) {
 					const action: SendOscMessageActionDecl = val.action;
 					osc.send(new OscMessage(
-						action.address, action.args
+						action.address, action.args, action.dontHack
 					));
 				}
 			}

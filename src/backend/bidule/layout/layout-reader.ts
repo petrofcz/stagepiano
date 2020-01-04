@@ -53,8 +53,8 @@ export class BiduleLayoutReader {
 							vst = effect;
 						}
 						if (vst) {
-							console.log('NEW VST');
-							console.log(vst);
+							//console.log('NEW VST');
+							//console.log(vst);
 							store.dispatch(new AddVSTAction(
 								vst
 							));
@@ -62,11 +62,11 @@ export class BiduleLayoutReader {
 					}
 					for (const manualDefinition of biduleLayout.manualDefinitions) {
 						const manualId = manualDefinition.id.toString();
-						console.log('ADD MANUAL ' + manualId);
+						//console.log('ADD MANUAL ' + manualId);
 						store.dispatch(new AddManualAction(manualId, manualDefinition.id + 1, manualDefinition.name));
 						for (const layerDefinition of manualDefinition.layers) {
 							const layerId = manualId + '-' + layerDefinition.id.toString();
-							console.log('ADD LAYER ' + layerId);
+							//console.log('ADD LAYER ' + layerId);
 							store.dispatch(new AddLayerAction(layerId, layerDefinition.name, manualId, layerDefinition.vstIds, layerDefinition.id + 1));
 						}
 					}

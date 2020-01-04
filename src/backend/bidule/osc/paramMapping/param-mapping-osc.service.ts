@@ -63,7 +63,7 @@ export class ParamMappingOscService {
 	private setupValueLearn() {
 		const learningMappingItemId$ = this.store.select(ParamMappingPageState.getLearningMappingItemId);
 
-		this.store.select(ParamMappingPageState.getState).subscribe((state) => console.log(state));
+		//this.store.select(ParamMappingPageState.getState).subscribe((state) => console.log(state));
 
 		// Endpoint learn
 		learningMappingItemId$

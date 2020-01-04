@@ -116,7 +116,8 @@ export class PresetListPageComponent implements OnInit {
 				vstId: null,
 				initStrategy: null,
 				parameterMappingGroupId: null,
-				paramValues: { }
+				paramValues: { },
+				effectParamValues: { }
 			}));
 			this.store.dispatch(new AddPresetToCategoryAction(id, this.store.selectSnapshot(PresetCategoryState.getCurrent).id));
 		});

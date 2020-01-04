@@ -1,5 +1,6 @@
 import {Layer} from '../../manual/model/layer';
 import {OscMessage} from '../../../backend/osc/osc.message';
+import {OscService} from '../../../backend/osc/osc.service';
 
 export class BiduleOscHelper {
 
@@ -13,8 +14,12 @@ export class BiduleOscHelper {
 		return '/';
 	}
 
+	public static getManualVstPrefix(manualId: string) {
+		return '/Manual' + (parseInt(manualId, 10) + 1) + '/';
+	}
+
 	public static getLocalVstPrefix(layer: Layer) {
-		return '/Manual' + (parseInt(layer.manualId, 10) + 1) + '/Layer' + layer.position + '/';
+		return BiduleOscHelper.getManualVstPrefix(layer.manualId) + 'Layer' + layer.position + '/';
 	}
 
 	public static buildLayerMidiSwitcherItemMessage(layer: Layer, instrumentId: string) {
@@ -45,14 +50,20 @@ export class BiduleOscHelper {
 		);
 	}
 
-	public static buildSendMidiMessages(byte1: number, byte2: number, byte3: number) {
-		return [
+	public static sendMidiMessage(byte1: number, byte2: number, byte3: number, osc: OscService) {
+		[
 			new OscMessage('/MidiCreator/Byte0/Value', [byte1 / 255]),
 			new OscMessage('/MidiCreator/Byte1/Value', [byte2 / 255]),
-			new OscMessage('/MidiCreator/Byte2/Value', [byte3 / 255]),
-			new OscMessage('/MidiCreator/Trigger/Send_Trigger', [1.0]),
-		];
+			new OscMessage('/MidiCreator/Byte2/Value', [byte3 / 255])
+		].forEach(message => osc.send(message));
+		setTimeout(() => osc.send(new OscMessage('/MidiCreator/Trigger/Send_Trigger', [1], true)), 10);
 	}
+	// deprecated - MIDI OSC bidule does not work
+	// public static buildSendMidiMessages(byte1: number, byte2: number, byte3: number) {
+	// 	return [
+	// 		new OscMessage('/OscMidi/MIDI', [byte1, byte2, byte3], true)
+	// 	];
+	// }
 
 	public static isLocalEffect(path: string) {
 		return path.match(/\/Manual\d\/Layer\d\/EI.+/) || path.match(/\/Manual\d\/Layer\d\/EO.+/);
@@ -88,6 +99,14 @@ export class BiduleOscHelper {
 
 	private static getInstrumentIndex(instrumentId: string, layer: Layer) {
 		return layer.availableVstIds.filter(vstId => vstId.startsWith('I')).indexOf(instrumentId);
+	}
+
+	static getManualMixerVolumeItem(manualPosition: number) {
+		return '/ManualMixer/Volume_Channel_' + manualPosition;
+	}
+
+	static getLayerMixerVolumeItem(layerPosition: number, manualId: string) {
+		return this.getManualVstPrefix(manualId) + 'LayerMixer/Volume_Channel_' + layerPosition;
 	}
 }
 

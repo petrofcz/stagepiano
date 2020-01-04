@@ -16,8 +16,10 @@ export class PcInitStrategyHandlerService {
 	public handle(strategy: PCPresetInitStrategy, layer: Layer) {
 		const manual = this.store.selectSnapshot(ManualState.getManualById)(layer.manualId);
 
-		BiduleOscHelper.buildSendMidiMessages(
-			192 + ((manual.position - 1) * 4) + (layer.position - 1), strategy.program, 0
-		).forEach(message => this.osc.send(message));
+		if (strategy.program !== null) {
+			BiduleOscHelper.sendMidiMessage(
+				192 + ((manual.position - 1) * 4) + (layer.position - 1), strategy.program, 0, this.osc
+			);
+		}
 	}
 }

@@ -12,8 +12,10 @@ export class VstPresetInitStrategyHandlerService {
 	constructor(protected osc: OscService) { }
 
 	public handle(strategy: VstPresetInitStrategy, layer: Layer, instrumentId: string) {
-		this.osc.send(new OscMessage(
-			BiduleOscHelper.getLocalVstPrefix(layer) + instrumentId + '/' + BiduleCommonEndpoint.PRESET_NUMBER, [strategy.preset]
-		));
+		if (strategy.preset) {
+			this.osc.send(new OscMessage(
+				BiduleOscHelper.getLocalVstPrefix(layer) + instrumentId + '/' + BiduleCommonEndpoint.PRESET_NUMBER, [strategy.preset]
+			));
+		}
 	}
 }

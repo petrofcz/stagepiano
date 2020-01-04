@@ -10,22 +10,33 @@ import {SessionState} from '../../../shared/session/state/session.state';
 import {KeyboardRoutes} from './keyboardRoutes';
 import {EffectOverviewController} from '../controller/global/display/effectOverviewController';
 import {EffectDetailController} from '../controller/global/display/effectDetailController';
-import {distinctUntilChanged, map} from 'rxjs/operators';
+import {debounceTime, distinctUntilChanged, filter, map, switchMap, tap} from 'rxjs/operators';
 import {InstrumentDetailController} from '../controller/stageMode/instrumentDetailController';
+import {MixerController} from '../controller/global/display/mixer-controller.service';
+import {StaticKnobsDriver} from '../hw/staticKnobs/StaticKnobsDriver';
+import {merge, of} from 'rxjs';
+import {LayoutState} from '../../../shared/layout/state/layout.state';
 
 @Injectable({
 	providedIn: 'root'
 })
 export class KeyboardRouter {
 
-	protected currentDisplayController = null;
+	protected static readonly MIXER_HIDE_TIMEOUT = 2000;
+	protected static readonly MIXER_LOAD_TIMEOUT = 300;
+
+	protected currentDisplayController: MortalInterface|null = null;
+
+	protected isInMixerMode = false;
+
 
 	// tslint:disable-next-line:max-line-length
 	constructor(protected store: Store,
 				protected layerController: LayerController, protected displayModeController: DisplayModeController,
 				protected presetController: PresetController, protected instrumentDetailController: InstrumentDetailController,
 				protected effectOverviewController: EffectOverviewController, protected effectDetailController: EffectDetailController,
-				protected emptyController: EmptyController) {
+				protected emptyController: EmptyController,
+				protected mixerController: MixerController, protected staticKnobsDriver: StaticKnobsDriver) {
 		this.layerController.onInit();
 		this.displayModeController.onInit();
 
@@ -36,7 +47,47 @@ export class KeyboardRouter {
 			this.navigate(path);
 		});
 
+		this.setupMixerSwitching();
+
 		this.store.dispatch(new SetKeyboardRouteAction(KeyboardRoutes.EMPTY));
+	}
+
+	protected setupMixerSwitching() {
+
+		const touchActive$ = merge(
+			this.staticKnobsDriver.onKnobTouched.pipe(map(() => true)),
+			this.staticKnobsDriver.onKnobReleased.pipe(map(() => false))
+		);
+
+		// Mixer display override
+		this.store.select(LayoutState.isLayoutLoaded).pipe(
+			switchMap(loaded => loaded ? touchActive$ : of())
+		)
+			.pipe(debounceTime(KeyboardRouter.MIXER_LOAD_TIMEOUT))
+			.pipe(filter(val => val === true))
+			.pipe(filter(() => this.isInMixerMode === false))
+			.subscribe(() => {
+				this.isInMixerMode = true;
+				if (this.currentDisplayController) {
+					this.currentDisplayController.onDestroy();
+				}
+				this.mixerController.onInit();
+			});
+		this.store.select(LayoutState.isLayoutLoaded).pipe(
+			switchMap(loaded => !loaded ? of() :
+				touchActive$
+					.pipe(debounceTime(KeyboardRouter.MIXER_HIDE_TIMEOUT))
+					.pipe(filter(val => val === false))
+			)
+		)
+			.pipe(filter(() => this.isInMixerMode === true))
+			.subscribe(() => {
+				this.mixerController.onDestroy();
+				this.isInMixerMode = false;
+				if (this.currentDisplayController) {
+					this.currentDisplayController.onInit();
+				}
+			});
 	}
 
 	protected navigate(route: string) {
@@ -75,6 +126,8 @@ export class KeyboardRouter {
 		}
 		prepareCallback();
 		this.currentDisplayController = controller;
-		this.currentDisplayController.onInit();
+		if (!this.isInMixerMode) {
+			this.currentDisplayController.onInit();
+		}
 	}
 }

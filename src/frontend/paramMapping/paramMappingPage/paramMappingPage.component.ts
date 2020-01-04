@@ -116,7 +116,7 @@ export class ParamMappingPageComponent implements OnInit, OnDestroy {
 	setParamLearning(learning: boolean) {
 		if (learning) {
 			this.store.dispatch(new SendOscMessageAction(
-				this.store.selectSnapshot(ParamMappingPageState.getVstPathPrefix) + 'Open_UI', [1.0]
+				this.store.selectSnapshot(ParamMappingPageState.getVstPathPrefix) + 'Open_UI', [1], true
 			));
 		}
 		setTimeout(() => {
