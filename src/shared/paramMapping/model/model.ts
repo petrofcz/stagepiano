@@ -1,4 +1,3 @@
-import {Mapping} from '../../../../.node_modules/source-map';
 import {ParamMappingStrategies} from './paramMappingStrategies';
 
 export interface ParamMappingGroup {

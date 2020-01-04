@@ -7,7 +7,6 @@ import {combineLatest} from 'rxjs';
 import {PresetCategoryState} from '../../preset/state/preset-category.state';
 import {PresetSessionState} from '../../preset/state/presetSession.state';
 import {debounceTime, distinctUntilChanged, map, withLatestFrom} from 'rxjs/operators';
-import {forEach} from '../../../../.node_modules/@angular-devkit/schematics/src';
 import {SessionState} from '../state/session.state';
 import {PresetCategory} from '../../preset/model/model';
 import {SelectPresetCategoryAction} from '../state/session.actions';
