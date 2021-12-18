@@ -37,9 +37,7 @@ export class BiduleLayoutOpener {
 				this.timeout = null;
 			}
 			if (activeLayout) {
-
-				// TODO REENABLE!!!
-				//osc.send(new OscMessage('/open', [activeLayout.biduleFile]));
+				osc.send(new OscMessage('/open', [activeLayout.biduleFile]));
 
 				this.interval = setInterval(() => {
 					osc.send(new OscMessage('/ManualMixer/parameters_osc_update', []));
@@ -67,8 +65,7 @@ export class BiduleLayoutOpener {
 				store.dispatch(new SetLayoutLoadingAction(true));
 			} else {
 				const appDir = app.getAppPath();
-				// TODO REENABLE!
-				// osc.send(new OscMessage('/open', [appDir + '/bidule/emptyLayout.bidule']));
+				osc.send(new OscMessage('/open', [appDir + '/bidule/emptyLayout.bidule']));
 				store.dispatch(new SetLayoutLoadingAction(false));
 			}
 		});
