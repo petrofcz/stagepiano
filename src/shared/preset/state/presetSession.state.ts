@@ -200,24 +200,26 @@ export class PresetSessionState {
 			history = history.slice(0, maxHistoryLength);
 		}
 		if (!presetId) {
-			this.patchCurrentPresetSession(
+			this.patchPresetSession(
 				ctx,
 				{
 					preset: null,
 					presetChangeTimestamp: Date.now(),
 					lastPresets: history
-				}
+				},
+				layerId
 			);
 		} else {
 			const preset = forcePresetData ? forcePresetData : this.store.selectSnapshot(PresetState.getById)(presetId);
-			this.patchCurrentPresetSession(
+			this.patchPresetSession(
 				ctx,
 				{
 					preset: Object.assign({}, preset),
 					ignoreParams: true,
 					presetChangeTimestamp: Date.now(),
 					lastPresets: history
-				}
+				},
+				layerId
 			);
 		}
 	}
