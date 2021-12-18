@@ -95,6 +95,7 @@ export class InstrumentParamMappingPageComponent implements OnInit, OnDestroy {
 			id: this.currentParamMappingGroupId,
 			paramMappingPage: currentParamMappingPage
 		}));
+		setTimeout(() => this.router.navigate([this._cameFromPresetDetail ? '/presets/detail' : '/instruments']), 50);
 	}
 
 	removeParamMappingGroup() {
