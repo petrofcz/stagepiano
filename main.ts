@@ -2,10 +2,15 @@ import {app, BrowserWindow, screen} from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import 'zone.js/dist/zone-node';
-import {enableProdMode} from '@angular/core';
+// import {enableProdMode} from '@angular/core';
 import {renderModuleFactory} from '@angular/platform-server';
 import {BackendModuleNgFactory} from './dist/backend/main';
 import installExtension, { REDUX_DEVTOOLS } from 'electron-devtools-installer';
+
+module.paths.push(path.resolve('node_modules'));
+module.paths.push(path.resolve('../node_modules'));
+module.paths.push(path.resolve(__dirname, '..', '..', '..', '..', 'resources', 'app', 'node_modules'));
+module.paths.push(path.resolve(__dirname, '..', '..', '..', '..', 'resources', 'app.asar', 'node_modules'));
 
 let win, serve;
 const args = process.argv.slice(1);
@@ -26,6 +31,7 @@ function createWindow() {
 		height: size.height,
 		webPreferences: {
 			nodeIntegration: true,
+			webSecurity: false
 		},
 		show: false
 	});
