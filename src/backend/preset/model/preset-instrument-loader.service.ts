@@ -190,6 +190,7 @@ export class PresetInstrumentLoaderService {
 			mergeMap(layerGroup => layerGroup.pipe(
 				map(data => data.activeInstrumentId),
 				distinctUntilChanged(),
+				debounceTime(20), // hackish
 				tap(activeInstrumentId => {
 					console.log('[PILS] For layer ' + layerGroup.key + ' and instrument ' + activeInstrumentId + ' set midi output');
 					if (!activeInstrumentId) {
