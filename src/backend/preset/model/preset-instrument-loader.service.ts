@@ -131,6 +131,8 @@ export class PresetInstrumentLoaderService {
 								tap((args) => {
 									console.log('[PILS] INIT STRATEGY ' + instrumentGroup.key + ' for layer ' + layerGroup.key);
 
+									console.log(args.preset.initStrategy);
+
 									// apply init strategy
 									const layer = this.store.selectSnapshot(ManualState.getLayerById)(layerGroup.key);
 									this.initStrategyHandler.handle(args.preset.initStrategy, layer, instrumentGroup.key);

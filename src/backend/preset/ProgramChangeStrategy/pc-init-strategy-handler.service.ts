@@ -17,6 +17,7 @@ export class PcInitStrategyHandlerService {
 		const manual = this.store.selectSnapshot(ManualState.getManualById)(layer.manualId);
 
 		if (strategy.program !== null) {
+			console.log('CREATING MIDI PC MESSAGE - P' + strategy.program);
 			BiduleOscHelper.sendMidiMessage(
 				192 + ((manual.position - 1) * 4) + (layer.position - 1), strategy.program, 0, this.osc
 			);
