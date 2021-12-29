@@ -55,7 +55,8 @@ export class MidiAdapter {
 		});
 		usbDriver.onConnect.subscribe(() => {
 			this.initialized = false;
-			this.onInit.emit();
+			// todo get rid of keyboard service
+			// this.onInit.emit();
 		});
 		this.onSysex.subscribe((message: SysexMessage) => {
 			if (message.payload[4] === 3 && message.payload[5] === 3) {

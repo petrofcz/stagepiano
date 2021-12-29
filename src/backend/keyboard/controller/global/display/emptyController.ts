@@ -5,7 +5,7 @@ import {DisplayRegionDriver} from '../../../hw/display/display-region-driver';
 @Injectable({
 	providedIn: 'root'
 })
-export class EmptyController implements MortalInterface{
+export class EmptyController implements MortalInterface {
 
 	constructor(protected display: DisplayRegionDriver) { }
 

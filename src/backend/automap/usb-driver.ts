@@ -23,6 +23,7 @@ export class USBDriver {
 
 	constructor() {
 		this.interval = setInterval(() => {
+			console.log('TICK');
 			this.init();
 		}, 3000);
 	}
@@ -32,9 +33,21 @@ export class USBDriver {
 			this.usb = require('usb');
 		}
 		if (!this.interface) {
+			console.log("ACTIVE IFACE NOT FOUND");
+
 			const device = this.usb.findByIds(4661, 11);
+
+			console.log(device);
+
 			if (device) {
-				device.open();
+				console.log("DEVICE FOUND, OPENING DEVICE");
+
+				try {
+					device.open();
+				} catch (e) {
+					console.log("DEVICE OPEN ERROR");
+					console.log(e);
+				}
 				for (const iface of device.interfaces) {
 					if (iface.descriptor.bInterfaceClass === 255) {
 						iface.claim();
@@ -53,20 +66,41 @@ export class USBDriver {
 							});
 
 							inEndpoint.on('end', () => {
-								this._onDisconnect.emit();
+								console.log("DISCONNECTING USB");
+								// try {
+								// 	this.interface.release(true);
+								// } catch (e) {
+								// 	console.log(e);
+								// }
+								try {
+									device.close();
+								} catch (e) {
+									console.log(e);
+								}
 								this.interface = null;
 								this.outEndpoint = null;
+								this._onDisconnect.emit();
 							});
 
-							this.inEndpoint.on('error', message => console.log(message));
-							this.outEndpoint.on('error', message => console.log(message));
+							this.inEndpoint.on('error', message => console.log('SPADLOTO', message));
+							this.outEndpoint.on('error', message => console.log('SPADLOTO', message));
 						} catch (e) {
+							device.close();
 							this.interface = null;
 							this.outEndpoint = null;
 							this.inEndpoint = null;
 						}
+						
+						console.log('START POLL');
+						
+						try {
+							inEndpoint.startPoll(8, 4);
+						} catch (e) {
+							console.log('SPADLOTO2');
+							console.log(e);
+						}
 
-						inEndpoint.startPoll(8, 4);
+						console.log('POLLING STARTED');
 
 						setTimeout(() => {
 							this._onConnect.emit();
